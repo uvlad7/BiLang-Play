@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BiLang Play</title>
+    <meta
+      name="description"
+      content="A desktop video player for language learners: two subtitles at once, a transcript on pause, and a translation for any word."
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#07111d" />
+    <meta property="og:title" content="BiLang Play" />
+    <meta property="og:description" content="A desktop video player for language learners." />
+    <meta property="og:image" content="icon.png" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      // The language before the first paint: ?lang=, then the visitor's
+      // choice, then the browser's languages.
+      (() => {
+        let lang = new URLSearchParams(location.search).get("lang");
+        if (lang !== "en" && lang !== "ru") {
+          try {
+            lang = localStorage.getItem("bilangplay.site.lang");
+          } catch {
+            lang = null;
+          }
+        }
+        if (lang !== "en" && lang !== "ru") {
+          const first = (navigator.languages || [navigator.language || "en"])
+            .map((tag) => tag.toLowerCase().split("-")[0])
+            .find((tag) => tag === "en" || tag === "ru" || tag === "be");
+          lang = first === "ru" || first === "be" ? "ru" : "en";
+        }
+        document.documentElement.dataset.lang = lang;
+        document.documentElement.lang = lang;
+      })();
+    </script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap top-row">
+        <a class="brand" href="#">
+          <img src="icon.svg" width="32" height="32" alt="" />
+          <span>BiLang Play</span>
+        </a>
+        <nav class="nav" aria-label="Sections">
+          <a href="#download"><span lang="en">Download</span><span lang="ru">Скачать</span></a>
+          <a href="#install"><span lang="en">Install</span><span lang="ru">Установка</span></a>
+          <a href="#uninstall"><span lang="en">Uninstall</span><span lang="ru">Удаление</span></a>
+          <a href="#changelog"><span lang="en">Changelog</span><span lang="ru">Изменения</span></a>
+        </nav>
+        <div class="lang-switch" role="group" aria-label="Language / Язык">
+          <button type="button" data-set-lang="en">EN</button>
+          <button type="button" data-set-lang="ru">RU</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero wrap">
+        <div class="hero-text">
+          <p class="badge">alpha</p>
+          <h1>
+            <span lang="en">Learn languages from the videos you watch</span>
+            <span lang="ru">Учите языки по видео, которые смотрите</span>
+          </h1>
+          <p class="lead" lang="en">
+            A desktop video player for language learners. Watch your own videos with subtitles in
+            the language you learn and in your own, pause to see the transcript, and click any word
+            for its translation and definition.
+          </p>
+          <p class="lead" lang="ru">
+            Видеоплеер для компьютера для тех, кто учит языки. Смотрите свои видео с субтитрами на
+            изучаемом и на родном языке, на паузе видите транскрипт, а щелчок по любому слову
+            показывает перевод и определение.
+          </p>
+          <p class="note" lang="en">
+            The app's interface is in English only for now; translations will come later.
+          </p>
+          <p class="note" lang="ru">
+            Интерфейс приложения пока только на английском; переводы появятся позже.
+          </p>
+        </div>
+
+        <div class="card primary" id="primary" aria-live="polite">
+          <p class="primary-os" data-primary-os></p>
+          <div class="primary-buttons" data-primary-buttons></div>
+          <p class="primary-meta" data-primary-meta>
+            <span lang="en">Looking for the latest release…</span>
+            <span lang="ru">Ищем последний релиз…</span>
+          </p>
+          <a class="primary-other" href="#download">
+            <span lang="en">Other systems and formats</span>
+            <span lang="ru">Другие системы и форматы</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="wrap features" aria-label="Features">
+        <article class="card feature">
+          <h3><span lang="en">Two subtitles</span><span lang="ru">Два субтитра</span></h3>
+          <p lang="en">
+            The language you learn and your own at once, each with its own timing. SRT, WebVTT, and
+            tracks inside the video.
+          </p>
+          <p lang="ru">
+            Изучаемый и родной язык одновременно, у каждого свой сдвиг по времени. SRT, WebVTT и
+            дорожки внутри видео.
+          </p>
+        </article>
+        <article class="card feature">
+          <h3>
+            <span lang="en">Transcript on pause</span><span lang="ru">Транскрипт на паузе</span>
+          </h3>
+          <p lang="en">
+            Pause and the lines so far appear over the picture; click one to go back to it. Or keep
+            a transcript panel beside the video.
+          </p>
+          <p lang="ru">
+            На паузе поверх картинки появляются прошедшие реплики; щелчок возвращает к реплике. Или
+            держите панель транскрипта рядом с видео.
+          </p>
+        </article>
+        <article class="card feature">
+          <h3><span lang="en">Any word, explained</span><span lang="ru">Любое слово</span></h3>
+          <p lang="en">Click a word in a subtitle for its translation and definition.</p>
+          <p lang="ru">Щелчок по слову в субтитрах показывает перевод и определение.</p>
+        </article>
+        <article class="card feature">
+          <h3><span lang="en">Your own files</span><span lang="ru">Ваши файлы</span></h3>
+          <p lang="en">
+            MP4, WebM, and MKV from your disk, with AC-3, DTS, and TrueHD audio. Nothing is
+            uploaded.
+          </p>
+          <p lang="ru">
+            MP4, WebM и MKV с вашего диска, со звуком AC-3, DTS и TrueHD. Ничего никуда не
+            загружается.
+          </p>
+        </article>
+      </section>
+
+      <section class="wrap section" id="download">
+        <h2><span lang="en">Download</span><span lang="ru">Скачать</span></h2>
+        <p class="section-meta" data-release-meta></p>
+        <div class="downloads">
+          <article class="card platform" data-platform="windows">
+            <h3>Windows</h3>
+            <p class="needs" lang="en">Windows 10 or 11, 64-bit</p>
+            <p class="needs" lang="ru">Windows 10 или 11, 64-бит</p>
+            <ul class="files" data-files="windows"></ul>
+          </article>
+          <article class="card platform" data-platform="macos">
+            <h3>macOS</h3>
+            <p class="needs" lang="en">A Mac with Apple Silicon (M1 or later)</p>
+            <p class="needs" lang="ru">Mac на Apple Silicon (M1 или новее)</p>
+            <ul class="files" data-files="macos"></ul>
+          </article>
+          <article class="card platform" data-platform="linux">
+            <h3>Linux</h3>
+            <p class="needs" lang="en">
+              x86-64, glibc 2.35+ (Ubuntu 22.04+, Debian 12+, Fedora 36+)
+            </p>
+            <p class="needs" lang="ru">
+              x86-64, glibc 2.35+ (Ubuntu 22.04+, Debian 12+, Fedora 36+)
+            </p>
+            <ul class="files" data-files="linux"></ul>
+          </article>
+        </div>
+        <p class="small" data-sources hidden>
+          <span lang="en"
+            >Source of the bundled FFmpeg and Opus libraries and the script that builds them (LGPL
+            2.1):</span
+          >
+          <span lang="ru"
+            >Исходный код встроенных библиотек FFmpeg и Opus и скрипт их сборки (LGPL 2.1):</span
+          >
+          <span data-source-links></span>
+        </p>
+      </section>
+
+      <section class="wrap section" id="install">
+        <h2><span lang="en">Install</span><span lang="ru">Установка</span></h2>
+        <p class="section-lead" lang="en">
+          The builds are not signed with a paid certificate yet, so Windows and macOS warn about
+          them once. The steps below get past that.
+        </p>
+        <p class="section-lead" lang="ru">
+          Сборки пока не подписаны платным сертификатом, поэтому Windows и macOS один раз
+          предупреждают о них. Ниже — как это обойти.
+        </p>
+        <div class="tabs" data-tabs>
+          <div class="tab-list" role="tablist">
+            <button type="button" role="tab" data-tab="windows">Windows</button>
+            <button type="button" role="tab" data-tab="macos">macOS</button>
+            <button type="button" role="tab" data-tab="linux">Linux</button>
+          </div>
+
+          <div class="card tab-panel" role="tabpanel" data-panel="windows">
+            <div lang="en">
+              <h3>Installer</h3>
+              <p>
+                Run
+                <code
+                  >bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64-setup.exe</code
+                >. It installs for your user only, without administrator rights, by default into
+                <code>%LOCALAPPDATA%\Programs\BiLang Play</code>, and adds Start menu and desktop
+                shortcuts.
+              </p>
+              <h3>Portable zip</h3>
+              <p>Unzip it anywhere and run <code>BiLang Play.exe</code>.</p>
+              <h3>If Windows blocks it</h3>
+              <p>
+                Windows marks downloaded files, and unsigned apps then get “Windows protected your
+                PC” (choose <b>More info</b>, then <b>Run anyway</b>) or “The publisher could not be
+                verified” (choose <b>Run</b>). To remove the mark beforehand, right-click the
+                downloaded file, choose <b>Properties</b>, tick <b>Unblock</b>, and choose
+                <b>OK</b>; for the zip, do it before unzipping. Or in PowerShell:
+              </p>
+            </div>
+            <div lang="ru">
+              <h3>Установщик</h3>
+              <p>
+                Запустите
+                <code
+                  >bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64-setup.exe</code
+                >. Он ставит программу только для вашего пользователя, без прав администратора, по
+                умолчанию в <code>%LOCALAPPDATA%\Programs\BiLang Play</code>, и добавляет ярлыки в
+                меню «Пуск» и на рабочий стол.
+              </p>
+              <h3>Портативный zip</h3>
+              <p>Распакуйте куда угодно и запустите <code>BiLang Play.exe</code>.</p>
+              <h3>Если Windows блокирует запуск</h3>
+              <p>
+                Windows помечает скачанные файлы, и для неподписанных программ показывает «Система
+                Windows защитила ваш компьютер» (нажмите <b>Подробнее</b>, затем
+                <b>Выполнить в любом случае</b>) или «Не удалось проверить издателя» (нажмите
+                <b>Запустить</b>). Чтобы снять пометку заранее, щёлкните скачанный файл правой
+                кнопкой, выберите <b>Свойства</b>, отметьте <b>Разблокировать</b> и нажмите
+                <b>ОК</b>; zip — до распаковки. Или в PowerShell:
+              </p>
+            </div>
+            <pre><code><span lang="en"># The downloaded installer or zip:</span><span lang="ru"># Скачанный установщик или zip:</span>
+Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64.zip"
+<span lang="en"># A folder already unzipped, every file in it:</span><span lang="ru"># Уже распакованная папка, все файлы в ней:</span>
+Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span lang="ru">&lt;распакованная папка&gt;</span>" | Unblock-File</code></pre>
+            <p lang="en">
+              Where Smart App Control (Windows 11) blocks unsigned apps, unblocking does not help;
+              only turning Smart App Control off does.
+            </p>
+            <p lang="ru">
+              Если неподписанные программы блокирует «Интеллектуальное управление приложениями»
+              (Smart App Control, Windows 11), разблокировка не помогает — только его отключение.
+            </p>
+          </div>
+
+          <div class="card tab-panel" role="tabpanel" data-panel="macos">
+            <div lang="en">
+              <h3>Disk image</h3>
+              <p>
+                Open
+                <code>bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.dmg</code> and
+                drag <b>BiLang Play</b> onto <b>Applications</b>.
+              </p>
+              <h3>Zip</h3>
+              <p>
+                Unzip it and move <b>BiLang Play</b> to <b>Applications</b>. Started anywhere else,
+                the app offers to move itself there.
+              </p>
+              <h3>If macOS blocks it</h3>
+              <p>
+                On the first start macOS says it cannot verify the app. Choose <b>Done</b>, open
+                <b>System Settings › Privacy &amp; Security</b>, scroll down to the message about
+                BiLang Play, and choose <b>Open Anyway</b>. Or remove the “downloaded from the
+                internet” mark in Terminal:
+              </p>
+            </div>
+            <div lang="ru">
+              <h3>Образ диска</h3>
+              <p>
+                Откройте
+                <code>bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.dmg</code> и
+                перетащите <b>BiLang Play</b> в <b>Программы</b> (Applications).
+              </p>
+              <h3>Zip</h3>
+              <p>
+                Распакуйте и переместите <b>BiLang Play</b> в <b>Программы</b>. Если запустить его
+                из другого места, приложение само предложит туда переместиться.
+              </p>
+              <h3>Если macOS блокирует запуск</h3>
+              <p>
+                При первом запуске macOS сообщает, что не может проверить приложение. Нажмите
+                <b>Готово</b>, откройте
+                <b>Системные настройки › Конфиденциальность и безопасность</b>, прокрутите до
+                сообщения о BiLang Play и нажмите <b>Всё равно открыть</b>. Или снимите пометку
+                «загружено из интернета» в Терминале:
+              </p>
+            </div>
+            <pre><code><span lang="en"># The installed app:</span><span lang="ru"># Установленное приложение:</span>
+xattr -dr com.apple.quarantine "/Applications/BiLang Play.app"
+<span lang="en"># Or the zip, before unzipping it:</span><span lang="ru"># Или zip, до распаковки:</span>
+xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.zip</code></pre>
+          </div>
+
+          <div class="card tab-panel" role="tabpanel" data-panel="linux">
+            <div lang="en">
+              <h3>AppImage</h3>
+              <p>Make it executable and run it:</p>
+            </div>
+            <div lang="ru">
+              <h3>AppImage</h3>
+              <p>Сделайте файл исполняемым и запустите:</p>
+            </div>
+            <pre><code>chmod +x bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage
+./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage</code></pre>
+            <p lang="en">
+              Or in the file manager:
+              <b>Properties › Permissions › Allow executing file as program</b>. It needs no
+              <code>libfuse2</code>. On the first start it offers to add itself to the applications
+              menu. On Ubuntu 24.04 and later the first start shows one <code>sudo</code> command
+              that installs an AppArmor profile for it, because Ubuntu restricts the sandbox the app
+              relies on; run it, then start the app again.
+            </p>
+            <p lang="ru">
+              Или в файловом менеджере:
+              <b>Свойства › Права › Разрешить выполнение файла как программы</b>.
+              <code>libfuse2</code> не нужен. При первом запуске приложение предложит добавить себя
+              в меню приложений. В Ubuntu 24.04 и новее первый запуск покажет одну команду с
+              <code>sudo</code>, которая ставит для него профиль AppArmor: Ubuntu ограничивает
+              песочницу, на которую опирается приложение. Выполните её и запустите приложение снова.
+            </p>
+            <h3><code>.deb</code></h3>
+            <p lang="en">Debian, Ubuntu, and their derivatives:</p>
+            <p lang="ru">Debian, Ubuntu и производные:</p>
+            <pre><code>sudo apt install ./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-amd64.deb</code></pre>
+            <h3><code>.tar.gz</code></h3>
+            <p lang="en">
+              Unpack it anywhere and run <code>./bilangplay</code> in the folder. If it exits with a
+              message about the SUID sandbox helper, either install an AppArmor profile for it or
+              let the bundled helper run as root, from that folder:
+            </p>
+            <p lang="ru">
+              Распакуйте куда угодно и запустите <code>./bilangplay</code> в папке. Если он
+              завершается с сообщением о SUID sandbox helper, поставьте для него профиль AppArmor
+              или разрешите встроенному помощнику запускаться от root, из этой папки:
+            </p>
+            <pre><code>sudo chown root:root chrome-sandbox &amp;&amp; sudo chmod 4755 chrome-sandbox</code></pre>
+            <p lang="en">
+              On Ubuntu 22.04-era desktops, install <code>zenity</code> so file pickers open in the
+              last folder you used.
+            </p>
+            <p lang="ru">
+              На рабочих столах времён Ubuntu 22.04 поставьте <code>zenity</code>, чтобы окна выбора
+              файлов открывались в последней использованной папке.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap section" id="uninstall">
+        <h2><span lang="en">Uninstall completely</span><span lang="ru">Полное удаление</span></h2>
+        <p class="section-lead" lang="en">
+          Quit BiLang Play first. Removing the app leaves your settings and app data, so a reinstall
+          starts where you left off; the commands under “App data and settings” remove those too.
+          App data is the recent folders of the file pickers, the answers to first-start questions,
+          and the player's browsing data and cache. The system's own recent-files lists are not the
+          app's and stay.
+        </p>
+        <p class="section-lead" lang="ru">
+          Сначала закройте BiLang Play. Удаление программы оставляет настройки и данные, чтобы после
+          переустановки всё было как раньше; команды в разделе «Данные и настройки» удаляют и их.
+          Данные — это последние папки в окнах выбора файлов, ответы на вопросы при первом запуске,
+          а также данные браузера и кэш плеера. Системные списки недавних файлов принадлежат системе
+          и остаются.
+        </p>
+        <div class="tabs" data-tabs>
+          <div class="tab-list" role="tablist">
+            <button type="button" role="tab" data-tab="windows">Windows</button>
+            <button type="button" role="tab" data-tab="macos">macOS</button>
+            <button type="button" role="tab" data-tab="linux">Linux</button>
+          </div>
+
+          <div class="card tab-panel" role="tabpanel" data-panel="windows">
+            <ul lang="en">
+              <li>
+                <b>Installer:</b> <b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>.
+              </li>
+              <li><b>Portable zip:</b> delete the folder.</li>
+            </ul>
+            <ul lang="ru">
+              <li>
+                <b>Установщик:</b>
+                <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>.
+              </li>
+              <li><b>Портативный zip:</b> удалите папку.</li>
+            </ul>
+            <h3>
+              <span lang="en">App data and settings, in PowerShell</span>
+              <span lang="ru">Данные и настройки, в PowerShell</span>
+            </h3>
+            <pre><code>Remove-Item -Recurse -Force "$env:APPDATA\bilangplay"
+Remove-Item -Recurse -Force "HKCU:\Software\io.github.uvlad7.bilangplay"</code></pre>
+          </div>
+
+          <div class="card tab-panel" role="tabpanel" data-panel="macos">
+            <p lang="en">Delete <b>BiLang Play</b> from <b>Applications</b>.</p>
+            <p lang="ru">Удалите <b>BiLang Play</b> из <b>Программ</b>.</p>
+            <h3>
+              <span lang="en">App data and settings, in Terminal</span>
+              <span lang="ru">Данные и настройки, в Терминале</span>
+            </h3>
+            <pre><code>rm -rf ~/Library/"Application Support"/bilangplay
+defaults delete io.github.uvlad7.bilangplay 2&gt;/dev/null
+rm -f ~/Library/Preferences/io.github.uvlad7.bilangplay*.plist
+rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedState</code></pre>
+          </div>
+
+          <div class="card tab-panel" role="tabpanel" data-panel="linux">
+            <ul lang="en">
+              <li>
+                <b><code>.deb</code>:</b> <code>sudo apt purge bilangplay</code> (it removes its
+                AppArmor profile and settings schema too).
+              </li>
+              <li>
+                <b><code>.tar.gz</code>:</b> delete the folder.
+              </li>
+              <li>
+                <b>AppImage:</b> delete the file. If you added it to the applications menu, remove
+                the entry and its icons (before deleting the file, the app's start screen also has
+                <b>Remove from applications menu</b>):
+              </li>
+            </ul>
+            <ul lang="ru">
+              <li>
+                <b><code>.deb</code>:</b> <code>sudo apt purge bilangplay</code> (заодно удаляет
+                свой профиль AppArmor и схему настроек).
+              </li>
+              <li>
+                <b><code>.tar.gz</code>:</b> удалите папку.
+              </li>
+              <li>
+                <b>AppImage:</b> удалите файл. Если вы добавляли его в меню приложений, удалите
+                пункт меню и значки (пока файл не удалён, на стартовом экране приложения есть и
+                кнопка <b>Remove from applications menu</b>):
+              </li>
+            </ul>
+            <pre><code>data="${XDG_DATA_HOME:-$HOME/.local/share}"
+rm -f "$data/applications/bilang-play.desktop"
+find "$data/icons/hicolor" -name 'bilang-play*' -delete</code></pre>
+            <p lang="en">If you installed its AppArmor profile (Ubuntu 24.04 and later):</p>
+            <p lang="ru">Если вы ставили его профиль AppArmor (Ubuntu 24.04 и новее):</p>
+            <pre><code>sudo apparmor_parser -R /etc/apparmor.d/bilangplay-appimage
+sudo rm /etc/apparmor.d/bilangplay-appimage</code></pre>
+            <h3>
+              <span lang="en"
+                >App data and settings (settings live in GSettings, stored by dconf)</span
+              >
+              <span lang="ru">Данные и настройки (настройки — в GSettings, хранит их dconf)</span>
+            </h3>
+            <pre><code>rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
+dconf reset -f /io/github/uvlad7/bilangplay/</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap section" id="changelog">
+        <h2><span lang="en">Changelog</span><span lang="ru">История изменений</span></h2>
+        <div class="changelog" data-changelog>
+          <p class="small"><span lang="en">Loading…</span><span lang="ru">Загрузка…</span></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="wrap footer">
+      <p lang="en">
+        BiLang Play is proprietary software, not open source. Alpha builds are free, and will stay
+        free. Its license and the licenses of the open-source components it includes are in
+        <b>Help › Licenses</b> and in each package's <code>licenses</code> folder.
+      </p>
+      <p lang="ru">
+        BiLang Play — проприетарная программа, не открытая. Альфа-версии бесплатны и останутся
+        бесплатными. Её лицензия и лицензии открытых компонентов внутри — в
+        <b>Help › Licenses</b> и в папке <code>licenses</code> каждого пакета.
+      </p>
+      <p lang="en">
+        Word definitions: Wiktionary contributors,
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, via
+        <a href="https://freedictionaryapi.com">FreeDictionaryAPI.com</a>. The video player is built
+        with <a href="https://playerjs.com">PlayerJS</a>.
+      </p>
+      <p lang="ru">
+        Определения слов: участники Викисловаря,
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ru">CC BY-SA 4.0</a>, через
+        <a href="https://freedictionaryapi.com">FreeDictionaryAPI.com</a>. Видеоплеер сделан на
+        <a href="https://playerjs.com">PlayerJS</a>.
+      </p>
+      <p>
+        <a href="https://github.com/uvlad7/BiLang-Play">GitHub</a> ·
+        <a href="https://github.com/uvlad7/BiLang-Play/issues"
+          ><span lang="en">Report a problem</span><span lang="ru">Сообщить о проблеме</span></a
+        >
+      </p>
+    </footer>
+  </body>
+</html>
