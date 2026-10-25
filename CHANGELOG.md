@@ -1,3 +1,5 @@
+<!-- Each release replaces this file in uvlad7/BiLang-Play from BiLang Play's sources; edits made there are overwritten. -->
+
 # Changelog
 
 All notable changes to BiLang Play. Versions follow
