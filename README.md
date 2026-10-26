@@ -70,10 +70,15 @@ remove the mark beforehand, right-click the downloaded file, choose
 **Properties**, tick **Unblock**, and choose **OK**; for the zip, do it
 before unzipping. Or in PowerShell:
 
+The downloaded installer or zip:
+
 ```powershell
-# The downloaded installer or zip:
 Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<version>-windows-x64.zip"
-# A folder already unzipped, every file in it:
+```
+
+A folder already unzipped, every file in it:
+
+```powershell
 Get-ChildItem -Recurse "<the unzipped folder>" | Unblock-File
 ```
 
@@ -94,10 +99,15 @@ app. Choose **Done**, open **System Settings > Privacy & Security**, scroll
 down to the message about BiLang Play, and choose **Open Anyway**. Or remove
 the "downloaded from the internet" mark in Terminal:
 
+The installed app:
+
 ```sh
-# The installed app:
 xattr -dr com.apple.quarantine "/Applications/BiLang Play.app"
-# Or the zip, before unzipping it:
+```
+
+Or the zip, before unzipping it:
+
+```sh
 xattr -d com.apple.quarantine ~/Downloads/bilangplay-<version>-macos-arm64.zip
 ```
 
@@ -136,7 +146,11 @@ sudo chown root:root chrome-sandbox && sudo chmod 4755 chrome-sandbox
 ```
 
 On Ubuntu 22.04 and other systems of its age, install `zenity` so file
-pickers open in the last folder you used.
+pickers open in the last folder you used:
+
+```sh
+sudo apt install zenity
+```
 
 ## Uninstall completely
 

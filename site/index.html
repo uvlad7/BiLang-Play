@@ -369,10 +369,12 @@
                 <b>ОК</b>; zip — до распаковки. Или в PowerShell:
               </p>
             </div>
-            <pre><code><span lang="en"># The downloaded installer or zip:</span><span lang="ru"># Скачанный установщик или zip:</span>
-Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64.zip"
-<span lang="en"># A folder already unzipped, every file in it:</span><span lang="ru"># Уже распакованная папка, все файлы в ней:</span>
-Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span lang="ru">&lt;распакованная папка&gt;</span>" | Unblock-File</code></pre>
+            <p lang="en">The downloaded installer or zip:</p>
+            <p lang="ru">Скачанный установщик или zip:</p>
+            <pre><code>Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64.zip"</code></pre>
+            <p lang="en">A folder already unzipped, every file in it:</p>
+            <p lang="ru">Уже распакованная папка, все файлы в ней:</p>
+            <pre><code>Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span lang="ru">&lt;распакованная папка&gt;</span>" | Unblock-File</code></pre>
             <p lang="en">
               Where Smart App Control (Windows 11) blocks unsigned apps, unblocking does not help;
               only turning Smart App Control off does.
@@ -425,10 +427,12 @@ Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span 
                 «загружено из интернета» в Терминале:
               </p>
             </div>
-            <pre><code><span lang="en"># The installed app:</span><span lang="ru"># Установленное приложение:</span>
-xattr -dr com.apple.quarantine "/Applications/BiLang Play.app"
-<span lang="en"># Or the zip, before unzipping it:</span><span lang="ru"># Или zip, до распаковки:</span>
-xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.zip</code></pre>
+            <p lang="en">The installed app:</p>
+            <p lang="ru">Установленное приложение:</p>
+            <pre><code>xattr -dr com.apple.quarantine "/Applications/BiLang Play.app"</code></pre>
+            <p lang="en">Or the zip, before unzipping it:</p>
+            <p lang="ru">Или zip, до распаковки:</p>
+            <pre><code>xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.zip</code></pre>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
@@ -480,12 +484,13 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
             <pre><code>sudo chown root:root chrome-sandbox &amp;&amp; sudo chmod 4755 chrome-sandbox</code></pre>
             <p lang="en">
               On Ubuntu 22.04 and other systems of its age, install <code>zenity</code> so file
-              pickers open in the last folder you used.
+              pickers open in the last folder you used:
             </p>
             <p lang="ru">
               В Ubuntu 22.04 и других системах того времени поставьте <code>zenity</code>, чтобы
-              окна выбора файлов открывались в последней использованной папке.
+              окна выбора файлов открывались в последней использованной папке:
             </p>
+            <pre><code>sudo apt install zenity</code></pre>
           </div>
         </div>
       </section>
