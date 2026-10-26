@@ -135,8 +135,8 @@ folder:
 sudo chown root:root chrome-sandbox && sudo chmod 4755 chrome-sandbox
 ```
 
-On Ubuntu 22.04-era desktops, install `zenity` so file pickers open in the
-last folder you used.
+On Ubuntu 22.04 and other systems of its age, install `zenity` so file
+pickers open in the last folder you used.
 
 ## Uninstall completely
 
@@ -212,8 +212,8 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
   sudo rm /etc/apparmor.d/bilangplay-appimage
   ```
 
-App data and settings (settings live in GSettings, stored by dconf in most
-DEs):
+App data and settings (settings live in GSettings, stored by dconf on most
+systems):
 
 ```sh
 rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
