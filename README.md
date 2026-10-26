@@ -26,6 +26,28 @@ picks the right package for your system, or take one from
 The builds are not signed with a paid certificate yet, so Windows and macOS
 warn about them once. The steps below get past that.
 
+## Screenshots
+
+Two subtitles while it plays:
+
+![Playing with English and Russian subtitles](screenshots/fullscreen-playing.png)
+
+On pause, the transcript in both languages, and a word looked up:
+
+![The pause transcript with the word card for "forgot"](screenshots/fullscreen-word.png)
+
+More: [paused](screenshots/fullscreen-paused.png), and in a window:
+[playing](screenshots/window-playing.png), [paused](screenshots/window-paused.png),
+[word](screenshots/window-word.png). Taken on macOS.
+
+The film is [Tears of Steel](https://mango.blender.org), (CC) Blender
+Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/):
+[the video](https://download.blender.org/demo/movies/ToS/tears_of_steel_1080p.mov.zip),
+its [Dolby 5.1 mix](https://download.blender.org/demo/movies/ToS/Surround-TOS_DVDSURROUND-Dolby%205.1.ac3)
+as the second audio track, and its
+[English](https://download.blender.org/demo/movies/ToS/subtitles/TOS-en.srt) and
+[Russian](https://download.blender.org/demo/movies/ToS/subtitles/TOS-ru.srt) subtitles.
+
 ## Install
 
 ### Windows
