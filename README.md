@@ -30,15 +30,15 @@ warn about them once. The steps below get past that.
 
 Two subtitles while it plays:
 
-![Playing with English and Russian subtitles](screenshots/fullscreen-playing.png)
+![Playing with English and Russian subtitles](screenshots/window-playing.png)
 
 On pause, the transcript in both languages, and a word looked up:
 
-![The pause transcript with the word card for "forgot"](screenshots/fullscreen-word.png)
+![The pause transcript with the word card for "forgot"](screenshots/window-word.png)
 
-More: [paused](screenshots/fullscreen-paused.png), and in a window:
-[playing](screenshots/window-playing.png), [paused](screenshots/window-paused.png),
-[word](screenshots/window-word.png). Taken on macOS.
+More: [paused](screenshots/window-paused.png), and fullscreen:
+[playing](screenshots/fullscreen-playing.png), [paused](screenshots/fullscreen-paused.png),
+[word](screenshots/fullscreen-word.png). Taken on macOS.
 
 The film is [Tears of Steel](https://mango.blender.org), (CC) Blender
 Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/):

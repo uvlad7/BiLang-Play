@@ -1,6 +1,7 @@
 name: Pages
 
-# The site (site/) with both changelogs beside it, on every change to main.
+# The site (site/) with both changelogs and the screenshots beside it, on
+# every change to main.
 # Downloads need no redeploy: the page reads the newest release from the
 # GitHub API in the visitor's browser.
 on:
@@ -29,6 +30,7 @@ jobs:
           mkdir _site
           cp -r site/. _site/
           cp CHANGELOG.md CHANGELOG.ru.md _site/
+          cp -r screenshots _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

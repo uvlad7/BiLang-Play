@@ -209,6 +209,48 @@ function setupTabs() {
   }
 }
 
+// The screenshot gallery: one slide at a time; the arrows, the dots, the
+// keyboard's arrow keys, and a swipe move it, and it loops at both ends.
+function setupGallery() {
+  const gallery = document.querySelector("[data-gallery]");
+  if (!gallery) return;
+  const track = gallery.querySelector("[data-gallery-track]");
+  const slides = [...track.children];
+  const dots = gallery.querySelector("[data-gallery-dots]");
+  let current = 0;
+  const show = (index) => {
+    current = (index + slides.length) % slides.length;
+    track.style.transform = `translateX(${-100 * current}%)`;
+    slides.forEach((slide, i) => slide.setAttribute("aria-hidden", String(i !== current)));
+    [...dots.children].forEach((dot, i) => dot.setAttribute("aria-current", String(i === current)));
+  };
+  slides.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("aria-label", String(i + 1));
+    dot.addEventListener("click", () => show(i));
+    dots.append(dot);
+  });
+  for (const arrow of gallery.querySelectorAll("[data-gallery-step]")) {
+    arrow.addEventListener("click", () => show(current + Number(arrow.dataset.galleryStep)));
+  }
+  gallery.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") show(current - 1);
+    else if (event.key === "ArrowRight") show(current + 1);
+    else return;
+    event.preventDefault();
+  });
+  let startX = null;
+  track.addEventListener("pointerdown", (event) => (startX = event.clientX));
+  track.addEventListener("pointerup", (event) => {
+    if (startX === null) return;
+    const moved = event.clientX - startX;
+    startX = null;
+    if (Math.abs(moved) > 40) show(current + (moved < 0 ? 1 : -1));
+  });
+  show(0);
+}
+
 // Copy buttons copy the command as shown, in the shown language.
 function setupCopy() {
   for (const pre of document.querySelectorAll("pre")) {
@@ -344,6 +386,7 @@ for (const b of document.querySelectorAll("[data-set-lang]")) {
   b.addEventListener("click", () => setLanguage(b.dataset.setLang));
 }
 setupTabs();
+setupGallery();
 setupCopy();
 render();
 loadRelease()
