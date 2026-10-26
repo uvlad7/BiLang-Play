@@ -127,7 +127,7 @@ shows one `sudo` command that installs an AppArmor profile for it, because
 Ubuntu restricts the sandbox the app relies on; run it, then start the app
 again.
 
-**Debian/Ubuntu (and their derivatives) package (.deb):**
+**Debian/Ubuntu package (.deb):**
 
 ```sh
 sudo apt install ./bilangplay-<version>-linux-amd64.deb
@@ -197,7 +197,7 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
 
 ### Linux
 
-- **Debian/Ubuntu (and their derivatives) package (.deb):** it removes its
+- **Debian/Ubuntu package (.deb):** it removes its
   AppArmor profile and settings schema too:
 
   ```sh
@@ -237,7 +237,7 @@ dconf reset -f /io/github/uvlad7/bilangplay/
 If the `dconf` command is not found, run this instead, **before** deleting
 the app (`gsettings` needs a file that comes with it):
 
-**Debian/Ubuntu (and their derivatives) package (.deb):**
+**Debian/Ubuntu package (.deb):**
 
 ```sh
 gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
