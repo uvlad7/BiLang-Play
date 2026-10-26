@@ -246,22 +246,24 @@
         <!-- A screenshot at full size: opened by clicking one in the gallery. -->
         <dialog class="lightbox" data-lightbox aria-label="Screenshot">
           <figure class="lightbox-figure">
-            <img data-lightbox-image alt="" />
+            <div class="lightbox-media">
+              <img data-lightbox-image alt="" />
+              <button type="button" class="gallery-arrow prev" data-lightbox-step="-1">
+                <span aria-hidden="true">‹</span>
+                <span class="sr-only" lang="en">Previous</span
+                ><span class="sr-only" lang="ru">Назад</span>
+              </button>
+              <button type="button" class="gallery-arrow next" data-lightbox-step="1">
+                <span aria-hidden="true">›</span>
+                <span class="sr-only" lang="en">Next</span><span class="sr-only" lang="ru">Вперёд</span>
+              </button>
+            </div>
             <figcaption data-lightbox-caption></figcaption>
           </figure>
           <button type="button" class="lightbox-close" data-lightbox-close>
             <span aria-hidden="true">×</span>
             <span class="sr-only" lang="en">Close</span
             ><span class="sr-only" lang="ru">Закрыть</span>
-          </button>
-          <button type="button" class="gallery-arrow prev" data-lightbox-step="-1">
-            <span aria-hidden="true">‹</span>
-            <span class="sr-only" lang="en">Previous</span
-            ><span class="sr-only" lang="ru">Назад</span>
-          </button>
-          <button type="button" class="gallery-arrow next" data-lightbox-step="1">
-            <span aria-hidden="true">›</span>
-            <span class="sr-only" lang="en">Next</span><span class="sr-only" lang="ru">Вперёд</span>
           </button>
         </dialog>
       </section>

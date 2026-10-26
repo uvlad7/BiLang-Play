@@ -481,6 +481,7 @@ pre .copy:hover {
   border: 0;
   background: transparent;
   color: var(--text);
+  touch-action: pan-y;
 }
 .lightbox[open] {
   display: grid;
@@ -492,16 +493,25 @@ pre .copy:hover {
 }
 .lightbox-figure {
   margin: 0;
-  display: grid;
-  place-items: center;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
   width: 100%;
   height: 100%;
   padding: 56px 72px 24px;
 }
-.lightbox-figure img {
+.lightbox-media {
+  position: relative;
+  display: grid;
   max-width: 100%;
-  max-height: calc(100vh - 130px);
+  max-height: calc(100dvh - 140px);
+}
+.lightbox-media img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100dvh - 140px);
   width: auto;
   height: auto;
   object-fit: contain;
@@ -526,8 +536,17 @@ pre .copy:hover {
 .lightbox-close:hover {
   background: rgb(255 255 255 / 0.16);
 }
-.lightbox .gallery-arrow {
-  top: calc(50% - 22px);
+.lightbox-media .gallery-arrow {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+}
+.lightbox-media .gallery-arrow.prev {
+  left: 12px;
+}
+.lightbox-media .gallery-arrow.next {
+  right: 12px;
 }
 .gallery-slide {
   flex: 0 0 100%;

@@ -279,15 +279,37 @@ function setupGallery() {
     event.preventDefault();
   });
 
-  // A swipe changes the slide; a tap or click without one opens it.
-  let startX = null;
-  track.addEventListener("pointerdown", (event) => (startX = event.clientX));
-  track.addEventListener("pointerup", (event) => {
-    if (startX === null) return;
-    const moved = event.clientX - startX;
-    startX = null;
-    if (Math.abs(moved) > 40) show(current + (moved < 0 ? 1 : -1));
-    else if (Math.abs(moved) < 8 && event.target.closest(".gallery-slide img")) open();
+  // Capturing the pointer lets a swipe complete even when the finger leaves
+  // the image. The same gesture works in the full-screen viewer.
+  const installSwipe = (target, step, tap) => {
+    let start = null;
+    const clear = () => (start = null);
+    target.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (event.target.closest("button")) return;
+      start = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+      target.setPointerCapture?.(event.pointerId);
+    });
+    target.addEventListener("pointerup", (event) => {
+      if (!start || event.pointerId !== start.pointerId) return;
+      const movedX = event.clientX - start.x;
+      const movedY = event.clientY - start.y;
+      clear();
+      target.releasePointerCapture?.(event.pointerId);
+      if (Math.abs(movedX) > 32 && Math.abs(movedX) > Math.abs(movedY)) {
+        step(movedX < 0 ? 1 : -1);
+      } else if (Math.abs(movedX) < 8 && Math.abs(movedY) < 8) {
+        tap?.(event);
+      }
+    });
+    target.addEventListener("pointercancel", clear);
+  };
+  installSwipe(track, (step) => show(current + step), (event) => {
+    if (event.target.closest(".gallery-slide img")) open();
+  });
+  installSwipe(lightbox, (step) => {
+    show(current + step);
+    fill();
   });
   show(0);
 }
