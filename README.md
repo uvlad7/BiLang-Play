@@ -54,13 +54,13 @@ as the second audio track, and its
 
 ### Windows
 
-**Installer.** Run `bilangplay-<version>-windows-x64-setup.exe`. It installs
-for your user only (no administrator rights), by default into
+**NSIS installer (.exe).** Run `bilangplay-<version>-windows-x64-setup.exe`.
+It installs for your user only (no administrator rights), by default into
 `%LOCALAPPDATA%\Programs\BiLang Play`, and adds Start menu and desktop
 shortcuts.
 
-**Portable zip.** Unzip it anywhere and run `BiLang Play.exe`. On the first
-start it offers to add itself to the Start menu and the desktop.
+**Portable app (.zip).** Unzip it anywhere and run `BiLang Play.exe`. On the
+first start it offers to add itself to the Start menu and the desktop.
 
 **If Windows blocks it.** Windows marks downloaded files, and unsigned apps
 then get "Windows protected your PC" (choose **More info**, then **Run
@@ -81,11 +81,12 @@ not help; only turning Smart App Control off does.
 
 ### macOS
 
-**Disk image.** Open `bilangplay-<version>-macos-arm64.dmg` and drag
+**Disk image (.dmg).** Open `bilangplay-<version>-macos-arm64.dmg` and drag
 **BiLang Play** onto **Applications**.
 
-**Zip.** Unzip it and move **BiLang Play** to **Applications**. Started
-anywhere else, the app offers to move itself there.
+**App (.app in .zip).** Unzip it and move **BiLang Play** to
+**Applications**. Started anywhere else, the app offers to move itself
+there.
 
 **If macOS blocks it.** On the first start macOS says it cannot verify the
 app. Choose **Done**, open **System Settings > Privacy & Security**, scroll
@@ -101,7 +102,7 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<version>-macos-arm64.zip
 
 ### Linux
 
-**AppImage.** Make it executable and run it:
+**Portable app image (.AppImage).** Make it executable and run it:
 
 ```sh
 chmod +x bilangplay-<version>-linux-x86_64.AppImage
@@ -115,7 +116,7 @@ shows one `sudo` command that installs an AppArmor profile for it, because
 Ubuntu restricts the sandbox the app relies on; run it, then start the app
 again.
 
-**`.deb`** (Debian, Ubuntu, and their derivatives):
+**Debian/Ubuntu (and their derivatives) package (.deb):**
 
 ```sh
 sudo apt install ./bilangplay-<version>-linux-amd64.deb
@@ -123,9 +124,9 @@ sudo apt install ./bilangplay-<version>-linux-amd64.deb
 
 It adds BiLang Play to the applications menu itself.
 
-**`.tar.gz`.** Unpack it anywhere and run `./bilangplay` in the folder. On
-the first start it offers to add itself to the applications menu. If it
-exits with a message about the SUID sandbox helper, either install an
+**Portable app (.tar.gz).** Unpack it anywhere and run `./bilangplay` in the
+folder. On the first start it offers to add itself to the applications menu.
+If it exits with a message about the SUID sandbox helper, either install an
 AppArmor profile for it or let the bundled helper run as root, from that
 folder:
 

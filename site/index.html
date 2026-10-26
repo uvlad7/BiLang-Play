@@ -318,7 +318,7 @@
 
           <div class="card tab-panel" role="tabpanel" data-panel="windows">
             <div lang="en">
-              <h3>Installer</h3>
+              <h3>NSIS installer (.exe)</h3>
               <p>
                 Run
                 <code
@@ -327,7 +327,7 @@
                 <code>%LOCALAPPDATA%\Programs\BiLang Play</code>, and adds Start menu and desktop
                 shortcuts.
               </p>
-              <h3>Portable zip</h3>
+              <h3>Portable app (.zip)</h3>
               <p>
                 Unzip it anywhere and run <code>BiLang Play.exe</code>. On the first start it offers
                 to add itself to the Start menu and the desktop.
@@ -342,7 +342,7 @@
               </p>
             </div>
             <div lang="ru">
-              <h3>Установщик</h3>
+              <h3>Установщик NSIS (.exe)</h3>
               <p>
                 Запустите
                 <code
@@ -351,7 +351,7 @@
                 умолчанию в <code>%LOCALAPPDATA%\Programs\BiLang Play</code>, и добавляет ярлыки в
                 меню «Пуск» и на рабочий стол.
               </p>
-              <h3>Портативный zip</h3>
+              <h3>Портативное приложение (.zip)</h3>
               <p>
                 Распакуйте куда угодно и запустите <code>BiLang Play.exe</code>. При первом запуске
                 приложение предложит добавить себя в меню «Пуск» и на рабочий стол.
@@ -382,13 +382,13 @@ Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span 
 
           <div class="card tab-panel" role="tabpanel" data-panel="macos">
             <div lang="en">
-              <h3>Disk image</h3>
+              <h3>Disk image (.dmg)</h3>
               <p>
                 Open
                 <code>bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.dmg</code> and
                 drag <b>BiLang Play</b> onto <b>Applications</b>.
               </p>
-              <h3>Zip</h3>
+              <h3>App (.app in .zip)</h3>
               <p>
                 Unzip it and move <b>BiLang Play</b> to <b>Applications</b>. Started anywhere else,
                 the app offers to move itself there.
@@ -402,13 +402,13 @@ Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span 
               </p>
             </div>
             <div lang="ru">
-              <h3>Образ диска</h3>
+              <h3>Образ диска (.dmg)</h3>
               <p>
                 Откройте
                 <code>bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.dmg</code> и
                 перетащите <b>BiLang Play</b> в <b>Программы</b> (Applications).
               </p>
-              <h3>Zip</h3>
+              <h3>Приложение (.app в .zip)</h3>
               <p>
                 Распакуйте и переместите <b>BiLang Play</b> в <b>Программы</b>. Если запустить его
                 из другого места, приложение само предложит туда переместиться.
@@ -430,11 +430,11 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
             <div lang="en">
-              <h3>AppImage</h3>
+              <h3>Portable app image (.AppImage)</h3>
               <p>Make it executable and run it:</p>
             </div>
             <div lang="ru">
-              <h3>AppImage</h3>
+              <h3>Портативный образ приложения (.AppImage)</h3>
               <p>Сделайте файл исполняемым и запустите:</p>
             </div>
             <pre><code>chmod +x bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage
@@ -455,13 +455,13 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
               <code>sudo</code>, которая ставит для него профиль AppArmor: Ubuntu ограничивает
               песочницу, на которую опирается приложение. Выполните её и запустите приложение снова.
             </p>
-            <h3><code>.deb</code></h3>
-            <p lang="en">Debian, Ubuntu, and their derivatives:</p>
-            <p lang="ru">Debian, Ubuntu и производные:</p>
+            <h3 lang="en">Debian/Ubuntu (and their derivatives) package (.deb)</h3>
+            <h3 lang="ru">Пакет для Debian/Ubuntu (и производных) (.deb)</h3>
             <pre><code>sudo apt install ./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-amd64.deb</code></pre>
             <p lang="en">It adds BiLang Play to the applications menu itself.</p>
             <p lang="ru">Он сам добавляет BiLang Play в меню приложений.</p>
-            <h3><code>.tar.gz</code></h3>
+            <h3 lang="en">Portable app (.tar.gz)</h3>
+            <h3 lang="ru">Портативное приложение (.tar.gz)</h3>
             <p lang="en">
               Unpack it anywhere and run <code>./bilangplay</code> in the folder. On the first start
               it offers to add itself to the applications menu. If it exits with a message about the
