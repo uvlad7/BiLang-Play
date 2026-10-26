@@ -55,9 +55,10 @@ as the second audio track, and its
 ### Windows
 
 **NSIS installer (.exe).** Run `bilangplay-<version>-windows-x64-setup.exe`.
-It installs for your user only (no administrator rights), by default into
-`%LOCALAPPDATA%\Programs\BiLang Play`, and adds Start menu and desktop
-shortcuts.
+It asks whether to install for you only (no administrator rights, by
+default into `%LOCALAPPDATA%\Programs\BiLang Play`) or for everyone on the
+computer (administrator rights, into `C:\Program Files\BiLang Play`), and
+adds Start menu and desktop shortcuts.
 
 **Portable app (.zip).** Unzip it anywhere and run `BiLang Play.exe`. On the
 first start it offers to add itself to the Start menu and the desktop.
@@ -211,8 +212,8 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
   sudo rm /etc/apparmor.d/bilangplay-appimage
   ```
 
-App data and settings (settings live in GSettings, stored by dconf on most
-desktops):
+App data and settings (settings live in GSettings, stored by dconf in most
+DEs):
 
 ```sh
 rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"

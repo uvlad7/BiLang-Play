@@ -323,9 +323,10 @@
                 Run
                 <code
                   >bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64-setup.exe</code
-                >. It installs for your user only, without administrator rights, by default into
-                <code>%LOCALAPPDATA%\Programs\BiLang Play</code>, and adds Start menu and desktop
-                shortcuts.
+                >. It asks whether to install for you only (no administrator rights, by default into
+                <code>%LOCALAPPDATA%\Programs\BiLang Play</code>) or for everyone on the computer
+                (administrator rights, into <code>C:\Program Files\BiLang Play</code>), and adds
+                Start menu and desktop shortcuts.
               </p>
               <h3>Portable app (.zip)</h3>
               <p>
@@ -347,9 +348,11 @@
                 Запустите
                 <code
                   >bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64-setup.exe</code
-                >. Он ставит программу только для вашего пользователя, без прав администратора, по
-                умолчанию в <code>%LOCALAPPDATA%\Programs\BiLang Play</code>, и добавляет ярлыки в
-                меню «Пуск» и на рабочий стол.
+                >. Он спросит, ставить программу только для вас (без прав администратора, по
+                умолчанию в <code>%LOCALAPPDATA%\Programs\BiLang Play</code>) или для всех
+                пользователей компьютера (с правами администратора, в
+                <code>C:\Program Files\BiLang Play</code>), и добавит ярлыки в меню «Пуск» и на
+                рабочий стол.
               </p>
               <h3>Портативное приложение (.zip)</h3>
               <p>
@@ -608,12 +611,12 @@ find "$data/icons/hicolor" -name 'bilang-play*' -delete</code></pre>
 sudo rm /etc/apparmor.d/bilangplay-appimage</code></pre>
             <h3>
               <span lang="en"
-                >App data and settings (settings live in GSettings, stored by dconf on most
-                desktops)</span
+                >App data and settings (settings live in GSettings, stored by dconf in most
+                DEs)</span
               >
               <span lang="ru"
-                >Данные и настройки (настройки — в GSettings, на большинстве рабочих столов их
-                хранит dconf)</span
+                >Данные и настройки (настройки — в GSettings, в большинстве DE их хранит
+                dconf)</span
               >
             </h3>
             <pre><code>rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
