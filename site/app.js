@@ -237,9 +237,49 @@ function setupGallery() {
   gallery.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") show(current - 1);
     else if (event.key === "ArrowRight") show(current + 1);
+    else if (event.key === "Enter" && event.target === gallery) open();
     else return;
     event.preventDefault();
   });
+  // The lightbox: the current slide at full size; its arrows move the
+  // gallery too, so closing it leaves the gallery on the last one seen.
+  const lightbox = document.querySelector("[data-lightbox]");
+  const image = lightbox.querySelector("[data-lightbox-image]");
+  const caption = lightbox.querySelector("[data-lightbox-caption]");
+  const fill = () => {
+    const slide = slides[current].querySelector("img");
+    image.src = slide.currentSrc || slide.src;
+    image.alt = slide.alt;
+    caption.innerHTML = slides[current].querySelector("figcaption").innerHTML;
+  };
+  const open = () => {
+    fill();
+    lightbox.showModal();
+    document.body.style.overflow = "hidden";
+  };
+  lightbox.addEventListener("close", () => (document.body.style.overflow = ""));
+  for (const arrow of lightbox.querySelectorAll("[data-lightbox-step]")) {
+    arrow.addEventListener("click", () => {
+      show(current + Number(arrow.dataset.lightboxStep));
+      fill();
+    });
+  }
+  lightbox.querySelector("[data-lightbox-close]").addEventListener("click", () => lightbox.close());
+  // A click outside the picture closes it; Esc does natively.
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox || event.target.classList.contains("lightbox-figure")) {
+      lightbox.close();
+    }
+  });
+  lightbox.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") show(current - 1);
+    else if (event.key === "ArrowRight") show(current + 1);
+    else return;
+    fill();
+    event.preventDefault();
+  });
+
+  // A swipe changes the slide; a tap or click without one opens it.
   let startX = null;
   track.addEventListener("pointerdown", (event) => (startX = event.clientX));
   track.addEventListener("pointerup", (event) => {
@@ -247,6 +287,7 @@ function setupGallery() {
     const moved = event.clientX - startX;
     startX = null;
     if (Math.abs(moved) > 40) show(current + (moved < 0 ? 1 : -1));
+    else if (Math.abs(moved) < 8 && event.target.closest(".gallery-slide img")) open();
   });
   show(0);
 }
