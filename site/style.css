@@ -548,6 +548,15 @@ pre .copy:hover {
 .lightbox-media .gallery-arrow.next {
   right: 12px;
 }
+/* On wider screens the figure has side room, so keep the image unobstructed. */
+@media (min-width: 641px) {
+  .lightbox-media .gallery-arrow.prev {
+    left: -56px;
+  }
+  .lightbox-media .gallery-arrow.next {
+    right: -56px;
+  }
+}
 .gallery-slide {
   flex: 0 0 100%;
   margin: 0;
