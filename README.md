@@ -14,6 +14,9 @@ discovers those tracks and automatically selects preferred languages. A lone
 `episode.srt` also loads automatically; when files are ambiguous, the app does
 not guess.
 
+Each subtitle track has its own timing adjustment, so you can move it earlier
+or later to correct an offset.
+
 **Status: alpha.** Builds are shared for testing; expect rough edges. The
 interface is in English only for now; translations will come later. What
 changed in each version: [CHANGELOG.md](CHANGELOG.md).
