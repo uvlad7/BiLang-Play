@@ -235,11 +235,15 @@
           </button>
           <div class="gallery-dots" data-gallery-dots></div>
           <div class="gallery-mobile-controls">
-            <p lang="en">Swipe sideways to browse</p>
-            <p lang="ru">Листайте свайпом</p>
             <div>
-              <button type="button" data-gallery-step="-1"><span lang="en">Previous</span><span lang="ru">Назад</span></button>
-              <button type="button" data-gallery-step="1"><span lang="en">Next</span><span lang="ru">Вперёд</span></button>
+              <button type="button" data-gallery-step="-1">
+                <span aria-hidden="true">‹</span>
+                <span class="sr-only" lang="en">Previous</span><span class="sr-only" lang="ru">Назад</span>
+              </button>
+              <button type="button" data-gallery-step="1">
+                <span aria-hidden="true">›</span>
+                <span class="sr-only" lang="en">Next</span><span class="sr-only" lang="ru">Вперёд</span>
+              </button>
             </div>
           </div>
         </div>
@@ -268,11 +272,15 @@
             </div>
             <figcaption data-lightbox-caption></figcaption>
             <div class="gallery-mobile-controls lightbox-mobile-controls">
-              <p lang="en">Swipe sideways to browse</p>
-              <p lang="ru">Листайте свайпом</p>
               <div>
-                <button type="button" data-lightbox-step="-1"><span lang="en">Previous</span><span lang="ru">Назад</span></button>
-                <button type="button" data-lightbox-step="1"><span lang="en">Next</span><span lang="ru">Вперёд</span></button>
+                <button type="button" data-lightbox-step="-1">
+                  <span aria-hidden="true">‹</span>
+                  <span class="sr-only" lang="en">Previous</span><span class="sr-only" lang="ru">Назад</span>
+                </button>
+                <button type="button" data-lightbox-step="1">
+                  <span aria-hidden="true">›</span>
+                  <span class="sr-only" lang="en">Next</span><span class="sr-only" lang="ru">Вперёд</span>
+                </button>
               </div>
             </div>
           </figure>
