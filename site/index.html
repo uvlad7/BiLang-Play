@@ -78,7 +78,7 @@
             for its translation and definition. Make it look the way you read best.
           </p>
           <p class="lead" lang="ru">
-            Видеоплеер для компьютера для тех, кто учит языки. Смотрите свои видео с субтитрами на
+            Десктопный видеоплеер для тех, кто учит языки. Смотрите свои видео с субтитрами на
             изучаемом и на родном языке, на паузе видите транскрипт, а щелчок по любому слову
             показывает перевод и определение. Настройте вид так, как вам удобнее читать.
           </p>
@@ -116,11 +116,11 @@
         <article class="card feature">
           <h3><span lang="en">Two subtitles</span><span lang="ru">Два субтитра</span></h3>
           <p lang="en">
-            The language you learn and your own at once, each with its own timing. SRT, WebVTT, and
-            tracks inside the video.
+            The language you learn and your own at once, each configured separately. SRT, WebVTT,
+            and tracks inside the video.
           </p>
           <p lang="ru">
-            Изучаемый и родной язык одновременно, у каждого свой сдвиг по времени. SRT, WebVTT и
+            Изучаемый и родной язык одновременно, каждый настраивается отдельно. SRT, WebVTT и
             дорожки внутри видео.
           </p>
         </article>
@@ -515,22 +515,26 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
               <span lang="en">NSIS installer (.exe)</span>
               <span lang="ru">Установщик NSIS (.exe)</span>
             </h3>
-            <p lang="en"><b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>.</p>
+            <p lang="en">
+              <b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>, then delete the
+              downloaded installer.
+            </p>
             <p lang="ru">
-              <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>.
+              <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>,
+              затем удалите скачанный установщик.
             </p>
             <h3>
               <span lang="en">Portable app (.zip)</span>
               <span lang="ru">Портативное приложение (.zip)</span>
             </h3>
             <p lang="en">
-              Delete the folder. If you let it add its shortcuts, remove them too (before deleting
-              the folder, the app's start screen also has
+              Delete the unzipped folder and the downloaded zip. If you let it add its shortcuts,
+              remove them too (before deleting the folder, the app's start screen also has
               <b>Remove from Start menu and desktop</b>):
             </p>
             <p lang="ru">
-              Удалите папку. Если вы разрешили ему добавить ярлыки, удалите и их (пока папка не
-              удалена, на стартовом экране приложения есть и кнопка
+              Удалите распакованную папку и скачанный zip. Если вы разрешили ему добавить ярлыки,
+              удалите и их (пока папка не удалена, на стартовом экране приложения есть и кнопка
               <b>Remove from Start menu and desktop</b>):
             </p>
             <pre><code>Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
@@ -546,11 +550,11 @@ Remove-Item -Recurse -Force "HKCU:\Software\io.github.uvlad7.bilangplay"</code><
           <div class="card tab-panel" role="tabpanel" data-panel="macos">
             <p lang="en">
               Move <b>BiLang Play</b> to the Trash from wherever you keep it (usually
-              <b>Applications</b>).
+              <b>Applications</b>), and the downloaded disk image or zip.
             </p>
             <p lang="ru">
               Переместите <b>BiLang Play</b> в Корзину оттуда, где оно лежит (обычно из
-              <b>Программ</b>).
+              <b>Программ</b>), и скачанный образ диска или zip.
             </p>
             <h3>
               <span lang="en">App data and settings, in Terminal</span>
@@ -568,8 +572,13 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
               <span lang="ru">Пакет для Debian/Ubuntu (и производных) (.deb)</span>
             </h3>
             <pre><code>sudo apt purge bilangplay</code></pre>
-            <p lang="en">It removes its AppArmor profile and settings schema too.</p>
-            <p lang="ru">Заодно удаляет свой профиль AppArmor и схему настроек.</p>
+            <p lang="en">
+              It removes its AppArmor profile and settings schema too. Then delete the downloaded
+              package.
+            </p>
+            <p lang="ru">
+              Заодно удаляет свой профиль AppArmor и схему настроек. Затем удалите скачанный пакет.
+            </p>
             <h3>
               <span lang="en">Portable app image (.AppImage) or portable app (.tar.gz)</span>
               <span lang="ru"
@@ -577,13 +586,15 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
               >
             </h3>
             <p lang="en">
-              Delete the file or the folder. If you added it to the applications menu, remove the
-              entry and its icons (before deleting it, the app's start screen also has
+              Delete the AppImage file, or the unpacked folder and the downloaded archive. If you
+              added it to the applications menu, remove the entry and its icons (before deleting it,
+              the app's start screen also has
               <b>Remove from applications menu</b>):
             </p>
             <p lang="ru">
-              Удалите файл или папку. Если вы добавляли приложение в меню приложений, удалите пункт
-              меню и значки (пока оно не удалено, на стартовом экране приложения есть и кнопка
+              Удалите файл AppImage или распакованную папку и скачанный архив. Если вы добавляли
+              приложение в меню приложений, удалите пункт меню и значки (пока оно не удалено, на
+              стартовом экране приложения есть и кнопка
               <b>Remove from applications menu</b>):
             </p>
             <pre><code>data="${XDG_DATA_HOME:-$HOME/.local/share}"

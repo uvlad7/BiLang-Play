@@ -149,10 +149,11 @@ stay.
 ### Windows
 
 - **NSIS installer (.exe):** **Settings > Apps > Installed apps > BiLang
-  Play > Uninstall**.
-- **Portable app (.zip):** delete the folder. If you let it add its
-  shortcuts, remove them too (before deleting the folder, the app's start
-  screen also has **Remove from Start menu and desktop**):
+  Play > Uninstall**, then delete the downloaded installer.
+- **Portable app (.zip):** delete the unzipped folder and the downloaded
+  zip. If you let it add its shortcuts, remove them too (before deleting
+  the folder, the app's start screen also has **Remove from Start menu and
+  desktop**):
 
   ```powershell
   Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
@@ -169,7 +170,8 @@ Remove-Item -Recurse -Force "HKCU:\Software\io.github.uvlad7.bilangplay"
 ### macOS
 
 Move **BiLang Play** to the Trash from wherever you keep it (usually
-**Applications**). App data and settings, in Terminal:
+**Applications**), and the downloaded disk image or zip. App data and
+settings, in Terminal:
 
 ```sh
 rm -rf ~/Library/"Application Support"/bilangplay
@@ -187,10 +189,13 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
   sudo apt purge bilangplay
   ```
 
+  Then delete the downloaded package.
+
 - **Portable app image (.AppImage) or portable app (.tar.gz):** delete the
-  file or the folder. If you added it to the applications menu, remove the
-  entry and its icons (before deleting it, the app's start screen also has
-  **Remove from applications menu**):
+  AppImage file, or the unpacked folder and the downloaded archive. If you
+  added it to the applications menu, remove the entry and its icons (before
+  deleting it, the app's start screen also has **Remove from applications
+  menu**):
 
   ```sh
   data="${XDG_DATA_HOME:-$HOME/.local/share}"
