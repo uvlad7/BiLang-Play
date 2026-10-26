@@ -10,6 +10,9 @@ transcript, and click any word for its translation and definition.
 interface is in English only for now; translations will come later. What
 changed in each version: [CHANGELOG.md](CHANGELOG.md).
 
+**Vibe-coded.** The app is written almost entirely by AI coding agents
+(Claude Code and Codex), directed, tested, and reviewed by its author.
+
 **Download:** [uvlad7.github.io/BiLang-Play](https://uvlad7.github.io/BiLang-Play/)
 picks the right package for your system, or take one from
 [Releases](https://github.com/uvlad7/BiLang-Play/releases).
