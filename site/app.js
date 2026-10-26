@@ -287,19 +287,27 @@ function setupGallery() {
     target.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
       if (event.target.closest("button")) return;
-      start = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+      start = {
+        x: event.clientX,
+        y: event.clientY,
+        pointerId: event.pointerId,
+        target: event.target,
+      };
       target.setPointerCapture?.(event.pointerId);
     });
     target.addEventListener("pointerup", (event) => {
       if (!start || event.pointerId !== start.pointerId) return;
       const movedX = event.clientX - start.x;
       const movedY = event.clientY - start.y;
+      const pressed = start;
       clear();
       target.releasePointerCapture?.(event.pointerId);
       if (Math.abs(movedX) > 32 && Math.abs(movedX) > Math.abs(movedY)) {
         step(movedX < 0 ? 1 : -1);
       } else if (Math.abs(movedX) < 8 && Math.abs(movedY) < 8) {
-        tap?.(event);
+        // Pointer capture makes `event.target` the track on release, so use
+        // the element that was actually pressed to keep desktop clicks live.
+        tap?.({ target: pressed.target });
       }
     });
     target.addEventListener("pointercancel", clear);
