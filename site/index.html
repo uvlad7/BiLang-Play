@@ -75,12 +75,12 @@
           <p class="lead" lang="en">
             A desktop video player for language learners. Watch your own videos with subtitles in
             the language you learn and in your own, pause to see the transcript, and click any word
-            for its translation and definition.
+            for its translation and definition. Make it look the way you read best.
           </p>
           <p class="lead" lang="ru">
             Видеоплеер для компьютера для тех, кто учит языки. Смотрите свои видео с субтитрами на
             изучаемом и на родном языке, на паузе видите транскрипт, а щелчок по любому слову
-            показывает перевод и определение.
+            показывает перевод и определение. Настройте вид так, как вам удобнее читать.
           </p>
           <p class="note" lang="en">
             The app's interface is in English only for now; translations will come later.
@@ -141,6 +141,17 @@
           <h3><span lang="en">Any word, explained</span><span lang="ru">Любое слово</span></h3>
           <p lang="en">Click a word in a subtitle for its translation and definition.</p>
           <p lang="ru">Щелчок по слову в субтитрах показывает перевод и определение.</p>
+        </article>
+        <article class="card feature">
+          <h3><span lang="en">Your look</span><span lang="ru">Свой вид</span></h3>
+          <p lang="en">
+            Style profiles, and the font, size, colors, outline, and position of the subtitles and
+            both transcripts, changed live.
+          </p>
+          <p lang="ru">
+            Профили стиля, а также шрифт, размер, цвета, обводка и положение субтитров и обоих
+            транскриптов — изменения видны сразу.
+          </p>
         </article>
         <article class="card feature">
           <h3><span lang="en">Your own files</span><span lang="ru">Ваши файлы</span></h3>
@@ -547,7 +558,7 @@ Remove-Item -Recurse -Force "HKCU:\Software\io.github.uvlad7.bilangplay"</code><
             <pre><code>rm -rf ~/Library/"Application Support"/bilangplay
 defaults delete io.github.uvlad7.bilangplay 2&gt;/dev/null
 rm -f ~/Library/Preferences/io.github.uvlad7.bilangplay*.plist
-rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedState</code></pre>
+rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedState</code></pre>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
@@ -584,12 +595,39 @@ find "$data/icons/hicolor" -name 'bilang-play*' -delete</code></pre>
 sudo rm /etc/apparmor.d/bilangplay-appimage</code></pre>
             <h3>
               <span lang="en"
-                >App data and settings (settings live in GSettings, stored by dconf)</span
+                >App data and settings (settings live in GSettings, stored by dconf on most
+                desktops)</span
               >
-              <span lang="ru">Данные и настройки (настройки — в GSettings, хранит их dconf)</span>
+              <span lang="ru"
+                >Данные и настройки (настройки — в GSettings, на большинстве рабочих столов их
+                хранит dconf)</span
+              >
             </h3>
             <pre><code>rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
 dconf reset -f /io/github/uvlad7/bilangplay/</code></pre>
+            <p lang="en">
+              Where GSettings is not backed by dconf (some distributions and minimal desktops),
+              <code>dconf</code> is missing or the settings stay; there, before removing the app,
+              run:
+            </p>
+            <p lang="ru">
+              Где GSettings работает не через dconf (некоторые дистрибутивы и минимальные рабочие
+              столы), <code>dconf</code> нет или настройки остаются; там до удаления приложения
+              выполните:
+            </p>
+            <pre><code>gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
+            <p lang="en">
+              For the <code>.tar.gz</code>, add
+              <code>--schemadir &lt;its folder&gt;/resources/settings-schemas</code> right after
+              <code>gsettings</code>; for the AppImage, <code>--appimage-extract</code> unpacks the
+              same folder into <code>squashfs-root</code>.
+            </p>
+            <p lang="ru">
+              Для <code>.tar.gz</code> добавьте
+              <code>--schemadir &lt;его папка&gt;/resources/settings-schemas</code> сразу после
+              <code>gsettings</code>; для AppImage ту же папку распакует в
+              <code>squashfs-root</code> ключ <code>--appimage-extract</code>.
+            </p>
           </div>
         </div>
       </section>

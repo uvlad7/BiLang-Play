@@ -5,6 +5,8 @@
 A desktop video player for language learners. Watch your own videos with
 subtitles in the language you learn and in your own, pause to see the
 transcript, and click any word for its translation and definition.
+Make it look the way you read best: style profiles, and fonts, sizes,
+colors, outlines, and positions for the subtitles and both transcripts.
 
 **Status: alpha.** Builds are shared for testing; expect rough edges. The
 interface is in English only for now; translations will come later. What
@@ -172,7 +174,7 @@ Move **BiLang Play** to the Trash from wherever you keep it (usually
 rm -rf ~/Library/"Application Support"/bilangplay
 defaults delete io.github.uvlad7.bilangplay 2>/dev/null
 rm -f ~/Library/Preferences/io.github.uvlad7.bilangplay*.plist
-rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedState
+rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedState
 ```
 
 ### Linux
@@ -197,12 +199,21 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedStat
   sudo rm /etc/apparmor.d/bilangplay-appimage
   ```
 
-App data and settings (settings live in GSettings, stored by dconf):
+App data and settings (settings live in GSettings, stored by dconf on most
+desktops):
 
 ```sh
 rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
 dconf reset -f /io/github/uvlad7/bilangplay/
 ```
+
+Where GSettings is not backed by dconf (some distributions and minimal
+desktops), `dconf` is missing or the settings stay; there, before removing
+the app, run
+`gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/`.
+For the `.tar.gz`, add `--schemadir <its folder>/resources/settings-schemas`
+right after `gsettings`; for the AppImage, `--appimage-extract` unpacks the
+same folder into `squashfs-root`.
 
 ## License
 

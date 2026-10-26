@@ -273,7 +273,7 @@ h3:first-child {
 /* Features */
 .features {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   padding-bottom: 24px;
 }
@@ -631,6 +631,9 @@ pre .copy:hover {
   }
   .features {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .features .feature:last-child:nth-child(odd) {
+    grid-column: span 2;
   }
   .downloads {
     grid-template-columns: 1fr;
