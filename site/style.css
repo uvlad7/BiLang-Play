@@ -285,11 +285,6 @@ h3:first-child {
   color: var(--text-dim);
   font-size: 0.95rem;
 }
-.subtitle-guide {
-  margin: -8px auto 24px;
-  color: var(--text-dim);
-  max-width: 760px;
-}
 
 /* Sections */
 .section {
@@ -303,6 +298,48 @@ h3:first-child {
 .small {
   color: var(--text-faint);
   font-size: 0.9rem;
+}
+
+/* Subtitle setup: one useful, scan-friendly guide rather than another feature tile. */
+.setup-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+.setup-card li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  min-width: 0;
+  padding: 20px;
+  color: var(--text-dim);
+}
+.setup-card li + li {
+  border-left: 1px solid var(--border);
+}
+.setup-card strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.setup-card span:not(.setup-number) {
+  display: block;
+  font-size: 0.9rem;
+}
+.setup-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--accent-ink);
+  background: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .downloads {
@@ -543,15 +580,22 @@ pre .copy:hover {
   padding: 10px 0 4px;
 }
 .gallery-dots button {
-  width: 8px;
-  height: 8px;
+  position: relative;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.25);
+  background: transparent;
   cursor: pointer;
 }
-.gallery-dots button[aria-current="true"] {
+.gallery-dots button::after {
+  position: absolute;
+  inset: 10px;
+  content: "";
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.25);
+}
+.gallery-dots button[aria-current="true"]::after {
   background: var(--accent);
 }
 .sr-only {
@@ -643,6 +687,15 @@ pre .copy:hover {
   .downloads {
     grid-template-columns: 1fr;
   }
+  .setup-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .setup-card li:nth-child(odd) {
+    border-left: 0;
+  }
+  .setup-card li:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
 }
 
 @media (max-width: 640px) {
@@ -655,25 +708,44 @@ pre .copy:hover {
   .features {
     grid-template-columns: 1fr;
   }
+  .features .feature:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+  .setup-card {
+    grid-template-columns: 1fr;
+  }
+  .setup-card li + li,
+  .setup-card li:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
   .card {
     padding: 16px;
   }
-  .gallery {
-    padding: 8px 8px 4px;
+  #screenshots .gallery {
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    padding: 0 0 6px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+  #screenshots .gallery-viewport {
+    border-radius: 0;
   }
   .gallery-arrow {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     font-size: 1.5rem;
   }
   .gallery-arrow.prev {
-    left: 12px;
+    left: 8px;
   }
   .gallery-arrow.next {
-    right: 12px;
+    right: 8px;
   }
   .gallery-slide figcaption {
-    padding: 6px 8px 0;
+    padding: 8px 16px 0;
   }
   .lightbox-figure {
     padding: 56px 8px 24px;

@@ -30,10 +30,15 @@
           }
         }
         if (lang !== "en" && lang !== "ru") {
-          const first = (navigator.languages || [navigator.language || "en"])
-            .map((tag) => tag.toLowerCase().split("-")[0])
-            .find((tag) => tag === "en" || tag === "ru" || tag === "be");
-          lang = first === "ru" || first === "be" ? "ru" : "en";
+          const languages = (navigator.languages || [navigator.language || "en"])
+            .map((tag) => tag.toLowerCase().split("-")[0]);
+          // Belarusian is not yet a site language, so prefer Russian when
+          // either Belarusian or Russian appears anywhere in the list. This
+          // avoids an earlier English fallback winning over a later `be-BY`.
+          const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          lang = languages.includes("ru") || languages.includes("be") || timeZone === "Europe/Minsk"
+            ? "ru"
+            : "en";
         }
         document.documentElement.dataset.lang = lang;
         document.documentElement.lang = lang;
@@ -107,8 +112,8 @@
             <span lang="ru">Ищем последнюю версию…</span>
           </p>
           <a class="primary-other" href="#download">
-            <span lang="en">Other systems and formats</span>
-            <span lang="ru">Другие платформы и форматы</span>
+            <span lang="en">All systems and formats</span>
+            <span lang="ru">Все платформы и форматы</span>
           </a>
         </div>
       </section>
@@ -166,19 +171,6 @@
           </p>
         </article>
       </section>
-
-      <p class="wrap subtitle-guide" lang="en">
-        Keep <code>episode.en.srt</code> and <code>episode.ru.srt</code> beside
-        <code>episode.mp4</code>, and BiLang Play discovers the tracks and selects your preferred
-        languages automatically. If a subtitle is out of sync, move that track earlier or later
-        without affecting the other one.
-      </p>
-      <p class="wrap subtitle-guide" lang="ru">
-        Положите рядом с <code>episode.mp4</code> файлы <code>episode.en.srt</code> и
-        <code>episode.ru.srt</code> — BiLang найдёт дорожки и автоматически выберет предпочитаемые
-        языки. Если субтитры рассинхронизированы, сдвиньте нужную дорожку вперёд или назад, не
-        затрагивая другую.
-      </p>
 
       <section class="wrap section" id="screenshots">
         <h2><span lang="en">Screenshots</span><span lang="ru">Скриншоты</span></h2>
@@ -272,6 +264,77 @@
             <span class="sr-only" lang="en">Next</span><span class="sr-only" lang="ru">Вперёд</span>
           </button>
         </dialog>
+      </section>
+
+      <section class="wrap section setup" id="setup">
+        <h2 lang="en">Set up subtitles once</h2>
+        <h2 lang="ru">Настройте субтитры один раз</h2>
+        <p class="section-lead" lang="en">
+          Keep a tidy folder and BiLang Play takes care of the routine work.
+        </p>
+        <p class="section-lead" lang="ru">
+          Аккуратно названные файлы избавляют от рутинной настройки.
+        </p>
+        <ol class="card setup-card" lang="en">
+          <li>
+            <span class="setup-number">1</span>
+            <div>
+              <strong>Keep tracks beside the video</strong>
+              <span><code>episode.mp4</code>, <code>episode.en.srt</code>, and <code>episode.ru.srt</code>.</span>
+            </div>
+          </li>
+          <li>
+            <span class="setup-number">2</span>
+            <div>
+              <strong>Choose your languages</strong>
+              <span>BiLang Play selects matching subtitle tracks when the video opens.</span>
+            </div>
+          </li>
+          <li>
+            <span class="setup-number">3</span>
+            <div>
+              <strong>Add another file when needed</strong>
+              <span>Choose a subtitle manually when it has a different name or lives elsewhere.</span>
+            </div>
+          </li>
+          <li>
+            <span class="setup-number">4</span>
+            <div>
+              <strong>Fix timing without starting over</strong>
+              <span>Move either subtitle track earlier or later without changing the other one.</span>
+            </div>
+          </li>
+        </ol>
+        <ol class="card setup-card" lang="ru">
+          <li>
+            <span class="setup-number">1</span>
+            <div>
+              <strong>Держите дорожки рядом с видео</strong>
+              <span><code>episode.mp4</code>, <code>episode.en.srt</code> и <code>episode.ru.srt</code>.</span>
+            </div>
+          </li>
+          <li>
+            <span class="setup-number">2</span>
+            <div>
+              <strong>Укажите свои языки</strong>
+              <span>При открытии видео BiLang выберет подходящие дорожки субтитров.</span>
+            </div>
+          </li>
+          <li>
+            <span class="setup-number">3</span>
+            <div>
+              <strong>Подключите другой файл вручную</strong>
+              <span>Выберите субтитры сами, если файл называется иначе или лежит в другой папке.</span>
+            </div>
+          </li>
+          <li>
+            <span class="setup-number">4</span>
+            <div>
+              <strong>Исправьте рассинхронизацию</strong>
+              <span>Сдвигайте любую дорожку вперёд или назад, не меняя другую.</span>
+            </div>
+          </li>
+        </ol>
       </section>
 
       <section class="wrap section" id="download">
@@ -451,11 +514,11 @@
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
             <div lang="en">
-              <h3>Portable app image (.AppImage)</h3>
+              <h3>App image (.AppImage)</h3>
               <p>Make it executable and run it:</p>
             </div>
             <div lang="ru">
-              <h3>Портативный образ приложения (.AppImage)</h3>
+              <h3>Образ приложения (.AppImage)</h3>
               <p>Сделайте файл исполняемым и запустите:</p>
             </div>
             <pre><code>chmod +x bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage
@@ -602,9 +665,9 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
               Заодно удаляет свой профиль AppArmor и схему настроек. Затем удалите скачанный пакет.
             </p>
             <h3>
-              <span lang="en">Portable app image (.AppImage) or portable app (.tar.gz)</span>
+              <span lang="en">App image (.AppImage) or portable app (.tar.gz)</span>
               <span lang="ru"
-                >Портативный образ приложения (.AppImage) или портативное приложение (.tar.gz)</span
+                >Образ приложения (.AppImage) или портативное приложение (.tar.gz)</span
               >
             </h3>
             <p lang="en">
@@ -662,11 +725,11 @@ dconf reset -f /io/github/uvlad7/bilangplay/</code></pre>
             </p>
             <pre><code>gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
             <p lang="en">
-              <b>Portable app image (.AppImage)</b>, from the folder it is in (this unpacks a
+              <b>App image (.AppImage)</b>, from the folder it is in (this unpacks a
               temporary copy):
             </p>
             <p lang="ru">
-              <b>Портативный образ приложения (.AppImage)</b>, из папки, где он лежит (это распакует
+              <b>Образ приложения (.AppImage)</b>, из папки, где он лежит (это распакует
               временную копию):
             </p>
             <pre><code>./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage --appimage-extract

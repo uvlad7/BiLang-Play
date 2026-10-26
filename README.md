@@ -122,7 +122,7 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<version>-macos-arm64.zip
 
 ### Linux
 
-**Portable app image (.AppImage).** Make it executable and run it:
+**App image (.AppImage).** Make it executable and run it:
 
 ```sh
 chmod +x bilangplay-<version>-linux-x86_64.AppImage
@@ -215,7 +215,7 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
 
   Then delete the downloaded package.
 
-- **Portable app image (.AppImage) or portable app (.tar.gz):** delete the
+- **App image (.AppImage) or portable app (.tar.gz):** delete the
   AppImage file, or the unpacked folder and the downloaded archive. If you
   added it to the applications menu, remove the entry and its icons (before
   deleting it, the app's start screen also has **Remove from applications
@@ -259,7 +259,7 @@ gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilang
 gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
 ```
 
-**Portable app image (.AppImage)**, from the folder it is in (this unpacks
+**App image (.AppImage)**, from the folder it is in (this unpacks
 a temporary copy):
 
 ```sh
