@@ -57,7 +57,8 @@ for your user only (no administrator rights), by default into
 `%LOCALAPPDATA%\Programs\BiLang Play`, and adds Start menu and desktop
 shortcuts.
 
-**Portable zip.** Unzip it anywhere and run `BiLang Play.exe`.
+**Portable zip.** Unzip it anywhere and run `BiLang Play.exe`. On the first
+start it offers to add itself to the Start menu and the desktop.
 
 **If Windows blocks it.** Windows marks downloaded files, and unsigned apps
 then get "Windows protected your PC" (choose **More info**, then **Run
@@ -118,7 +119,10 @@ again.
 sudo apt install ./bilangplay-<version>-linux-amd64.deb
 ```
 
-**`.tar.gz`.** Unpack it anywhere and run `./bilangplay` in the folder. If it
+It adds BiLang Play to the applications menu itself.
+
+**`.tar.gz`.** Unpack it anywhere and run `./bilangplay` in the folder. On
+the first start it offers to add itself to the applications menu. If it
 exits with a message about the SUID sandbox helper, either install an
 AppArmor profile for it or let the bundled helper run as root, from that
 folder:
@@ -143,7 +147,14 @@ stay.
 
 - **Installer:** **Settings > Apps > Installed apps > BiLang Play >
   Uninstall**.
-- **Portable zip:** delete the folder.
+- **Portable zip:** delete the folder. If you let it add its shortcuts,
+  remove them too (before deleting the folder, the app's start screen also
+  has **Remove from Start menu and desktop**):
+
+  ```powershell
+  Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
+  Remove-Item "$([Environment]::GetFolderPath('Desktop'))\BiLang Play.lnk"
+  ```
 
 App data and settings, in PowerShell:
 
@@ -168,10 +179,9 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedStat
 
 - **`.deb`:** `sudo apt purge bilangplay` (it removes its AppArmor profile
   and settings schema too).
-- **`.tar.gz`:** delete the folder.
-- **AppImage:** delete the file. If you added it to the applications menu,
-  remove the entry and its icons (before deleting the file, the app's start
-  screen also has **Remove from applications menu**):
+- **AppImage or `.tar.gz`:** delete the file or the folder. If you added it
+  to the applications menu, remove the entry and its icons (before deleting
+  it, the app's start screen also has **Remove from applications menu**):
 
   ```sh
   data="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -179,7 +189,8 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedStat
   find "$data/icons/hicolor" -name 'bilang-play*' -delete
   ```
 
-  If you installed its AppArmor profile (Ubuntu 24.04 and later):
+  If you installed the AppImage's AppArmor profile (Ubuntu 24.04 and
+  later):
 
   ```sh
   sudo apparmor_parser -R /etc/apparmor.d/bilangplay-appimage

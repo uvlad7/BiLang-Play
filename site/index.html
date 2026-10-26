@@ -317,7 +317,10 @@
                 shortcuts.
               </p>
               <h3>Portable zip</h3>
-              <p>Unzip it anywhere and run <code>BiLang Play.exe</code>.</p>
+              <p>
+                Unzip it anywhere and run <code>BiLang Play.exe</code>. On the first start it offers
+                to add itself to the Start menu and the desktop.
+              </p>
               <h3>If Windows blocks it</h3>
               <p>
                 Windows marks downloaded files, and unsigned apps then get “Windows protected your
@@ -338,7 +341,10 @@
                 меню «Пуск» и на рабочий стол.
               </p>
               <h3>Портативный zip</h3>
-              <p>Распакуйте куда угодно и запустите <code>BiLang Play.exe</code>.</p>
+              <p>
+                Распакуйте куда угодно и запустите <code>BiLang Play.exe</code>. При первом запуске
+                приложение предложит добавить себя в меню «Пуск» и на рабочий стол.
+              </p>
               <h3>Если Windows блокирует запуск</h3>
               <p>
                 Windows помечает скачанные файлы, и для неподписанных программ показывает «Система
@@ -442,16 +448,20 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
             <p lang="en">Debian, Ubuntu, and their derivatives:</p>
             <p lang="ru">Debian, Ubuntu и производные:</p>
             <pre><code>sudo apt install ./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-amd64.deb</code></pre>
+            <p lang="en">It adds BiLang Play to the applications menu itself.</p>
+            <p lang="ru">Он сам добавляет BiLang Play в меню приложений.</p>
             <h3><code>.tar.gz</code></h3>
             <p lang="en">
-              Unpack it anywhere and run <code>./bilangplay</code> in the folder. If it exits with a
-              message about the SUID sandbox helper, either install an AppArmor profile for it or
-              let the bundled helper run as root, from that folder:
+              Unpack it anywhere and run <code>./bilangplay</code> in the folder. On the first start
+              it offers to add itself to the applications menu. If it exits with a message about the
+              SUID sandbox helper, either install an AppArmor profile for it or let the bundled
+              helper run as root, from that folder:
             </p>
             <p lang="ru">
-              Распакуйте куда угодно и запустите <code>./bilangplay</code> в папке. Если он
-              завершается с сообщением о SUID sandbox helper, поставьте для него профиль AppArmor
-              или разрешите встроенному помощнику запускаться от root, из этой папки:
+              Распакуйте куда угодно и запустите <code>./bilangplay</code> в папке. При первом
+              запуске приложение предложит добавить себя в меню приложений. Если оно завершается с
+              сообщением о SUID sandbox helper, поставьте для него профиль AppArmor или разрешите
+              встроенному помощнику запускаться от root, из этой папки:
             </p>
             <pre><code>sudo chown root:root chrome-sandbox &amp;&amp; sudo chmod 4755 chrome-sandbox</code></pre>
             <p lang="en">
@@ -494,15 +504,25 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
               <li>
                 <b>Installer:</b> <b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>.
               </li>
-              <li><b>Portable zip:</b> delete the folder.</li>
+              <li>
+                <b>Portable zip:</b> delete the folder. If you let it add its shortcuts, remove them
+                too (before deleting the folder, the app's start screen also has
+                <b>Remove from Start menu and desktop</b>):
+              </li>
             </ul>
             <ul lang="ru">
               <li>
                 <b>Установщик:</b>
                 <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>.
               </li>
-              <li><b>Портативный zip:</b> удалите папку.</li>
+              <li>
+                <b>Портативный zip:</b> удалите папку. Если вы разрешили ему добавить ярлыки,
+                удалите и их (пока папка не удалена, на стартовом экране приложения есть и кнопка
+                <b>Remove from Start menu and desktop</b>):
+              </li>
             </ul>
+            <pre><code>Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
+Remove-Item "$([Environment]::GetFolderPath('Desktop'))\BiLang Play.lnk"</code></pre>
             <h3>
               <span lang="en">App data and settings, in PowerShell</span>
               <span lang="ru">Данные и настройки, в PowerShell</span>
@@ -537,12 +557,9 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedStat
                 AppArmor profile and settings schema too).
               </li>
               <li>
-                <b><code>.tar.gz</code>:</b> delete the folder.
-              </li>
-              <li>
-                <b>AppImage:</b> delete the file. If you added it to the applications menu, remove
-                the entry and its icons (before deleting the file, the app's start screen also has
-                <b>Remove from applications menu</b>):
+                <b>AppImage or <code>.tar.gz</code>:</b> delete the file or the folder. If you added
+                it to the applications menu, remove the entry and its icons (before deleting it, the
+                app's start screen also has <b>Remove from applications menu</b>):
               </li>
             </ul>
             <ul lang="ru">
@@ -551,19 +568,18 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay.savedStat
                 свой профиль AppArmor и схему настроек).
               </li>
               <li>
-                <b><code>.tar.gz</code>:</b> удалите папку.
-              </li>
-              <li>
-                <b>AppImage:</b> удалите файл. Если вы добавляли его в меню приложений, удалите
-                пункт меню и значки (пока файл не удалён, на стартовом экране приложения есть и
-                кнопка <b>Remove from applications menu</b>):
+                <b>AppImage или <code>.tar.gz</code>:</b> удалите файл или папку. Если вы добавляли
+                приложение в меню приложений, удалите пункт меню и значки (пока оно не удалено, на
+                стартовом экране приложения есть и кнопка <b>Remove from applications menu</b>):
               </li>
             </ul>
             <pre><code>data="${XDG_DATA_HOME:-$HOME/.local/share}"
 rm -f "$data/applications/bilang-play.desktop"
 find "$data/icons/hicolor" -name 'bilang-play*' -delete</code></pre>
-            <p lang="en">If you installed its AppArmor profile (Ubuntu 24.04 and later):</p>
-            <p lang="ru">Если вы ставили его профиль AppArmor (Ubuntu 24.04 и новее):</p>
+            <p lang="en">
+              If you installed the AppImage's AppArmor profile (Ubuntu 24.04 and later):
+            </p>
+            <p lang="ru">Если вы ставили профиль AppArmor для AppImage (Ubuntu 24.04 и новее):</p>
             <pre><code>sudo apparmor_parser -R /etc/apparmor.d/bilangplay-appimage
 sudo rm /etc/apparmor.d/bilangplay-appimage</code></pre>
             <h3>
