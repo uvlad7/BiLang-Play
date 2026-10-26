@@ -775,11 +775,13 @@ pre .copy:hover {
     justify-items: center;
     padding: 0 16px 12px;
   }
-  .gallery-mobile-controls > div {
+  .gallery-mobile-arrows {
     display: flex;
     gap: 12px;
   }
   .gallery-mobile-controls button {
+    display: grid;
+    place-items: center;
     width: 64px;
     height: 36px;
     padding: 0;
@@ -789,7 +791,10 @@ pre .copy:hover {
     color: var(--text);
     font: 400 1.7rem/1 var(--font);
   }
-  .gallery-mobile-controls button span[aria-hidden] { margin-top: -4px; }
+  .gallery-mobile-controls button span[aria-hidden] { margin: 0; }
+  .lightbox-mobile-controls .gallery-dots {
+    padding: 0;
+  }
   .gallery-mobile-controls button:active {
     background: rgb(143 208 255 / 0.2);
   }

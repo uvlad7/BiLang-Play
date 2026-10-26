@@ -217,12 +217,16 @@ function setupGallery() {
   const track = gallery.querySelector("[data-gallery-track]");
   const slides = [...track.children];
   const dots = gallery.querySelector("[data-gallery-dots]");
+  let lightboxDots;
   let current = 0;
   const show = (index) => {
     current = (index + slides.length) % slides.length;
     track.style.transform = `translateX(${-100 * current}%)`;
     slides.forEach((slide, i) => slide.setAttribute("aria-hidden", String(i !== current)));
-    [...dots.children].forEach((dot, i) => dot.setAttribute("aria-current", String(i === current)));
+    for (const group of [dots, lightboxDots]) {
+      if (!group) continue;
+      [...group.children].forEach((dot, i) => dot.setAttribute("aria-current", String(i === current)));
+    }
   };
   slides.forEach((_, i) => {
     const dot = document.createElement("button");
@@ -246,6 +250,7 @@ function setupGallery() {
   const lightbox = document.querySelector("[data-lightbox]");
   const image = lightbox.querySelector("[data-lightbox-image]");
   const caption = lightbox.querySelector("[data-lightbox-caption]");
+  lightboxDots = lightbox.querySelector("[data-lightbox-dots]");
   const fill = () => {
     const slide = slides[current].querySelector("img");
     image.src = slide.currentSrc || slide.src;
@@ -264,6 +269,16 @@ function setupGallery() {
       fill();
     });
   }
+  slides.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("aria-label", String(i + 1));
+    dot.addEventListener("click", () => {
+      show(i);
+      fill();
+    });
+    lightboxDots.append(dot);
+  });
   lightbox.querySelector("[data-lightbox-close]").addEventListener("click", () => lightbox.close());
   // A click outside the picture closes it; Esc does natively.
   lightbox.addEventListener("click", (event) => {
