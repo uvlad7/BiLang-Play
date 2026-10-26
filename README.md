@@ -148,11 +148,11 @@ stay.
 
 ### Windows
 
-- **Installer:** **Settings > Apps > Installed apps > BiLang Play >
-  Uninstall**.
-- **Portable zip:** delete the folder. If you let it add its shortcuts,
-  remove them too (before deleting the folder, the app's start screen also
-  has **Remove from Start menu and desktop**):
+- **NSIS installer (.exe):** **Settings > Apps > Installed apps > BiLang
+  Play > Uninstall**.
+- **Portable app (.zip):** delete the folder. If you let it add its
+  shortcuts, remove them too (before deleting the folder, the app's start
+  screen also has **Remove from Start menu and desktop**):
 
   ```powershell
   Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
@@ -180,11 +180,17 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
 
 ### Linux
 
-- **`.deb`:** `sudo apt purge bilangplay` (it removes its AppArmor profile
-  and settings schema too).
-- **AppImage or `.tar.gz`:** delete the file or the folder. If you added it
-  to the applications menu, remove the entry and its icons (before deleting
-  it, the app's start screen also has **Remove from applications menu**):
+- **Debian/Ubuntu (and their derivatives) package (.deb):** it removes its
+  AppArmor profile and settings schema too:
+
+  ```sh
+  sudo apt purge bilangplay
+  ```
+
+- **Portable app image (.AppImage) or portable app (.tar.gz):** delete the
+  file or the folder. If you added it to the applications menu, remove the
+  entry and its icons (before deleting it, the app's start screen also has
+  **Remove from applications menu**):
 
   ```sh
   data="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -211,14 +217,23 @@ dconf reset -f /io/github/uvlad7/bilangplay/
 If the `dconf` command is not found, run this instead, **before** deleting
 the app (`gsettings` needs a file that comes with it):
 
+**Debian/Ubuntu (and their derivatives) package (.deb):**
+
 ```sh
-# .deb
 gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+```
 
-# .tar.gz, from the app's folder (the one with bilangplay in it)
+**Portable app (.tar.gz)**, from the app's folder (the one with
+`bilangplay` in it):
+
+```sh
 gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+```
 
-# AppImage, from the folder it is in (this unpacks a temporary copy)
+**Portable app image (.AppImage)**, from the folder it is in (this unpacks
+a temporary copy):
+
+```sh
 ./bilangplay-<version>-linux-x86_64.AppImage --appimage-extract
 gsettings --schemadir squashfs-root/resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
 rm -rf squashfs-root

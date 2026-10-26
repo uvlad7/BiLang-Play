@@ -511,27 +511,28 @@ xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;versi
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="windows">
-            <ul lang="en">
-              <li>
-                <b>Installer:</b> <b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>.
-              </li>
-              <li>
-                <b>Portable zip:</b> delete the folder. If you let it add its shortcuts, remove them
-                too (before deleting the folder, the app's start screen also has
-                <b>Remove from Start menu and desktop</b>):
-              </li>
-            </ul>
-            <ul lang="ru">
-              <li>
-                <b>Установщик:</b>
-                <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>.
-              </li>
-              <li>
-                <b>Портативный zip:</b> удалите папку. Если вы разрешили ему добавить ярлыки,
-                удалите и их (пока папка не удалена, на стартовом экране приложения есть и кнопка
-                <b>Remove from Start menu and desktop</b>):
-              </li>
-            </ul>
+            <h3>
+              <span lang="en">NSIS installer (.exe)</span>
+              <span lang="ru">Установщик NSIS (.exe)</span>
+            </h3>
+            <p lang="en"><b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>.</p>
+            <p lang="ru">
+              <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>.
+            </p>
+            <h3>
+              <span lang="en">Portable app (.zip)</span>
+              <span lang="ru">Портативное приложение (.zip)</span>
+            </h3>
+            <p lang="en">
+              Delete the folder. If you let it add its shortcuts, remove them too (before deleting
+              the folder, the app's start screen also has
+              <b>Remove from Start menu and desktop</b>):
+            </p>
+            <p lang="ru">
+              Удалите папку. Если вы разрешили ему добавить ярлыки, удалите и их (пока папка не
+              удалена, на стартовом экране приложения есть и кнопка
+              <b>Remove from Start menu and desktop</b>):
+            </p>
             <pre><code>Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
 Remove-Item "$([Environment]::GetFolderPath('Desktop'))\BiLang Play.lnk"</code></pre>
             <h3>
@@ -562,28 +563,29 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
-            <ul lang="en">
-              <li>
-                <b><code>.deb</code>:</b> <code>sudo apt purge bilangplay</code> (it removes its
-                AppArmor profile and settings schema too).
-              </li>
-              <li>
-                <b>AppImage or <code>.tar.gz</code>:</b> delete the file or the folder. If you added
-                it to the applications menu, remove the entry and its icons (before deleting it, the
-                app's start screen also has <b>Remove from applications menu</b>):
-              </li>
-            </ul>
-            <ul lang="ru">
-              <li>
-                <b><code>.deb</code>:</b> <code>sudo apt purge bilangplay</code> (заодно удаляет
-                свой профиль AppArmor и схему настроек).
-              </li>
-              <li>
-                <b>AppImage или <code>.tar.gz</code>:</b> удалите файл или папку. Если вы добавляли
-                приложение в меню приложений, удалите пункт меню и значки (пока оно не удалено, на
-                стартовом экране приложения есть и кнопка <b>Remove from applications menu</b>):
-              </li>
-            </ul>
+            <h3>
+              <span lang="en">Debian/Ubuntu (and their derivatives) package (.deb)</span>
+              <span lang="ru">Пакет для Debian/Ubuntu (и производных) (.deb)</span>
+            </h3>
+            <pre><code>sudo apt purge bilangplay</code></pre>
+            <p lang="en">It removes its AppArmor profile and settings schema too.</p>
+            <p lang="ru">Заодно удаляет свой профиль AppArmor и схему настроек.</p>
+            <h3>
+              <span lang="en">Portable app image (.AppImage) or portable app (.tar.gz)</span>
+              <span lang="ru"
+                >Портативный образ приложения (.AppImage) или портативное приложение (.tar.gz)</span
+              >
+            </h3>
+            <p lang="en">
+              Delete the file or the folder. If you added it to the applications menu, remove the
+              entry and its icons (before deleting it, the app's start screen also has
+              <b>Remove from applications menu</b>):
+            </p>
+            <p lang="ru">
+              Удалите файл или папку. Если вы добавляли приложение в меню приложений, удалите пункт
+              меню и значки (пока оно не удалено, на стартовом экране приложения есть и кнопка
+              <b>Remove from applications menu</b>):
+            </p>
             <pre><code>data="${XDG_DATA_HOME:-$HOME/.local/share}"
 rm -f "$data/applications/bilang-play.desktop"
 find "$data/icons/hicolor" -name 'bilang-play*' -delete</code></pre>
@@ -614,14 +616,27 @@ dconf reset -f /io/github/uvlad7/bilangplay/</code></pre>
               Если команда <code>dconf</code> не найдена, выполните вместо неё это,
               <b>до</b> удаления приложения (<code>gsettings</code> нужен файл, который идёт с ним):
             </p>
-            <pre><code># .deb
-gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
-
-<span lang="en"># .tar.gz, from the app's folder (the one with bilangplay in it)</span><span lang="ru"># .tar.gz, из папки приложения (той, где лежит bilangplay)</span>
-gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
-
-<span lang="en"># AppImage, from the folder it is in (this unpacks a temporary copy)</span><span lang="ru"># AppImage, из папки, где он лежит (это распакует временную копию)</span>
-./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage --appimage-extract
+            <p lang="en"><b>Debian/Ubuntu (and their derivatives) package (.deb):</b></p>
+            <p lang="ru"><b>Пакет для Debian/Ubuntu (и производных) (.deb):</b></p>
+            <pre><code>gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
+            <p lang="en">
+              <b>Portable app (.tar.gz)</b>, from the app's folder (the one with
+              <code>bilangplay</code> in it):
+            </p>
+            <p lang="ru">
+              <b>Портативное приложение (.tar.gz)</b>, из папки приложения (той, где лежит
+              <code>bilangplay</code>):
+            </p>
+            <pre><code>gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
+            <p lang="en">
+              <b>Portable app image (.AppImage)</b>, from the folder it is in (this unpacks a
+              temporary copy):
+            </p>
+            <p lang="ru">
+              <b>Портативный образ приложения (.AppImage)</b>, из папки, где он лежит (это распакует
+              временную копию):
+            </p>
+            <pre><code>./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage --appimage-extract
 gsettings --schemadir squashfs-root/resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
 rm -rf squashfs-root</code></pre>
           </div>
