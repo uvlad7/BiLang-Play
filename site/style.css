@@ -285,6 +285,11 @@ h3:first-child {
   color: var(--text-dim);
   font-size: 0.95rem;
 }
+.subtitle-guide {
+  margin: -8px auto 24px;
+  color: var(--text-dim);
+  max-width: 760px;
+}
 
 /* Sections */
 .section {
