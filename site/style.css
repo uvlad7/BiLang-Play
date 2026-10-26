@@ -788,7 +788,7 @@ pre .copy:hover {
     display: flex;
     gap: 12px;
   }
-  .gallery-mobile-controls button {
+  .gallery-mobile-arrows button {
     display: grid;
     place-items: center;
     width: 64px;
@@ -800,11 +800,23 @@ pre .copy:hover {
     color: var(--text);
     font: 400 1.7rem/1 var(--font);
   }
-  .gallery-mobile-controls button span[aria-hidden] { margin: 0; }
+  .gallery-mobile-arrows button span[aria-hidden] {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    font-size: 0;
+    transform: rotate(-45deg);
+  }
+  .gallery-mobile-arrows button[data-gallery-step="-1"] span[aria-hidden],
+  .gallery-mobile-arrows button[data-lightbox-step="-1"] span[aria-hidden] {
+    transform: rotate(135deg);
+  }
   .lightbox-mobile-controls .gallery-dots {
     padding: 0;
   }
-  .gallery-mobile-controls button:active {
+  .gallery-mobile-arrows button:active {
     background: rgb(143 208 255 / 0.2);
   }
   .gallery-slide figcaption {
