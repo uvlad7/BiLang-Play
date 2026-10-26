@@ -129,8 +129,8 @@ Remove-Item -Recurse -Force "HKCU:\Software\io.github.uvlad7.bilangplay"
 
 ### macOS
 
-Delete **BiLang Play** from **Applications**. App data and settings, in
-Terminal:
+Move **BiLang Play** to the Trash from wherever you keep it (usually
+**Applications**). App data and settings, in Terminal:
 
 ```sh
 rm -rf ~/Library/"Application Support"/bilangplay
