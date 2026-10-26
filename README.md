@@ -8,6 +8,12 @@ transcript, and click any word for its translation and definition.
 Make it look the way you read best: style profiles, and fonts, sizes,
 colors, outlines, and positions for the subtitles and both transcripts.
 
+Keep subtitle files beside a video and name language versions after it—for
+example, `episode.mp4`, `episode.en.srt`, and `episode.ru.srt`. BiLang Play
+discovers those tracks and automatically selects preferred languages. A lone
+`episode.srt` also loads automatically; when files are ambiguous, the app does
+not guess.
+
 **Status: alpha.** Builds are shared for testing; expect rough edges. The
 interface is in English only for now; translations will come later. What
 changed in each version: [CHANGELOG.md](CHANGELOG.md).
