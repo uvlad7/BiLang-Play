@@ -207,13 +207,21 @@ rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
 dconf reset -f /io/github/uvlad7/bilangplay/
 ```
 
-Where GSettings is not backed by dconf (some distributions and minimal
-desktops), `dconf` is missing or the settings stay; there, before removing
-the app, run
-`gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/`.
-For the `.tar.gz`, add `--schemadir <its folder>/resources/settings-schemas`
-right after `gsettings`; for the AppImage, `--appimage-extract` unpacks the
-same folder into `squashfs-root`.
+If the `dconf` command is not found, run this instead, **before** deleting
+the app (`gsettings` needs a file that comes with it):
+
+```sh
+# .deb
+gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+
+# .tar.gz, from the app's folder (the one with bilangplay in it)
+gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+
+# AppImage, from the folder it is in (this unpacks a temporary copy)
+./bilangplay-<version>-linux-x86_64.AppImage --appimage-extract
+gsettings --schemadir squashfs-root/resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+rm -rf squashfs-root
+```
 
 ## License
 

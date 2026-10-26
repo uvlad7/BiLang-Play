@@ -606,28 +606,24 @@ sudo rm /etc/apparmor.d/bilangplay-appimage</code></pre>
             <pre><code>rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
 dconf reset -f /io/github/uvlad7/bilangplay/</code></pre>
             <p lang="en">
-              Where GSettings is not backed by dconf (some distributions and minimal desktops),
-              <code>dconf</code> is missing or the settings stay; there, before removing the app,
-              run:
+              If the <code>dconf</code> command is not found, run this instead,
+              <b>before</b> deleting the app (<code>gsettings</code> needs a file that comes with
+              it):
             </p>
             <p lang="ru">
-              Где GSettings работает не через dconf (некоторые дистрибутивы и минимальные рабочие
-              столы), <code>dconf</code> нет или настройки остаются; там до удаления приложения
-              выполните:
+              Если команда <code>dconf</code> не найдена, выполните вместо неё это,
+              <b>до</b> удаления приложения (<code>gsettings</code> нужен файл, который идёт с ним):
             </p>
-            <pre><code>gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
-            <p lang="en">
-              For the <code>.tar.gz</code>, add
-              <code>--schemadir &lt;its folder&gt;/resources/settings-schemas</code> right after
-              <code>gsettings</code>; for the AppImage, <code>--appimage-extract</code> unpacks the
-              same folder into <code>squashfs-root</code>.
-            </p>
-            <p lang="ru">
-              Для <code>.tar.gz</code> добавьте
-              <code>--schemadir &lt;его папка&gt;/resources/settings-schemas</code> сразу после
-              <code>gsettings</code>; для AppImage ту же папку распакует в
-              <code>squashfs-root</code> ключ <code>--appimage-extract</code>.
-            </p>
+            <pre><code># .deb
+gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+
+<span lang="en"># .tar.gz, from the app's folder (the one with bilangplay in it)</span><span lang="ru"># .tar.gz, из папки приложения (той, где лежит bilangplay)</span>
+gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+
+<span lang="en"># AppImage, from the folder it is in (this unpacks a temporary copy)</span><span lang="ru"># AppImage, из папки, где он лежит (это распакует временную копию)</span>
+./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage --appimage-extract
+gsettings --schemadir squashfs-root/resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
+rm -rf squashfs-root</code></pre>
           </div>
         </div>
       </section>
