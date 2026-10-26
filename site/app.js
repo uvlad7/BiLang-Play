@@ -209,8 +209,8 @@ function setupTabs() {
   }
 }
 
-// The screenshot gallery: one slide at a time; the arrows, the dots, the
-// keyboard's arrow keys, and a swipe move it, and it loops at both ends.
+// The screenshot gallery: one slide at a time; buttons, dots, the keyboard's
+// arrow keys, and a swipe move it, and it loops at both ends.
 function setupGallery() {
   const gallery = document.querySelector("[data-gallery]");
   if (!gallery) return;
