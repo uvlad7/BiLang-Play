@@ -1,11 +1,13 @@
 name: Pages
 
-# The site is rebuilt when a release becomes non-draft, or on request for
-# testing. The workflow embeds the newest published release and changelogs so
-# visitors do not need browser-side GitHub API requests.
+# The site is rebuilt on every public-repository commit or on request for
+# testing. The release workflow publishes the release first, then commits its
+# updated source here; that commit is this workflow's single automatic trigger.
+# It embeds the newest published release and changelogs so visitors do not
+# need browser-side GitHub API requests.
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
