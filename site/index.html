@@ -421,6 +421,24 @@
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="windows">
+            <h3 lang="en">Personal package-manager channels</h3>
+            <h3 lang="ru">Личные каналы менеджеров пакетов</h3>
+            <p lang="en">These commands use BiLang Play's own sources; none submits anything to a public catalogue.</p>
+            <p lang="ru">Эти команды используют собственные источники BiLang Play; ничего не отправляется в публичный каталог.</p>
+            <p lang="en">The personal WinGet source does not clear Windows' download mark.</p>
+            <p lang="ru">Личный источник WinGet не снимает метку Windows о скачанном файле.</p>
+            <pre><code>winget source add --name bilangplay --arg "https://uvlad7.github.io/BiLang-Play/winget" --type Microsoft.PreIndexed.Package --explicit
+winget install --id io.github.uvlad7.bilangplay --source bilangplay</code></pre>
+            <p lang="en">If Windows still blocks the unsigned app, explicitly unblock only its installed files:</p>
+            <p lang="ru">Если Windows всё ещё блокирует неподписанное приложение, снимите метку только с установленных файлов:</p>
+            <pre><code>Get-ChildItem "$env:LOCALAPPDATA\Programs\BiLang Play" -Recurse -File | Unblock-File</code></pre>
+            <p lang="en">Scoop and Chocolatey show a warning before they clear that mark themselves:</p>
+            <p lang="ru">Scoop и Chocolatey сами снимают эту метку только после предупреждения:</p>
+            <pre><code>scoop bucket add bilang-play https://github.com/uvlad7/BiLang-Play
+scoop install bilang-play/bilang-play
+
+choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"
+choco install bilangplay --source bilangplay -y</code></pre>
             <div lang="en">
               <h3>NSIS installer (.exe)</h3>
               <p>
@@ -490,6 +508,12 @@
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="macos">
+            <h3 lang="en">Homebrew</h3>
+            <h3 lang="ru">Homebrew</h3>
+            <p lang="en">The personal cask installs the app and warns before removing quarantine from this unsigned preview.</p>
+            <p lang="ru">Личный cask устанавливает приложение и предупреждает перед снятием карантина с этой неподписанной предварительной версии.</p>
+            <pre><code>brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play
+brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
             <div lang="en">
               <h3>Disk image (.dmg)</h3>
               <p>
@@ -540,6 +564,12 @@
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
+            <h3 lang="en">Homebrew</h3>
+            <h3 lang="ru">Homebrew</h3>
+            <p lang="en">The personal cask installs the tar.gz build, command, application-menu entry, and icons.</p>
+            <p lang="ru">Личный cask устанавливает сборку tar.gz, команду, пункт меню приложений и значки.</p>
+            <pre><code>brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play
+brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
             <div lang="en">
               <h3>App image (.AppImage)</h3>
               <p>Make it executable and run it:</p>
