@@ -9,7 +9,6 @@ import { fileURLToPath } from "node:url";
 const owner = "uvlad7";
 const repository = "BiLang-Play";
 const releaseBase = `https://github.com/${owner}/${repository}/releases/download`;
-export const PLACEHOLDER_SHA256 = "0".repeat(64);
 
 function usage() {
   throw new Error("usage: render.mjs <version> <release-assets-dir> [output-dir]");
@@ -34,23 +33,6 @@ export function artifacts(version, directory) {
       if (!existsSync(path)) throw new Error(`missing release artifact: ${path}`);
       return [key, { name, sha256: digest(path) }];
     }),
-  );
-}
-
-/**
- * Release preparation is useful before GitHub Actions has created artifacts.
- * These hashes are valid-looking only so the generated package syntax is easy
- * to review. They cannot verify any real artifact and must never be published.
- * @param {string} version
- */
-export function placeholderArtifacts(version) {
-  return Object.fromEntries(
-    Object.entries({
-      mac: `bilangplay-${version}-macos-arm64.zip`,
-      linux: `bilangplay-${version}-linux-x64.tar.gz`,
-      zip: `bilangplay-${version}-windows-x64.zip`,
-      nsis: `bilangplay-${version}-windows-x64-setup.exe`,
-    }).map(([key, name]) => [key, { name, sha256: PLACEHOLDER_SHA256 }]),
   );
 }
 
@@ -169,40 +151,15 @@ if ($installedApp -and $installedApp.InstallLocation -and (Test-Path -LiteralPat
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const [, , first, second, third] = process.argv;
-  const placeholder = first === "--stub";
-  const version = placeholder ? second : first;
-  const directory = placeholder ? undefined : second;
-  const suppliedOutput = third;
-  if (!version || (!placeholder && !directory)) usage();
-  const output = resolve(
-    suppliedOutput ?? join("package-managers", placeholder ? "stubs" : "out", version),
-  );
+  const [, , version, directory, suppliedOutput] = process.argv;
+  if (!version || !directory) usage();
+  const output = resolve(suppliedOutput ?? join("package-managers", "out", version));
   rmSync(output, { recursive: true, force: true });
-  const files = placeholder ? placeholderArtifacts(version) : artifacts(version, resolve(directory));
+  const files = artifacts(version, resolve(directory));
   for (const [relative, text] of sources(version, files)) {
     const path = join(output, relative);
     mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, text);
   }
-  if (placeholder) {
-    writeFileSync(
-      join(output, "README.md"),
-      `# ${version} package-manager release stubs\n\n` +
-        "These sources have the final asset names and URLs, but every SHA-256 is\n" +
-        "`0000000000000000000000000000000000000000000000000000000000000000`. They\n" +
-        "are intentionally non-installable review fixtures. They are not package-manager\n" +
-        "source. Once the immutable release assets exist, rerun\n" +
-        "`node package-managers/render.mjs " +
-        version +
-        " path/to/release-assets`. Its output\n" +
-        "is the complete source for each personal distribution channel.\n\n" +
-        "Expected artifacts:\n\n" +
-        `- \`${files.mac.name}\`\n` +
-        `- \`${files.linux.name}\`\n` +
-        `- \`${files.zip.name}\`\n` +
-        `- \`${files.nsis.name}\`\n`,
-    );
-  }
-  console.log(`Wrote ${placeholder ? "placeholder " : ""}package-manager sources to ${output}`);
+  console.log(`Wrote package-manager sources to ${output}`);
 }

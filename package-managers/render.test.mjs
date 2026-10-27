@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { PLACEHOLDER_SHA256, placeholderArtifacts, sources } from "./render.mjs";
+import { sources } from "./render.mjs";
 
 const artifacts = Object.fromEntries(
   ["mac", "linux", "zip", "nsis"].map((name) => [name, { name, sha256: "a".repeat(64) }]),
@@ -36,15 +36,4 @@ test("renders immutable, checksummed package-manager sources and local integrati
     chocolatey.indexOf("Unblock-File -LiteralPath $installer") <
       chocolatey.indexOf("Install-ChocolateyInstallPackage"),
   );
-});
-
-test("prepares versioned stubs with deliberate non-matching hashes", () => {
-  const contents = [...sources("0.1.0-alpha.2", placeholderArtifacts("0.1.0-alpha.2")).values()].join(
-    "\n",
-  );
-  assert.match(contents, /bilangplay-0\.1\.0-alpha\.2-macos-arm64\.zip/);
-  assert.match(contents, /bilangplay-0\.1\.0-alpha\.2-linux-x64\.tar\.gz/);
-  assert.match(contents, /bilangplay-0\.1\.0-alpha\.2-windows-x64\.zip/);
-  assert.match(contents, /bilangplay-0\.1\.0-alpha\.2-windows-x64-setup\.exe/);
-  assert.match(contents, new RegExp(PLACEHOLDER_SHA256));
 });
