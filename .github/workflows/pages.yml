@@ -1,9 +1,10 @@
 name: Pages
 
-# The site (site/) with both changelogs and the screenshots beside it, on
-# every change to main.
-# Downloads need no redeploy: the page reads the newest release from the
-# GitHub API in the visitor's browser.
+# The site is rebuilt on every public-repository commit or on request for
+# testing. Package-manager source is rendered by a separate workflow after a
+# release is manually published; its commit triggers this workflow. It embeds
+# the newest published release and changelogs so visitors do not need
+# browser-side GitHub API requests.
 on:
   push:
     branches: [main]
@@ -26,11 +27,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-      - run: |
-          mkdir _site
-          cp -r site/. _site/
-          cp CHANGELOG.md CHANGELOG.ru.md _site/
-          cp -r screenshots _site/
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/build-site.mjs _site
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
