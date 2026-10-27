@@ -427,13 +427,6 @@
             <h3 lang="ru">Личные каналы менеджеров пакетов</h3>
             <p lang="en">These commands use BiLang Play's own sources; none submits anything to a public catalogue.</p>
             <p lang="ru">Эти команды используют собственные источники BiLang Play; ничего не отправляется в публичный каталог.</p>
-            <p lang="en">The personal WinGet source does not clear Windows' download mark.</p>
-            <p lang="ru">Личный источник WinGet не снимает метку Windows о скачанном файле.</p>
-            <pre><code>winget source add --name bilangplay --arg "https://uvlad7.github.io/BiLang-Play/winget" --type Microsoft.PreIndexed.Package --explicit
-winget install --id io.github.uvlad7.bilangplay --source bilangplay</code></pre>
-            <p lang="en">If Windows still blocks the unsigned app, explicitly unblock only its installed files:</p>
-            <p lang="ru">Если Windows всё ещё блокирует неподписанное приложение, снимите метку только с установленных файлов:</p>
-            <pre><code>Get-ChildItem "$env:LOCALAPPDATA\Programs\BiLang Play" -Recurse -File | Unblock-File</code></pre>
             <h3>Scoop</h3>
             <p lang="en">Scoop shows a warning before it clears the download mark from its installed files:</p>
             <p lang="ru">Scoop выводит предупреждение, прежде чем снять метку о скачанном файле со своих установленных файлов:</p>

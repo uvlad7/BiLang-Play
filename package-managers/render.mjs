@@ -9,9 +9,6 @@ import { fileURLToPath } from "node:url";
 const owner = "uvlad7";
 const repository = "BiLang-Play";
 const releaseBase = `https://github.com/${owner}/${repository}/releases/download`;
-// Keep this aligned with the application's reverse-DNS identifier. A WinGet
-// package identifier is permanent after its first community-repository merge.
-const packageId = "io.github.uvlad7.bilangplay";
 export const PLACEHOLDER_SHA256 = "0".repeat(64);
 
 function usage() {
@@ -163,10 +160,6 @@ Install-ChocolateyInstallPackage -PackageName $env:ChocolateyPackageName -FileTy
 $installedApp = Get-UninstallRegistryKey -SoftwareName 'BiLang Play*' | Select-Object -First 1
 if ($installedApp -and $installedApp.InstallLocation -and (Test-Path -LiteralPath $installedApp.InstallLocation)) { Get-ChildItem -LiteralPath $installedApp.InstallLocation -Recurse -File | Unblock-File }
 `,
-    ],
-    [
-      `winget/manifests/${packageId}.${version}.yaml`,
-      `PackageIdentifier: ${packageId}\nPackageVersion: ${version}\nPackageLocale: en-US\nPublisher: Uladzimir Ulyanitski (uvlad7)\nPublisherUrl: https://github.com/${owner}\nPublisherSupportUrl: https://github.com/${owner}/${repository}/issues\nPackageName: BiLang Play\nPackageUrl: https://github.com/${owner}/${repository}\nLicense: Proprietary\nShortDescription: Local-first video player for language learners\nInstallerType: nullsoft\nInstallers:\n  - Architecture: x64\n    InstallerUrl: ${release}/${files.nsis.name}\n    InstallerSha256: ${files.nsis.sha256}\nManifestType: singleton\nManifestVersion: 1.10.0\n`,
     ],
   ]);
 }
