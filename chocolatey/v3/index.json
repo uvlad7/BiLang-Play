@@ -7,7 +7,15 @@
     },
     {
       "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/",
+      "@type": "RegistrationsBaseUrl"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/",
       "@type": "RegistrationsBaseUrl/3.6.0"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/search/query",
+      "@type": "SearchQueryService"
     },
     {
       "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/search/query",

@@ -55,7 +55,9 @@ export function buildFeed(version, source, output) {
     version: "3.0.0",
     resources: [
       { "@id": `${base}/flatcontainer/`, "@type": "PackageBaseAddress/3.0.0" },
+      { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl" },
       { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl/3.6.0" },
+      { "@id": `${base}/search/query`, "@type": "SearchQueryService" },
       { "@id": `${base}/search/query`, "@type": "SearchQueryService/3.5.0" },
     ],
   });
@@ -66,7 +68,17 @@ export function buildFeed(version, source, output) {
     items: [{ "@id": `${registration}/index.json#page/0`, count: 1, items: [leaf] }],
   });
   json(join(v3, "registration", packageId, `${lowerVersion}.json`), leaf);
-  json(join(v3, "search", "query"), { totalHits: 1, data: [{ ...catalogEntry, versions: [{ version: lowerVersion }] }] });
+  json(join(v3, "search", "query"), {
+    totalHits: 1,
+    data: [{
+      ...catalogEntry,
+      "@id": `${registration}/index.json`,
+      "@type": "Package",
+      registration: `${registration}/index.json`,
+      versions: [{ "@id": leaf["@id"], version, downloads: 0 }],
+      packageTypes: [{ name: "ChocolateyPackage" }],
+    }],
+  });
 }
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
