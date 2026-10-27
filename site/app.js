@@ -1,6 +1,6 @@
-// BiLang Play site: the language switch, the download for this system from
-// the newest published release, install and uninstall tabs, and the
-// changelog rendered from CHANGELOG.md / CHANGELOG.ru.md.
+// BiLang Play site: the language switch, static download links from the
+// newest published release, install and uninstall tabs, and the changelog
+// embedded by the Pages build.
 
 const REPO = "uvlad7/BiLang-Play";
 const RELEASES = `https://github.com/${REPO}/releases`;
@@ -11,7 +11,6 @@ const TEXT = {
     forSystem: (name) => `For <b>${name}</b>`,
     pickSystem: "Choose your system below.",
     noRelease: "No release is published yet.",
-    failed: "Could not load the releases.",
     allReleases: "All releases",
     version: (tag, date) => `Version ${tag}, ${date}`,
     preRelease: "pre-release",
@@ -26,7 +25,6 @@ const TEXT = {
       deb: "Debian/Ubuntu package (.deb)",
       tar: "Portable app (.tar.gz)",
     },
-    changelogFailed: "Could not load the changelog.",
     onGitHub: "Release on GitHub",
     locale: "en-GB",
   },
@@ -35,7 +33,6 @@ const TEXT = {
     forSystem: (name) => `Для <b>${name}</b>`,
     pickSystem: "Выберите систему ниже.",
     noRelease: "Релизов пока нет.",
-    failed: "Не удалось загрузить релизы.",
     allReleases: "Все релизы",
     version: (tag, date) => `Версия ${tag}, ${date}`,
     preRelease: "предварительная",
@@ -50,7 +47,6 @@ const TEXT = {
       deb: "Пакет Debian/Ubuntu (.deb)",
       tar: "Портативное приложение (.tar.gz)",
     },
-    changelogFailed: "Не удалось загрузить историю изменений.",
     onGitHub: "Релиз на GitHub",
     locale: "ru-RU",
   },
@@ -72,8 +68,8 @@ const root = document.documentElement;
 const lang = () => (root.dataset.lang === "ru" ? "ru" : "en");
 const t = () => TEXT[lang()];
 const system = detectSystem();
-let release; // undefined: loading; null: none or failed
-let releaseError = false;
+const siteData = window.BILANGPLAY_SITE_DATA;
+const release = siteData?.release ?? null;
 
 function detectSystem() {
   const ua = navigator.userAgent;
@@ -125,11 +121,9 @@ function renderDownloads() {
   for (const card of document.querySelectorAll("[data-platform]")) {
     card.classList.toggle("detected", card.dataset.platform === system);
   }
-  if (release === undefined) return;
-
   const all = `<a href="${RELEASES}">${text.allReleases}</a>`;
   if (!release) {
-    const message = releaseError ? text.failed : text.noRelease;
+    const message = text.noRelease;
     meta.innerHTML = `${message} ${all}`;
     releaseMeta.innerHTML = meta.innerHTML;
     for (const list of document.querySelectorAll("[data-files]")) {
@@ -168,30 +162,6 @@ function renderDownloads() {
   // The commands name the files of this release.
   const plain = release.tag_name.replace(/^v/, "");
   for (const node of document.querySelectorAll(".ver")) node.textContent = plain;
-}
-
-async function loadRelease() {
-  const key = "bilangplay.site.release";
-  try {
-    const cached = JSON.parse(sessionStorage.getItem(key) || "null");
-    if (cached && Date.now() - cached.at < 10 * 60 * 1000) return cached.release;
-  } catch {
-    // No session storage: fetch every time.
-  }
-  // The newest published release, pre-releases included; /releases/latest
-  // skips pre-releases, and every alpha is one.
-  const response = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=20`, {
-    headers: { Accept: "application/vnd.github+json" },
-  });
-  if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
-  const list = await response.json();
-  const found = list.find((r) => !r.draft) || null;
-  try {
-    sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), release: found }));
-  } catch {
-    // Not cached.
-  }
-  return found;
 }
 
 // Tabs: the visitor's system first.
@@ -416,23 +386,11 @@ function releases(text) {
   return sections.filter((s) => s.version !== "Unreleased" && s.date);
 }
 
-const changelogs = {};
-async function renderChangelog() {
+function renderChangelog() {
   const box = document.querySelector("[data-changelog]");
   const which = lang();
-  try {
-    changelogs[which] ??= await fetch(which === "ru" ? "CHANGELOG.ru.md" : "CHANGELOG.md").then(
-      (response) => {
-        if (!response.ok) throw new Error(String(response.status));
-        return response.text();
-      },
-    );
-  } catch {
-    box.innerHTML = `<p class="small">${t().changelogFailed} <a href="https://github.com/${REPO}/blob/main/CHANGELOG.md">CHANGELOG.md</a></p>`;
-    return;
-  }
-  if (which !== lang()) return;
-  box.innerHTML = releases(changelogs[which])
+  const changelog = siteData?.changelogs?.[which] ?? "";
+  box.innerHTML = releases(changelog)
     .map((r) => {
       const version = escapeHtml(r.version);
       const pre = r.version.includes("-") ? `<span class="pre">${t().preRelease}</span>` : "";
@@ -475,12 +433,3 @@ setupTabs();
 setupGallery();
 setupCopy();
 render();
-loadRelease()
-  .then((found) => {
-    release = found;
-  })
-  .catch(() => {
-    release = null;
-    releaseError = true;
-  })
-  .finally(renderDownloads);
