@@ -1,10 +1,10 @@
 name: Pages
 
 # The site is rebuilt on every public-repository commit or on request for
-# testing. The release workflow publishes the release first, then commits its
-# updated source here; that commit is this workflow's single automatic trigger.
-# It embeds the newest published release and changelogs so visitors do not
-# need browser-side GitHub API requests.
+# testing. Package-manager source is rendered by a separate workflow after a
+# release is manually published; its commit triggers this workflow. It embeds
+# the newest published release and changelogs so visitors do not need
+# browser-side GitHub API requests.
 on:
   push:
     branches: [main]
