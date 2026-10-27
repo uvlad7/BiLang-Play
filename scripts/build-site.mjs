@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Build the static Pages payload from the newest published release. The site
 // must not depend on a visitor's network access to GitHub's API.
-import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -47,6 +47,9 @@ const changelogs = {
 mkdirSync(output, { recursive: true });
 cpSync(join(root, "site"), output, { recursive: true });
 cpSync(join(root, "screenshots"), join(output, "screenshots"), { recursive: true });
+if (existsSync(join(root, "chocolatey"))) {
+  cpSync(join(root, "chocolatey"), join(output, "chocolatey"), { recursive: true });
+}
 writeFileSync(
   join(output, "site-data.js"),
   `window.BILANGPLAY_SITE_DATA = ${JSON.stringify({ release, changelogs })};\n`,
