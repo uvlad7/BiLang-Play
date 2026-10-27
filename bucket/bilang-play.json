@@ -1,0 +1,24 @@
+{
+  "version": "0.1.0-alpha.2",
+  "description": "Local-first video player for language learners",
+  "homepage": "https://github.com/uvlad7/BiLang-Play",
+  "license": "Proprietary",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-windows-x64.zip",
+      "hash": "0f5397e3756a2cf5b0af448133041736a5bc9f15e1596e7cdea8aef1b423ec30"
+    }
+  },
+  "bin": "BiLang Play.exe",
+  "shortcuts": [
+    [
+      "BiLang Play.exe",
+      "BiLang Play"
+    ]
+  ],
+  "post_install": [
+    "Set-Content -LiteralPath \"$dir\\packaged-by\" -Value \"scoop\" -NoNewline",
+    "Get-ChildItem -LiteralPath $dir -Recurse -File | Unblock-File",
+    "Write-Warning \"SECURITY NOTICE: Scoop removed Mark-of-the-Web from this unsigned app. Install only if you trust this bucket and its SHA-256.\""
+  ]
+}
