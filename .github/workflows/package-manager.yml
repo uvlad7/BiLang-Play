@@ -1,0 +1,22 @@
+name: Package-manager source
+
+on:
+  pull_request:
+    paths:
+      - "package-managers/**"
+      - ".github/workflows/package-manager.yml"
+  push:
+    branches: [main]
+    paths:
+      - "package-managers/**"
+      - ".github/workflows/package-manager.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - run: node --test package-managers/render.test.mjs

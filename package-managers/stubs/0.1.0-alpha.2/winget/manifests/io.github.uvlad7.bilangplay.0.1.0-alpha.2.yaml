@@ -1,0 +1,17 @@
+PackageIdentifier: io.github.uvlad7.bilangplay
+PackageVersion: 0.1.0-alpha.2
+PackageLocale: en-US
+Publisher: Uladzimir Ulyanitski (uvlad7)
+PublisherUrl: https://github.com/uvlad7
+PublisherSupportUrl: https://github.com/uvlad7/BiLang-Play/issues
+PackageName: BiLang Play
+PackageUrl: https://github.com/uvlad7/BiLang-Play
+License: Proprietary
+ShortDescription: Local-first video player for language learners
+InstallerType: nullsoft
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-windows-x64-setup.exe
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+ManifestType: singleton
+ManifestVersion: 1.10.0

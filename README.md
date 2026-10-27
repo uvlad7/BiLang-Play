@@ -24,9 +24,16 @@ changed in each version: [CHANGELOG.md](CHANGELOG.md).
 **Vibe-coded.** The app is written almost entirely by AI coding agents
 (Claude Code and Codex), directed, tested, and reviewed by its author.
 
+**Author:** Uladzimir Ulyanitski (uvlad7).
+
 **Download:** [uvlad7.github.io/BiLang-Play](https://uvlad7.github.io/BiLang-Play/)
 picks the right package for your system, or take one from
 [Releases](https://github.com/uvlad7/BiLang-Play/releases).
+
+Package-manager source (Homebrew, Scoop, Chocolatey, and WinGet) lives in
+[package-managers](package-managers/). Its release-specific definitions are
+rendered only after the corresponding immutable release artifacts and hashes
+exist.
 
 | System | Package | Needs |
 | --- | --- | --- |
