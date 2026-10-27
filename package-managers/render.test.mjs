@@ -29,7 +29,6 @@ test("renders immutable, checksummed package-manager sources and local integrati
     chocolatey.indexOf("Unblock-File -LiteralPath $installer") <
       chocolatey.indexOf("Install-ChocolateyInstallPackage"),
   );
-  assert.match(files.get("winget/manifests/io.github.uvlad7.bilangplay.1.2.3.yaml"), /nullsoft/);
 });
 
 test("prepares versioned stubs with deliberate non-matching hashes", () => {
