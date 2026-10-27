@@ -21,15 +21,18 @@ cask "bilang-play" do
 
   on_linux do
     depends_on arch: :x86_64
+    linux_root = "bilangplay-#{version}-linux-x64"
     preflight_steps do
-      write_file "packaged-by", "brew\n", append_newline: false
-      inreplace "resources/desktop/bilang-play.desktop",
-                "Exec=bilangplay",
-                "Exec={{HOMEBREW_PREFIX}}/bin/bilangplay"
+      write_file "#{linux_root}/packaged-by", "brew\n", append_newline: false
+      if_path_exists "#{linux_root}/resources/desktop/bilang-play.desktop" do
+        inreplace "#{linux_root}/resources/desktop/bilang-play.desktop",
+                  "Exec=bilangplay",
+                  "Exec={{HOMEBREW_PREFIX}}/bin/bilangplay"
+      end
       mkdir_p ".local/share/applications", base: :home
     end
-    binary "bilangplay"
-    artifact "resources/desktop/bilang-play.desktop",
+    binary "#{linux_root}/bilangplay"
+    artifact "#{linux_root}/resources/desktop/bilang-play.desktop",
              target: "#{Dir.home}/.local/share/applications/bilang-play.desktop"
     hicolor_icons = %w[
       16x16/apps/bilang-play.png
@@ -44,7 +47,7 @@ cask "bilang-play" do
       symbolic/apps/bilang-play-symbolic.svg
     ]
     hicolor_icons.each do |icon|
-      artifact "resources/icons/hicolor/#{icon}",
+      artifact "#{linux_root}/resources/icons/hicolor/#{icon}",
                target: "#{Dir.home}/.local/share/icons/hicolor/#{icon}"
     end
   end
