@@ -22,7 +22,10 @@ test("builds a static NuGet v3 package, registration, and search feed", () => {
     assert.match(serviceIndex, /"@type": "RegistrationsBaseUrl\/3\.0\.0-rc"/);
     assert.match(readFileSync(join(feed, "flatcontainer", "bilangplay", "index.json"), "utf8"), /1.2.3/);
     assert.ok(readFileSync(join(feed, "flatcontainer", "bilangplay", "1.2.3", "bilangplay.1.2.3.nupkg")).length > 0);
-    assert.match(readFileSync(join(feed, "registration", "bilangplay", "index.json"), "utf8"), /packageContent/);
+    const registration = readFileSync(join(feed, "registration", "bilangplay", "index.json"), "utf8");
+    assert.match(registration, /packageContent/);
+    assert.match(registration, /"lower": "1\.2\.3"/);
+    assert.match(registration, /"upper": "1\.2\.3"/);
     assert.match(readFileSync(join(feed, "search", "query"), "utf8"), /"registration"/);
   } finally {
     rmSync(root, { recursive: true, force: true });

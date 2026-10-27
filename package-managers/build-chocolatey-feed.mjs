@@ -72,7 +72,13 @@ export function buildFeed(version, source, output) {
   writeFileSync(`${packagePath}.sha512`, packageDigest);
   json(join(v3, "registration", packageId, "index.json"), {
     count: 1,
-    items: [{ "@id": `${registration}/index.json#page/0`, count: 1, items: [leaf] }],
+    items: [{
+      "@id": `${registration}/index.json#page/0`,
+      count: 1,
+      lower: lowerVersion,
+      upper: lowerVersion,
+      items: [leaf],
+    }],
   });
   json(join(v3, "registration", packageId, `${lowerVersion}.json`), leaf);
   json(join(v3, "search", "query"), {
