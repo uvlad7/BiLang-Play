@@ -95,26 +95,22 @@ function sources(version, files) {
     binary "bilangplay"
     artifact "resources/desktop/bilang-play.desktop",
              target: "#{Dir.home}/.local/share/applications/bilang-play.desktop"
-    artifact "resources/icons/hicolor/16x16/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/16x16/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/24x24/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/24x24/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/32x32/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/32x32/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/48x48/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/48x48/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/64x64/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/64x64/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/128x128/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/128x128/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/256x256/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/256x256/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/512x512/apps/bilang-play.png",
-             target: "#{Dir.home}/.local/share/icons/hicolor/512x512/apps/bilang-play.png"
-    artifact "resources/icons/hicolor/scalable/apps/bilang-play.svg",
-             target: "#{Dir.home}/.local/share/icons/hicolor/scalable/apps/bilang-play.svg"
-    artifact "resources/icons/hicolor/symbolic/apps/bilang-play-symbolic.svg",
-             target: "#{Dir.home}/.local/share/icons/hicolor/symbolic/apps/bilang-play-symbolic.svg"
+    hicolor_icons = %w[
+      16x16/apps/bilang-play.png
+      24x24/apps/bilang-play.png
+      32x32/apps/bilang-play.png
+      48x48/apps/bilang-play.png
+      64x64/apps/bilang-play.png
+      128x128/apps/bilang-play.png
+      256x256/apps/bilang-play.png
+      512x512/apps/bilang-play.png
+      scalable/apps/bilang-play.svg
+      symbolic/apps/bilang-play-symbolic.svg
+    ]
+    hicolor_icons.each do |icon|
+      artifact "resources/icons/hicolor/#{icon}",
+               target: "#{Dir.home}/.local/share/icons/hicolor/#{icon}"
+    end
   end
 
   caveats <<~EOS
