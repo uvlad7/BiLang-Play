@@ -10,6 +10,18 @@ shows them all. The Russian translation is in [CHANGELOG.ru.md](CHANGELOG.ru.md)
 
 ## [Unreleased]
 
+## [0.1.0-alpha.2] - 2026-10-27
+
+Packaging and distribution update.
+
+- **Package-manager channels:** personal Homebrew, Scoop, and Chocolatey
+  sources now reuse the release artifacts and verify their hashes.
+- **Linux Homebrew integration:** the cask installs the command, application
+  menu entry, and all supplied hicolor icons; removing the cask removes what
+  it owns.
+- **Unsigned-build guidance:** clearer Windows Mark-of-the-Web and macOS
+  Gatekeeper instructions, including the Finder **Open** option.
+
 ## [0.1.0-alpha.1] - 2026-10-26
 
 The first alpha, shared with friends for testing. Expect rough edges, and
