@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
 const owner = "uvlad7";
 const repository = "BiLang-Play";
@@ -11,7 +12,7 @@ const releaseBase = `https://github.com/${owner}/${repository}/releases/download
 // Keep this aligned with the application's reverse-DNS identifier. A WinGet
 // package identifier is permanent after its first community-repository merge.
 const packageId = "io.github.uvlad7.bilangplay";
-const PLACEHOLDER_SHA256 = "0".repeat(64);
+export const PLACEHOLDER_SHA256 = "0".repeat(64);
 
 function usage() {
   throw new Error("usage: render.mjs <version> <release-assets-dir> [output-dir]");
@@ -23,7 +24,7 @@ function digest(path) {
 }
 
 /** @param {string} version @param {string} directory */
-function artifacts(version, directory) {
+export function artifacts(version, directory) {
   const required = {
     mac: `bilangplay-${version}-macos-arm64.zip`,
     linux: `bilangplay-${version}-linux-x64.tar.gz`,
@@ -45,7 +46,7 @@ function artifacts(version, directory) {
  * to review. They cannot verify any real artifact and must never be published.
  * @param {string} version
  */
-function placeholderArtifacts(version) {
+export function placeholderArtifacts(version) {
   return Object.fromEntries(
     Object.entries({
       mac: `bilangplay-${version}-macos-arm64.zip`,
@@ -57,7 +58,7 @@ function placeholderArtifacts(version) {
 }
 
 /** @param {string} version @param {Record<string, { name: string, sha256: string }>} files */
-function sources(version, files) {
+export function sources(version, files) {
   const release = `${releaseBase}/v${version}`;
   return new Map([
     [
@@ -145,7 +146,7 @@ end
     [
       "chocolatey/bilangplay.nuspec",
       `<?xml version="1.0"?>
-<package><metadata><id>bilangplay</id><version>${version}</version><title>BiLang Play</title><authors>Uladzimir Ulyanitski</authors><projectUrl>https://github.com/${owner}/${repository}</projectUrl><license type="expression">Proprietary</license><requireLicenseAcceptance>false</requireLicenseAcceptance><summary>Local-first video player for language learners</summary><description>Installs BiLang Play's NSIS installer.</description><tags>video subtitles language-learning electron</tags></metadata><files><file src="tools\\**" target="tools" /></files></package>
+<package><metadata><id>bilangplay</id><version>${version}</version><title>BiLang Play</title><authors>Uladzimir Ulyanitski (uvlad7)</authors><projectUrl>https://github.com/${owner}/${repository}</projectUrl><license type="expression">Proprietary</license><requireLicenseAcceptance>false</requireLicenseAcceptance><summary>Local-first video player for language learners</summary><description>Installs BiLang Play's NSIS installer.</description><tags>video subtitles language-learning electron</tags></metadata><files><file src="tools\\**" target="tools" /></files></package>
 `,
     ],
     [
@@ -165,42 +166,46 @@ if ($installedApp -and $installedApp.InstallLocation -and (Test-Path -LiteralPat
     ],
     [
       `winget/manifests/${packageId}.${version}.yaml`,
-      `PackageIdentifier: ${packageId}\nPackageVersion: ${version}\nPackageLocale: en-US\nPublisher: Uladzimir Ulyanitski\nPublisherUrl: https://github.com/${owner}\nPublisherSupportUrl: https://github.com/${owner}/${repository}/issues\nPackageName: BiLang Play\nPackageUrl: https://github.com/${owner}/${repository}\nLicense: Proprietary\nShortDescription: Local-first video player for language learners\nInstallerType: nullsoft\nInstallers:\n  - Architecture: x64\n    InstallerUrl: ${release}/${files.nsis.name}\n    InstallerSha256: ${files.nsis.sha256}\nManifestType: singleton\nManifestVersion: 1.10.0\n`,
+      `PackageIdentifier: ${packageId}\nPackageVersion: ${version}\nPackageLocale: en-US\nPublisher: Uladzimir Ulyanitski (uvlad7)\nPublisherUrl: https://github.com/${owner}\nPublisherSupportUrl: https://github.com/${owner}/${repository}/issues\nPackageName: BiLang Play\nPackageUrl: https://github.com/${owner}/${repository}\nLicense: Proprietary\nShortDescription: Local-first video player for language learners\nInstallerType: nullsoft\nInstallers:\n  - Architecture: x64\n    InstallerUrl: ${release}/${files.nsis.name}\n    InstallerSha256: ${files.nsis.sha256}\nManifestType: singleton\nManifestVersion: 1.10.0\n`,
     ],
   ]);
 }
 
-const [, , first, second, third] = process.argv;
-const placeholder = first === "--stub";
-const version = placeholder ? second : first;
-const directory = placeholder ? undefined : second;
-const suppliedOutput = third;
-if (!version || (!placeholder && !directory)) usage();
-const output = resolve(
-  suppliedOutput ?? join("package-managers", placeholder ? "stubs" : "out", version),
-);
-rmSync(output, { recursive: true, force: true });
-const files = placeholder ? placeholderArtifacts(version) : artifacts(version, resolve(directory));
-for (const [relative, text] of sources(version, files)) {
-  const path = join(output, relative);
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, text);
-}
-if (placeholder) {
-  writeFileSync(
-    join(output, "README.md"),
-    `# ${version} package-manager release stubs\n\n` +
-      "These sources have the final asset names and URLs, but every SHA-256 is\n" +
-      "`0000000000000000000000000000000000000000000000000000000000000000`. They\n" +
-      "are intentionally non-installable review fixtures. They are not package-manager\n" +
-      "source. Once the immutable release assets exist, rerun\n" +
-      "`node package-managers/render.mjs " + version + " path/to/release-assets`. Its output\n" +
-      "is the complete source for each personal distribution channel.\n\n" +
-      "Expected artifacts:\n\n" +
-      `- \`${files.mac.name}\`\n` +
-      `- \`${files.linux.name}\`\n` +
-      `- \`${files.zip.name}\`\n` +
-      `- \`${files.nsis.name}\`\n`,
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const [, , first, second, third] = process.argv;
+  const placeholder = first === "--stub";
+  const version = placeholder ? second : first;
+  const directory = placeholder ? undefined : second;
+  const suppliedOutput = third;
+  if (!version || (!placeholder && !directory)) usage();
+  const output = resolve(
+    suppliedOutput ?? join("package-managers", placeholder ? "stubs" : "out", version),
   );
+  rmSync(output, { recursive: true, force: true });
+  const files = placeholder ? placeholderArtifacts(version) : artifacts(version, resolve(directory));
+  for (const [relative, text] of sources(version, files)) {
+    const path = join(output, relative);
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, text);
+  }
+  if (placeholder) {
+    writeFileSync(
+      join(output, "README.md"),
+      `# ${version} package-manager release stubs\n\n` +
+        "These sources have the final asset names and URLs, but every SHA-256 is\n" +
+        "`0000000000000000000000000000000000000000000000000000000000000000`. They\n" +
+        "are intentionally non-installable review fixtures. They are not package-manager\n" +
+        "source. Once the immutable release assets exist, rerun\n" +
+        "`node package-managers/render.mjs " +
+        version +
+        " path/to/release-assets`. Its output\n" +
+        "is the complete source for each personal distribution channel.\n\n" +
+        "Expected artifacts:\n\n" +
+        `- \`${files.mac.name}\`\n` +
+        `- \`${files.linux.name}\`\n` +
+        `- \`${files.zip.name}\`\n` +
+        `- \`${files.nsis.name}\`\n`,
+    );
+  }
+  console.log(`Wrote ${placeholder ? "placeholder " : ""}package-manager sources to ${output}`);
 }
-console.log(`Wrote ${placeholder ? "placeholder " : ""}package-manager sources to ${output}`);
