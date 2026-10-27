@@ -17,6 +17,12 @@ cask "bilang-play" do
           args: ["-dr", "com.apple.quarantine", "{{appdir}}/BiLang Play.app"],
           must_succeed: false
     end
+
+    caveats <<~EOS
+      SECURITY NOTICE: this unsigned cask clears quarantine after install.
+      It bypasses Gatekeeper's downloaded-app check. Install only if you trust
+      this tap and the SHA-256 above.
+    EOS
   end
 
   on_linux do
@@ -52,9 +58,4 @@ cask "bilang-play" do
     end
   end
 
-  caveats <<~EOS
-    macOS: SECURITY NOTICE: this unsigned cask clears quarantine after install.
-    It bypasses Gatekeeper's downloaded-app check. Install only if you trust
-    this tap and the SHA-256 above.
-  EOS
 end

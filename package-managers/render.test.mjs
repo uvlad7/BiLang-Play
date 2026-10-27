@@ -16,6 +16,7 @@ test("renders immutable, checksummed package-manager sources and local integrati
   assert.match(contents, new RegExp("a".repeat(64)));
   assert.match(cask, /write_file "#\{linux_root\}\/packaged-by", "brew/);
   assert.match(cask, /preflight_steps do/);
+  assert.match(cask, /on_macos do[\s\S]*caveats <<~EOS[\s\S]*on_linux do/);
   assert.match(cask, /linux_root = "bilangplay-#\{version\}-linux-x64"/);
   assert.match(cask, /if_path_exists "#\{linux_root\}\/resources\/desktop\/bilang-play\.desktop" do/);
   assert.match(cask, /binary "#\{linux_root\}\/bilangplay"/);
