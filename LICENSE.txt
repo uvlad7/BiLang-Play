@@ -1,0 +1,17 @@
+BiLang Play
+Copyright (c) 2026 Uladzimir Ulyanitski (uvlad7). All rights reserved.
+
+BiLang Play is proprietary software. No right to use, copy, modify, or
+distribute it is granted except by a separate license from the copyright
+holder, such as the terms under which a copy is sold or shared.
+
+Third-party components included with BiLang Play are licensed under their
+own terms, given in licenses/THIRD-PARTY-NOTICES.txt and the other files in
+the licenses folder; nothing here limits the rights those licenses give.
+In particular, the FFmpeg libraries are licensed under the GNU Lesser
+General Public License, version 2.1 (licenses/FFmpeg-LGPL-2.1.txt): you may
+modify them for your own use, replace them with a modified version, and
+have BiLang Play use that version, and you may reverse engineer BiLang Play
+to the extent needed to debug such modifications. Their source, and the
+script that builds them, are published next to every download of BiLang
+Play.

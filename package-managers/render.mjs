@@ -146,7 +146,7 @@ end
     [
       "chocolatey/bilangplay.nuspec",
       `<?xml version="1.0"?>
-<package><metadata><id>bilangplay</id><version>${version}</version><title>BiLang Play</title><authors>Uladzimir Ulyanitski (uvlad7)</authors><projectUrl>https://github.com/${owner}/${repository}</projectUrl><license type="expression">Proprietary</license><requireLicenseAcceptance>false</requireLicenseAcceptance><summary>Local-first video player for language learners</summary><description>Installs BiLang Play's NSIS installer.</description><tags>video subtitles language-learning electron</tags></metadata><files><file src="tools\\**" target="tools" /></files></package>
+<package><metadata><id>bilangplay</id><version>${version}</version><title>BiLang Play</title><authors>Uladzimir Ulyanitski (uvlad7)</authors><projectUrl>https://github.com/${owner}/${repository}</projectUrl><licenseUrl>https://github.com/${owner}/${repository}/blob/main/LICENSE.txt</licenseUrl><requireLicenseAcceptance>false</requireLicenseAcceptance><summary>Local-first video player for language learners</summary><description>Installs BiLang Play's NSIS installer.</description><tags>video subtitles language-learning electron</tags></metadata><files><file src="tools\\**" target="tools" /></files></package>
 `,
     ],
     [

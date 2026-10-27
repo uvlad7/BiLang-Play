@@ -27,6 +27,7 @@ test("renders immutable, checksummed package-manager sources and local integrati
   assert.match(files.get("bucket/bilang-play.json"), /Unblock-File/);
   assert.match(chocolatey, /Get-ChocolateyWebFile/);
   assert.match(chocolatey, /Install-ChocolateyInstallPackage/);
+  assert.match(files.get("chocolatey/bilangplay.nuspec"), /<licenseUrl>https:\/\/github\.com\/uvlad7\/BiLang-Play\/blob\/main\/LICENSE\.txt<\/licenseUrl>/);
   assert.ok(
     chocolatey.indexOf("Get-ChocolateyWebFile") < chocolatey.indexOf("Unblock-File -LiteralPath $installer"),
   );
