@@ -10,7 +10,7 @@
       "description": "Installs BiLang Play's NSIS installer.",
       "summary": "Local-first video player for language learners",
       "projectUrl": "https://github.com/uvlad7/BiLang-Play",
-      "published": "2026-10-27T17:56:04.019Z",
+      "published": "2026-10-27T17:58:42.924Z",
       "listed": true,
       "registration": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/bilangplay/index.json",
       "versions": [
