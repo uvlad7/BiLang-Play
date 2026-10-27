@@ -21,11 +21,15 @@ cask "bilang-play" do
 
   on_linux do
     depends_on arch: :x86_64
-    preflight do
-      File.write(staged_path/"packaged-by", "brew\n")
-      desktop = staged_path/"resources/desktop/bilang-play.desktop"
-      desktop.write(desktop.read.sub("Exec=bilangplay", "Exec={{HOMEBREW_PREFIX}}/bin/bilangplay"))
-      (Pathname(Dir.home)/".local/share/applications").mkpath
+    container nested: "bilangplay-#{version}-linux-x64"
+    preflight_steps do
+      write_file "packaged-by", "brew\n", append_newline: false
+      if_path_exists "resources/desktop/bilang-play.desktop" do
+        inreplace "resources/desktop/bilang-play.desktop",
+                  "Exec=bilangplay",
+                  "Exec={{HOMEBREW_PREFIX}}/bin/bilangplay"
+      end
+      mkdir_p ".local/share/applications", base: :home
     end
     binary "bilangplay"
     artifact "resources/desktop/bilang-play.desktop",

@@ -14,10 +14,11 @@ test("renders immutable, checksummed package-manager sources and local integrati
 
   assert.match(contents, /releases\/download\/v1\.2\.3/);
   assert.match(contents, new RegExp("a".repeat(64)));
-  assert.match(cask, /File\.write\(staged_path\/"packaged-by", "brew/);
-  assert.match(cask, /preflight do/);
-  assert.doesNotMatch(cask, /preflight_steps do/);
-  assert.match(cask, /staged_path\/"resources\/desktop\/bilang-play\.desktop"/);
+  assert.match(cask, /write_file "packaged-by", "brew/);
+  assert.match(cask, /preflight_steps do/);
+  assert.match(cask, /container nested: "bilangplay-#\{version\}-linux-x64"/);
+  assert.match(cask, /if_path_exists "resources\/desktop\/bilang-play\.desktop" do/);
+  assert.match(cask, /inreplace "resources\/desktop\/bilang-play\.desktop"/);
   assert.match(cask, /hicolor_icons = %w\[/);
   assert.match(cask, /symbolic\/apps\/bilang-play-symbolic\.svg/);
   assert.match(cask, /hicolor_icons\.each do \|icon\|/);
