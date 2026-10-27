@@ -56,8 +56,15 @@ export function buildFeed(version, source, output) {
     resources: [
       { "@id": `${base}/flatcontainer/`, "@type": "PackageBaseAddress/3.0.0" },
       { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl" },
+      { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl/3.0.0-beta" },
+      { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl/3.0.0-rc" },
+      { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl/3.4.0" },
       { "@id": `${base}/registration/`, "@type": "RegistrationsBaseUrl/3.6.0" },
       { "@id": `${base}/search/query`, "@type": "SearchQueryService" },
+      // NuGet 6.4 (bundled by Chocolatey 2.7) resolves ListResource through
+      // these historical identifiers, not SearchQueryService/3.5.0.
+      { "@id": `${base}/search/query`, "@type": "SearchQueryService/3.0.0-beta" },
+      { "@id": `${base}/search/query`, "@type": "SearchQueryService/3.4.0" },
       { "@id": `${base}/search/query`, "@type": "SearchQueryService/3.5.0" },
     ],
   });

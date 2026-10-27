@@ -17,7 +17,9 @@ test("builds a static NuGet v3 package, registration, and search feed", () => {
     const serviceIndex = readFileSync(join(feed, "index.json"), "utf8");
     assert.match(serviceIndex, /PackageBaseAddress/);
     assert.match(serviceIndex, /"@type": "SearchQueryService"/);
+    assert.match(serviceIndex, /"@type": "SearchQueryService\/3\.0\.0-beta"/);
     assert.match(serviceIndex, /"@type": "RegistrationsBaseUrl"/);
+    assert.match(serviceIndex, /"@type": "RegistrationsBaseUrl\/3\.0\.0-rc"/);
     assert.match(readFileSync(join(feed, "flatcontainer", "bilangplay", "index.json"), "utf8"), /1.2.3/);
     assert.ok(readFileSync(join(feed, "flatcontainer", "bilangplay", "1.2.3", "bilangplay.1.2.3.nupkg")).length > 0);
     assert.match(readFileSync(join(feed, "registration", "bilangplay", "index.json"), "utf8"), /packageContent/);

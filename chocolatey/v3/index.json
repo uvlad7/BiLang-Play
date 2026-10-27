@@ -11,11 +11,31 @@
     },
     {
       "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/",
+      "@type": "RegistrationsBaseUrl/3.0.0-beta"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/",
+      "@type": "RegistrationsBaseUrl/3.0.0-rc"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/",
+      "@type": "RegistrationsBaseUrl/3.4.0"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/",
       "@type": "RegistrationsBaseUrl/3.6.0"
     },
     {
       "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/search/query",
       "@type": "SearchQueryService"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/search/query",
+      "@type": "SearchQueryService/3.0.0-beta"
+    },
+    {
+      "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/search/query",
+      "@type": "SearchQueryService/3.4.0"
     },
     {
       "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/search/query",
