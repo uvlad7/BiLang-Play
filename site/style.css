@@ -425,13 +425,18 @@ h3:first-child {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.55);
-  padding: 28px;
+  padding: 24px;
 }
 .build-request-dialog::backdrop {
   background: rgb(0 0 0 / 0.7);
 }
 .build-request-dialog p {
   color: var(--text-dim);
+}
+.build-request-dialog-copy {
+  width: calc(100% - 24px);
+  max-width: 360px;
+  margin-inline: auto;
 }
 .build-request-dialog-actions {
   display: grid;
