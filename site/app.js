@@ -366,13 +366,18 @@ function setupCopy() {
 }
 
 function setupBuildRequest() {
-  const request = document.querySelector("[data-build-request]");
   const dialog = document.querySelector("[data-build-request-dialog]");
-  request.addEventListener("click", (event) => {
-    if (!isMobileBrowser) return;
-    event.preventDefault();
-    dialog.showModal();
-  });
+  const continueLink = document.querySelector("[data-build-request-continue]");
+  for (const request of document.querySelectorAll(
+    ".build-request-actions [data-build-request], .build-request-actions [data-build-request-email]",
+  )) {
+    request.addEventListener("click", (event) => {
+      if (!isMobileBrowser) return;
+      event.preventDefault();
+      continueLink.href = request.href;
+      dialog.showModal();
+    });
+  }
 }
 
 // The changelog's own small Markdown: `## [version] - date` sections with
