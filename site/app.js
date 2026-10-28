@@ -481,11 +481,6 @@ function render() {
   for (const link of document.querySelectorAll("[data-build-request-email]")) {
     link.href = buildRequestEmailUrl();
   }
-  for (const link of document.querySelectorAll("[data-tooltip-en]")) {
-    const tooltip = link.dataset[`tooltip${lang() === "ru" ? "Ru" : "En"}`];
-    link.title = tooltip;
-    link.setAttribute("aria-label", tooltip);
-  }
 }
 
 for (const b of document.querySelectorAll("[data-set-lang]")) {

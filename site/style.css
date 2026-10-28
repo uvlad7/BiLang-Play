@@ -374,49 +374,37 @@ h3:first-child {
   font-size: 0.9rem;
 }
 .build-request {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 6px 12px;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 20px;
   margin-top: 20px;
-  padding: 16px 0 0;
-  border-top: 1px solid var(--border);
+  border-color: var(--border);
+  background: rgb(255 255 255 / 0.035);
+  box-shadow: none;
 }
 .build-request p {
   margin: 0;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 700;
+  color: var(--text-dim);
 }
 .build-request-actions {
   display: flex;
   gap: 10px;
-  margin-left: auto;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-items: center;
 }
-.build-request-icon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: var(--radius);
-  color: var(--text);
-  background: rgb(255 255 255 / 0.06);
+.build-request-actions .button {
+  justify-content: center;
 }
-.build-request-icon:hover {
-  background: rgb(255 255 255 / 0.1);
-  text-decoration: none;
-}
-.build-request-icon.main {
-  color: var(--accent-ink);
-  border-color: transparent;
-  background: linear-gradient(180deg, #4aaeff, var(--accent));
-}
-.build-request-icon svg {
-  width: 20px;
-  height: 20px;
+.build-request-actions svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
   fill: currentColor;
+}
+.build-request-actions [stroke] {
+  fill: none;
 }
 .build-request-dialog {
   width: min(480px, calc(100% - 32px));
@@ -800,11 +788,12 @@ pre .copy:hover {
     grid-template-columns: 1fr;
   }
   .build-request {
-    align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   .build-request-actions {
-    margin-left: 0;
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 10px;
   }
   .setup-card {
     grid-template-columns: repeat(2, 1fr);
