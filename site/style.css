@@ -393,7 +393,7 @@ h3:first-child {
 }
 .build-request-actions .button {
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr);
   align-items: center;
   padding-inline: 14px;
   min-width: 0;
@@ -413,6 +413,7 @@ h3:first-child {
 .build-request-actions .button span {
   grid-column: 2;
   justify-self: center;
+  text-align: left;
 }
 .build-request-actions [stroke] {
   fill: none;
@@ -424,7 +425,7 @@ h3:first-child {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.55);
-  padding: 24px;
+  padding: 28px;
 }
 .build-request-dialog::backdrop {
   background: rgb(0 0 0 / 0.7);
