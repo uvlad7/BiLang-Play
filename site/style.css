@@ -375,9 +375,6 @@ h3:first-child {
 }
 .build-request {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2px 20px;
   margin-top: 20px;
   border-color: var(--border);
   background: rgb(255 255 255 / 0.035);
@@ -392,23 +389,30 @@ h3:first-child {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   width: 420px;
   gap: 10px;
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-items: center;
+  margin-top: 14px;
 }
 .build-request-actions .button {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  padding-inline: 14px;
   min-width: 0;
   height: 50px;
-  justify-content: center;
   white-space: nowrap;
   font-size: 0.95rem;
   font-weight: 550;
 }
 .build-request-actions svg {
+  grid-column: 1;
+  justify-self: center;
   width: 18px;
   height: 18px;
   flex: none;
   fill: currentColor;
+}
+.build-request-actions .button span {
+  grid-column: 2;
+  justify-self: center;
 }
 .build-request-actions [stroke] {
   fill: none;
@@ -800,12 +804,7 @@ pre .copy:hover {
   .downloads {
     grid-template-columns: 1fr;
   }
-  .build-request {
-    grid-template-columns: 1fr;
-  }
   .build-request-actions {
-    grid-column: 1;
-    grid-row: auto;
     grid-template-columns: 1fr;
     width: 100%;
     margin-top: 10px;
