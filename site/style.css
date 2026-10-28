@@ -388,15 +388,19 @@ h3:first-child {
   color: var(--text-dim);
 }
 .build-request-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 420px;
   gap: 10px;
   grid-column: 2;
   grid-row: 1 / span 2;
   align-items: center;
 }
 .build-request-actions .button {
-  flex: 1 1 0;
+  min-width: 0;
+  height: 50px;
   justify-content: center;
+  white-space: nowrap;
   font-size: 0.95rem;
   font-weight: 550;
 }
@@ -425,23 +429,19 @@ h3:first-child {
   color: var(--text-dim);
 }
 .build-request-dialog-actions {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 24px;
 }
 .build-request-dialog-actions form {
-  flex: 1 1 0;
-  min-width: 0;
   margin: 0;
 }
 .build-request-dialog-actions .button,
 .dialog-cancel {
   width: 100%;
-}
-.build-request-dialog-actions > .button {
-  flex: 1 1 0;
-  min-width: 0;
+  height: 48px;
+  justify-content: center;
 }
 .dialog-cancel {
   border: 1px solid rgb(255 255 255 / 0.1);
@@ -806,11 +806,9 @@ pre .copy:hover {
   .build-request-actions {
     grid-column: 1;
     grid-row: auto;
-    flex-direction: column;
-    margin-top: 10px;
-  }
-  .build-request-actions .button {
+    grid-template-columns: 1fr;
     width: 100%;
+    margin-top: 10px;
   }
   .setup-card {
     grid-template-columns: repeat(2, 1fr);
