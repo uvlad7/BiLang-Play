@@ -4,6 +4,8 @@
 
 const REPO = "uvlad7/BiLang-Play";
 const RELEASES = `https://github.com/${REPO}/releases`;
+const NEW_BUILD_REQUEST = `https://github.com/${REPO}/issues/new`;
+const BUILD_REQUEST_EMAIL = "uvlad7@gmail.com";
 
 const TEXT = {
   en: {
@@ -68,6 +70,10 @@ const root = document.documentElement;
 const lang = () => (root.dataset.lang === "ru" ? "ru" : "en");
 const t = () => TEXT[lang()];
 const system = detectSystem();
+const isMobileBrowser =
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  navigator.userAgentData?.mobile === true ||
+  window.matchMedia("(pointer: coarse)").matches;
 const siteData = window.BILANGPLAY_SITE_DATA;
 const release = siteData?.release ?? null;
 
@@ -81,6 +87,36 @@ function detectSystem() {
   if (/mac/.test(platform) || /Mac OS X/.test(ua)) return "macos";
   if (/linux|x11/.test(platform) || /Linux|X11/.test(ua)) return "linux";
   return null;
+}
+
+function buildRequestUrl() {
+  const params = new URLSearchParams({ template: "build-request.yml" });
+  const detected = system ? t().systems[system] : "Unknown";
+  params.set("title", `[Build request]: ${detected}`);
+  params.set("system", `Browser reports: ${detected}`);
+  params.set("browser-details", navigator.userAgent);
+  const languages = navigator.languages?.join(", ") || navigator.language;
+  if (languages) params.set("browser-language", languages);
+  return `${NEW_BUILD_REQUEST}?${params}`;
+}
+
+function buildRequestEmailUrl() {
+  const detected = system ? t().systems[system] : "Unknown";
+  const languages = navigator.languages?.join(", ") || navigator.language || "Unknown";
+  const body = [
+    "Hello,",
+    "",
+    "I would like to request a BiLang Play build for another system.",
+    "",
+    `System: Browser reports: ${detected}`,
+    "Processor architecture:",
+    "How I would install and use it:",
+    "",
+    `Browser details: ${navigator.userAgent}`,
+    `Browser language: ${languages}`,
+  ].join("\n");
+  const params = new URLSearchParams({ subject: `Build request: ${detected}`, body });
+  return `mailto:${BUILD_REQUEST_EMAIL}?${params}`;
 }
 
 function escapeHtml(text) {
@@ -329,6 +365,16 @@ function setupCopy() {
   }
 }
 
+function setupBuildRequest() {
+  const request = document.querySelector("[data-build-request]");
+  const dialog = document.querySelector("[data-build-request-dialog]");
+  request.addEventListener("click", (event) => {
+    if (!isMobileBrowser) return;
+    event.preventDefault();
+    dialog.showModal();
+  });
+}
+
 // The changelog's own small Markdown: `## [version] - date` sections with
 // `###` headings, `-` lists (continued by indented lines), paragraphs, and
 // inline code, bold, and links.
@@ -424,6 +470,12 @@ function render() {
   for (const copy of document.querySelectorAll("pre .copy")) copy.textContent = t().copy;
   renderDownloads();
   renderChangelog();
+  for (const link of document.querySelectorAll("[data-build-request], [data-build-request-continue]")) {
+    link.href = buildRequestUrl();
+  }
+  for (const link of document.querySelectorAll("[data-build-request-email]")) {
+    link.href = buildRequestEmailUrl();
+  }
 }
 
 for (const b of document.querySelectorAll("[data-set-lang]")) {
@@ -432,4 +484,5 @@ for (const b of document.querySelectorAll("[data-set-lang]")) {
 setupTabs();
 setupGallery();
 setupCopy();
+setupBuildRequest();
 render();

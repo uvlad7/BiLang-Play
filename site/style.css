@@ -373,6 +373,64 @@ h3:first-child {
   color: var(--text-faint);
   font-size: 0.9rem;
 }
+.build-request {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border);
+}
+.build-request p {
+  margin: 0;
+  color: var(--text-dim);
+}
+.build-request-link {
+  flex: none;
+  white-space: nowrap;
+}
+.build-request-account {
+  flex-basis: 100%;
+  font-size: 0.9rem;
+}
+.build-request-dialog {
+  width: min(480px, calc(100% - 32px));
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.55);
+  padding: 24px;
+}
+.build-request-dialog::backdrop {
+  background: rgb(0 0 0 / 0.7);
+}
+.build-request-dialog p {
+  color: var(--text-dim);
+}
+.build-request-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+.build-request-dialog-actions form {
+  margin: 0;
+}
+.dialog-cancel {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.06);
+  color: var(--text);
+  cursor: pointer;
+  font: 600 1rem var(--font);
+  padding: 12px 16px;
+}
+.dialog-cancel:hover {
+  background: rgb(255 255 255 / 0.1);
+}
 
 /* Tabs */
 .tab-list {
@@ -717,6 +775,19 @@ pre .copy:hover {
   }
   .downloads {
     grid-template-columns: 1fr;
+  }
+  .build-request {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .build-request-dialog-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+  .build-request-dialog-actions .button,
+  .build-request-dialog-actions form,
+  .dialog-cancel {
+    width: 100%;
   }
   .setup-card {
     grid-template-columns: repeat(2, 1fr);

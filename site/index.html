@@ -403,6 +403,25 @@
           >
           <span data-source-links></span>
         </p>
+        <aside class="build-request" aria-label="Request another build">
+          <p lang="en">Don’t see your system?</p>
+          <p lang="ru">Не видите своей системы?</p>
+          <a
+            class="button build-request-link"
+            data-build-request
+            href="https://github.com/uvlad7/BiLang-Play/issues/new?template=build-request.yml"
+          >
+            <span lang="en">Request a build</span><span lang="ru">Запросить сборку</span>
+          </a>
+          <p class="build-request-account" lang="en">
+            You need a GitHub account to send a request. <a href="https://github.com/signup">Create one</a>, or
+            <a data-build-request-email href="mailto:uvlad7@gmail.com">send an email instead</a>.
+          </p>
+          <p class="build-request-account" lang="ru">
+            Чтобы отправить запрос, нужен аккаунт GitHub. <a href="https://github.com/signup">Создать аккаунт</a>
+            или <a data-build-request-email href="mailto:uvlad7@gmail.com">отправить письмо</a>.
+          </p>
+        </aside>
       </section>
 
       <section class="wrap section" id="install">
@@ -816,6 +835,37 @@ rm -rf squashfs-root</code></pre>
         </div>
       </section>
     </main>
+
+    <dialog class="build-request-dialog" data-build-request-dialog>
+      <h2 lang="en">BiLang Play is for desktop computers</h2>
+      <h2 lang="ru">BiLang Play предназначен для настольных компьютеров</h2>
+      <p lang="en">
+        BiLang Play does not support mobile devices. You can still request a build for another
+        system if that is what you need.
+      </p>
+      <p lang="ru">
+        BiLang Play не поддерживает мобильные устройства. Но вы всё равно можете запросить сборку
+        для другой системы, если она вам нужна.
+      </p>
+      <div class="build-request-dialog-actions">
+        <form method="dialog">
+          <button type="submit" class="dialog-cancel">
+            <span lang="en">Go back</span><span lang="ru">Назад</span>
+          </button>
+        </form>
+        <a class="button" data-build-request-email href="mailto:uvlad7@gmail.com">
+          <span lang="en">Email instead</span><span lang="ru">Написать письмо</span>
+        </a>
+        <a
+          class="button main"
+          data-build-request-continue
+          href="https://github.com/uvlad7/BiLang-Play/issues/new?template=build-request.yml"
+        >
+          <span lang="en">Create an issue anyway</span>
+          <span lang="ru">Всё равно создать issue</span>
+        </a>
+      </div>
+    </dialog>
 
     <footer class="wrap footer">
       <p lang="en">

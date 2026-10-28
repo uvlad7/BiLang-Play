@@ -1,0 +1,43 @@
+name: Request a build
+description: Request BiLang Play for a system that is not currently offered.
+title: "[Build request]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in BiLang Play. Tell us what you need so we can assess the request.
+  - type: textarea
+    id: system
+    attributes:
+      label: System
+      description: Include the operating-system name and version. The website may have filled in its best guess; please correct it if needed.
+      placeholder: "Example: FreeBSD 14.2"
+    validations:
+      required: true
+  - type: input
+    id: architecture
+    attributes:
+      label: Processor architecture
+      description: For example, x86-64, arm64, or something else.
+      placeholder: x86-64
+    validations:
+      required: true
+  - type: textarea
+    id: build-need
+    attributes:
+      label: What build do you need?
+      description: Describe how you would install and use it, including any packaging format you expect.
+      placeholder: I would install it from…
+    validations:
+      required: true
+  - type: textarea
+    id: browser-details
+    attributes:
+      label: Browser details
+      description: Filled in from your browser so we can check the system guess. Remove anything you do not want to share.
+      render: text
+  - type: input
+    id: browser-language
+    attributes:
+      label: Browser language
+      description: Optional; filled in from your browser when available.
