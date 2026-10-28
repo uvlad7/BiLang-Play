@@ -395,7 +395,10 @@ h3:first-child {
   align-items: center;
 }
 .build-request-actions .button {
+  flex: 1 1 0;
   justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 550;
 }
 .build-request-actions svg {
   width: 18px;
@@ -428,7 +431,17 @@ h3:first-child {
   margin-top: 24px;
 }
 .build-request-dialog-actions form {
-  margin: 0 auto 0 0;
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+}
+.build-request-dialog-actions .button,
+.dialog-cancel {
+  width: 100%;
+}
+.build-request-dialog-actions > .button {
+  flex: 1 1 0;
+  min-width: 0;
 }
 .dialog-cancel {
   border: 1px solid rgb(255 255 255 / 0.1);
@@ -793,7 +806,11 @@ pre .copy:hover {
   .build-request-actions {
     grid-column: 1;
     grid-row: auto;
+    flex-direction: column;
     margin-top: 10px;
+  }
+  .build-request-actions .button {
+    width: 100%;
   }
   .setup-card {
     grid-template-columns: repeat(2, 1fr);
