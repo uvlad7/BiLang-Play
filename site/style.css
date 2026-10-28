@@ -378,22 +378,45 @@ h3:first-child {
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 16px;
+  gap: 6px 12px;
   margin-top: 20px;
   padding: 16px 0 0;
   border-top: 1px solid var(--border);
 }
 .build-request p {
   margin: 0;
-  color: var(--text-dim);
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
-.build-request-link {
-  flex: none;
-  white-space: nowrap;
+.build-request-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
 }
-.build-request-account {
-  flex-basis: 100%;
-  font-size: 0.9rem;
+.build-request-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: rgb(255 255 255 / 0.06);
+}
+.build-request-icon:hover {
+  background: rgb(255 255 255 / 0.1);
+  text-decoration: none;
+}
+.build-request-icon.main {
+  color: var(--accent-ink);
+  border-color: transparent;
+  background: linear-gradient(180deg, #4aaeff, var(--accent));
+}
+.build-request-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 .build-request-dialog {
   width: min(480px, calc(100% - 32px));
@@ -412,12 +435,12 @@ h3:first-child {
 }
 .build-request-dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   gap: 12px;
   margin-top: 24px;
 }
 .build-request-dialog-actions form {
-  margin: 0;
+  margin: 0 auto 0 0;
 }
 .dialog-cancel {
   border: 1px solid rgb(255 255 255 / 0.1);
@@ -780,14 +803,8 @@ pre .copy:hover {
     align-items: flex-start;
     flex-direction: column;
   }
-  .build-request-dialog-actions {
-    align-items: stretch;
-    flex-direction: column-reverse;
-  }
-  .build-request-dialog-actions .button,
-  .build-request-dialog-actions form,
-  .dialog-cancel {
-    width: 100%;
+  .build-request-actions {
+    margin-left: 0;
   }
   .setup-card {
     grid-template-columns: repeat(2, 1fr);
