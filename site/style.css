@@ -375,9 +375,6 @@ h3:first-child {
 }
 .build-request {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: max-content auto;
-  column-gap: 20px;
   margin-top: 20px;
   border-color: var(--border);
   background: rgb(255 255 255 / 0.035);
@@ -390,12 +387,9 @@ h3:first-child {
 .build-request-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: 420px;
+  width: 380px;
   gap: 10px;
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
-  margin-top: 0;
+  margin: 14px 0 0 20px;
 }
 .build-request-actions .button {
   display: flex;
@@ -814,14 +808,9 @@ pre .copy:hover {
     grid-template-columns: 1fr;
   }
   .build-request-actions {
-    grid-column: auto;
-    grid-row: auto;
     grid-template-columns: 1fr;
     width: 100%;
-    margin-top: 10px;
-  }
-  .build-request {
-    display: block;
+    margin: 10px 0 0;
   }
   .setup-card {
     grid-template-columns: repeat(2, 1fr);
