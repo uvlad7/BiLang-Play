@@ -1,9 +1,9 @@
 cask "bilang-play" do
-  version "0.1.0-alpha.2"
-  archive = on_system_conditional macos: "bilangplay-0.1.0-alpha.2-macos-arm64.zip", linux: "bilangplay-0.1.0-alpha.2-linux-x64.tar.gz"
-  sha256 arm: "930091bf3212737ac54b39095f4e26cd59d61d53bcf55cc3321793ef2c3d6150", x86_64_linux: "3262acd1ca61adca6d3bc6605b5bb465597c08c028226b096daf7da4b635aea3"
+  version "0.1.0-alpha.3"
+  archive = on_system_conditional macos: "bilangplay-0.1.0-alpha.3-macos-arm64.zip", linux: "bilangplay-0.1.0-alpha.3-linux-x64.tar.gz"
+  sha256 arm: "e69c948d745f03647b652765f31109e700fdc65ebac3b75e519d3611b716e357", x86_64_linux: "556262248b4a6452ebd42c7049a7db9121c7b35f2f3d0868b6c781cfdbade1cf"
 
-  url "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/#{archive}"
+  url "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/#{archive}"
   name "BiLang Play"
   desc "Local-first video player for language learners"
   homepage "https://github.com/uvlad7/BiLang-Play"

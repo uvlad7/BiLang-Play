@@ -1,12 +1,12 @@
 {
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Local-first video player for language learners",
   "homepage": "https://github.com/uvlad7/BiLang-Play",
   "license": "Proprietary",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-windows-x64.zip",
-      "hash": "0f5397e3756a2cf5b0af448133041736a5bc9f15e1596e7cdea8aef1b423ec30"
+      "url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-windows-x64.zip",
+      "hash": "a4a381072555ca0c6fac334bbda9eefe002b5c29833d525f652f9614b0650fe2"
     }
   },
   "bin": "BiLang Play.exe",
