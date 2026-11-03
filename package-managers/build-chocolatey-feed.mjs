@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // Build a small static NuGet v3 feed for the generated Chocolatey package.
-import { createHash } from "node:crypto";
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
@@ -37,7 +36,6 @@ export function buildFeed(version, source, output) {
   rmSync(stage, { recursive: true, force: true });
 
   const packageUrl = `${flat}/${filename}`;
-  const packageDigest = createHash("sha512").update(readFileSync(packagePath)).digest("base64");
   const catalogEntry = {
     "@id": `${registration}/${lowerVersion}.json#catalogEntry`,
     "@type": "PackageDetails",
@@ -69,7 +67,6 @@ export function buildFeed(version, source, output) {
     ],
   });
   json(join(v3, "flatcontainer", packageId, "index.json"), { versions: [lowerVersion] });
-  writeFileSync(`${packagePath}.sha512`, packageDigest);
   json(join(v3, "registration", packageId, "index.json"), {
     count: 1,
     items: [{
