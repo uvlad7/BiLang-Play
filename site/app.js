@@ -18,15 +18,6 @@ const TEXT = {
     preRelease: "pre-release",
     copy: "Copy",
     copied: "Copied",
-    kinds: {
-      "windows-setup": "NSIS installer (.exe)",
-      "windows-zip": "Portable app (.zip)",
-      "macos-dmg": "Disk image (.dmg)",
-      "macos-zip": "App (.app in .zip)",
-      appimage: "App image (.AppImage)",
-      deb: "Debian/Ubuntu package (.deb)",
-      "linux-tar": "Portable app (.tar.gz)",
-    },
     onGitHub: "Release on GitHub",
     locale: "en-GB",
   },
@@ -40,15 +31,6 @@ const TEXT = {
     preRelease: "предварительная",
     copy: "Копировать",
     copied: "Скопировано",
-    kinds: {
-      "windows-setup": "Установщик NSIS (.exe)",
-      "windows-zip": "Портативное приложение (.zip)",
-      "macos-dmg": "Образ диска (.dmg)",
-      "macos-zip": "Приложение (.app в .zip)",
-      appimage: "Образ приложения (.AppImage)",
-      deb: "Пакет Debian/Ubuntu (.deb)",
-      "linux-tar": "Портативное приложение (.tar.gz)",
-    },
     onGitHub: "Релиз на GitHub",
     locale: "ru-RU",
   },
@@ -137,11 +119,13 @@ function filesOf(os) {
     .filter((entry) => entry.file);
 }
 
-function button({ kind, file }, main) {
+function button({ file }, main) {
   const link = document.createElement("a");
   link.className = main ? "button main" : "button";
   link.href = file.url;
-  link.innerHTML = `<span>${escapeHtml(t().kinds[kind.id])}</span><small>${megabytes(file.size)}</small>`;
+  // The file's title as the update file gives it, in the shown language.
+  const title = file.title[lang()] ?? file.title.en;
+  link.innerHTML = `<span>${escapeHtml(title)}</span><small>${megabytes(file.size)}</small>`;
   return link;
 }
 

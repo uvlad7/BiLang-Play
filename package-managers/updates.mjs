@@ -20,15 +20,41 @@ export const SCHEMA = "bilangplay.updates/1";
 const SITE = "https://uvlad7.github.io/BiLang-Play";
 const DOWNLOADS = "https://github.com/uvlad7/BiLang-Play/releases/download";
 
-/** The release's packages, by kind; every one must be there. */
+/**
+ * The release's packages, by kind (every one must be there): each file's
+ * name, and its title, which the site's download buttons and the app's
+ * update notice show.
+ * @type {Record<string, { name: (version: string) => string, title: { en: string, ru: string } }>}
+ */
 export const FILES = {
-  "windows-setup": (v) => `bilangplay-${v}-windows-x64-setup.exe`,
-  "windows-zip": (v) => `bilangplay-${v}-windows-x64.zip`,
-  "macos-dmg": (v) => `bilangplay-${v}-macos-arm64.dmg`,
-  "macos-zip": (v) => `bilangplay-${v}-macos-arm64.zip`,
-  appimage: (v) => `bilangplay-${v}-linux-x86_64.AppImage`,
-  deb: (v) => `bilangplay-${v}-linux-amd64.deb`,
-  "linux-tar": (v) => `bilangplay-${v}-linux-x64.tar.gz`,
+  "windows-setup": {
+    name: (v) => `bilangplay-${v}-windows-x64-setup.exe`,
+    title: { en: "NSIS installer (.exe)", ru: "Установщик NSIS (.exe)" },
+  },
+  "windows-zip": {
+    name: (v) => `bilangplay-${v}-windows-x64.zip`,
+    title: { en: "Portable app (.zip)", ru: "Портативное приложение (.zip)" },
+  },
+  "macos-dmg": {
+    name: (v) => `bilangplay-${v}-macos-arm64.dmg`,
+    title: { en: "Disk image (.dmg)", ru: "Образ диска (.dmg)" },
+  },
+  "macos-zip": {
+    name: (v) => `bilangplay-${v}-macos-arm64.zip`,
+    title: { en: "App (.app in .zip)", ru: "Приложение (.app в .zip)" },
+  },
+  appimage: {
+    name: (v) => `bilangplay-${v}-linux-x86_64.AppImage`,
+    title: { en: "App image (.AppImage)", ru: "Образ приложения (.AppImage)" },
+  },
+  deb: {
+    name: (v) => `bilangplay-${v}-linux-amd64.deb`,
+    title: { en: "Debian/Ubuntu package (.deb)", ru: "Пакет Debian/Ubuntu (.deb)" },
+  },
+  "linux-tar": {
+    name: (v) => `bilangplay-${v}-linux-x64.tar.gz`,
+    title: { en: "Portable app (.tar.gz)", ru: "Портативное приложение (.tar.gz)" },
+  },
 };
 
 /** The bundled libraries' sources and their build script (LGPL). */
@@ -76,10 +102,10 @@ export function renderUpdates(release) {
     return { name: asset.name, url: asset.browser_download_url, size: asset.size };
   };
   const files = Object.fromEntries(
-    Object.entries(FILES).map(([kind, name]) => {
+    Object.entries(FILES).map(([kind, { name, title }]) => {
       const asset = release.assets.find((a) => a.name === name(version));
       if (!asset) throw new Error(`the release has no ${name(version)}`);
-      return [kind, file(asset)];
+      return [kind, { ...file(asset), title }];
     }),
   );
   const fill = (text) =>
@@ -102,7 +128,14 @@ export function renderUpdates(release) {
     Object.entries(CHANNELS).map(([name, channel]) => [
       name,
       {
-        ...(channel.download ? { downloads: channel.download.map((kind) => files[kind].url) } : {}),
+        ...(channel.download
+          ? {
+              downloads: channel.download.map((kind) => ({
+                url: files[kind].url,
+                title: files[kind].title,
+              })),
+            }
+          : {}),
         ...(channel.warning ? { warning: filled(channel.warning) } : {}),
         ...(channel.update ? { update: filled(channel.update) } : {}),
       },

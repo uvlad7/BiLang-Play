@@ -13,7 +13,7 @@ const script = fileURLToPath(new URL("./updates.mjs", import.meta.url));
 /** A release as the GitHub API returns it, with every package. */
 function release(version, extra = []) {
   const names = [
-    ...Object.values(FILES).map((name) => name(version)),
+    ...Object.values(FILES).map(({ name }) => name(version)),
     `bilangplay-${version}-windows-x64-setup.exe.blockmap`,
     "latest.yml",
     "ffmpeg-9.0.2.tar.xz",
@@ -69,6 +69,7 @@ test("names the version, its files, its sources, and every channel's commands", 
     name: "bilangplay-0.1.0-beta.1-linux-amd64.deb",
     url: `${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`,
     size: 1005,
+    title: { en: "Debian/Ubuntu package (.deb)", ru: "Пакет Debian/Ubuntu (.deb)" },
   });
   assert.deepEqual(
     updates.sources.map((s) => s.name),
@@ -85,7 +86,9 @@ test("names the version, its files, its sources, and every channel's commands", 
       ["brew update", "brew upgrade --cask uvlad7/bilang-play/bilang-play"],
     ],
   );
-  assert.deepEqual(updates.channels.deb.downloads, [`${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`]);
+  assert.deepEqual(updates.channels.deb.downloads, [
+    { url: `${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`, title: updates.files.deb.title },
+  ]);
   assert.deepEqual(updates.channels.deb.update[0].commands, [
     `wget -O /tmp/bilangplay.deb ${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`,
     "sudo apt install /tmp/bilangplay.deb",
@@ -98,11 +101,17 @@ test("names the version, its files, its sources, and every channel's commands", 
   assert.equal(updates.channels["brew-linux"].warning, undefined);
   // The site shows a channel's warning with its install steps.
   assert.deepEqual(updates.install.windows[1].warning, updates.channels.scoop.warning);
-  assert.deepEqual(updates.channels.nsis.downloads, [`${base}/bilangplay-0.1.0-beta.1-windows-x64-setup.exe`]);
-  assert.deepEqual(updates.channels.macos.downloads, [
-    `${base}/bilangplay-0.1.0-beta.1-macos-arm64.dmg`,
-    `${base}/bilangplay-0.1.0-beta.1-macos-arm64.zip`,
-  ]);
+  assert.deepEqual(
+    updates.channels.nsis.downloads.map((file) => file.url),
+    [`${base}/bilangplay-0.1.0-beta.1-windows-x64-setup.exe`],
+  );
+  assert.deepEqual(
+    updates.channels.macos.downloads.map((file) => [file.url, file.title.en]),
+    [
+      [`${base}/bilangplay-0.1.0-beta.1-macos-arm64.dmg`, "Disk image (.dmg)"],
+      [`${base}/bilangplay-0.1.0-beta.1-macos-arm64.zip`, "App (.app in .zip)"],
+    ],
+  );
   const text = JSON.stringify(updates);
   assert.doesNotMatch(text, /\{(version|name:|url:)/);
 });
