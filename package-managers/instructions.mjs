@@ -65,42 +65,49 @@ const BREW_TIP = {
 };
 
 /**
+ * Homebrew's update steps. `brew upgrade` fetches the tap first only when
+ * Homebrew's auto-update is on and due, so the tap is always fetched here.
+ * @param {{ en: string, ru: string }} [warning]
+ */
+function brewUpdate(warning) {
+  const upgrade = "brew upgrade --cask uvlad7/bilang-play/bilang-play";
+  return [
+    {
+      text: t(
+        "Fetch only this tap, then upgrade BiLang Play:",
+        "Получите только этот tap, затем обновите BiLang Play:",
+      ),
+      ...(warning ? { warning } : {}),
+      commands: ['git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only', upgrade],
+    },
+    {
+      text: t(
+        "Or fetch the newest Homebrew and every tap's package lists (nothing installed is upgraded), then upgrade BiLang Play:",
+        "Или получите свежий Homebrew и списки пакетов всех tap'ов (установленное при этом не обновляется), затем обновите BiLang Play:",
+      ),
+      ...(warning ? { warning } : {}),
+      commands: ["brew update", upgrade],
+    },
+  ];
+}
+
+/**
  * Each way of installing the app, as its update notice tells it: the new
  * version's `download` (a kind of `FILES`), and the `update` steps; a step
  * that is another way of doing the same says so, "Or …".
  */
 export const CHANNELS = {
-  // `brew upgrade` fetches the tap first only when Homebrew's auto-update
-  // is on and due, so the tap is always fetched here.
-  brew: {
-    update: [
-      {
-        text: t(
-          "Fetch only this tap, then upgrade BiLang Play:",
-          "Получите только этот tap, затем обновите BiLang Play:",
-        ),
-        warning: t(
-          "On macOS, Homebrew warns before it clears the quarantine mark from the new app.",
-          "В macOS Homebrew предупредит, прежде чем снять карантин с нового приложения.",
-        ),
-        commands: [
-          'git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only',
-          "brew upgrade --cask uvlad7/bilang-play/bilang-play",
-        ],
-      },
-      {
-        text: t(
-          "Or fetch the newest Homebrew and every tap's package lists (nothing installed is upgraded), then upgrade BiLang Play:",
-          "Или получите свежий Homebrew и списки пакетов всех tap'ов (установленное при этом не обновляется), затем обновите BiLang Play:",
-        ),
-        warning: t(
-          "On macOS, Homebrew warns before it clears the quarantine mark from the new app.",
-          "В macOS Homebrew предупредит, прежде чем снять карантин с нового приложения.",
-        ),
-        commands: ["brew update", "brew upgrade --cask uvlad7/bilang-play/bilang-play"],
-      },
-    ],
+  // Homebrew on macOS and on Linux: the same commands; on macOS the cask
+  // clears quarantine, and says so.
+  "brew-macos": {
+    update: brewUpdate(
+      t(
+        "Homebrew warns before it clears the quarantine mark from the new app.",
+        "Homebrew предупредит, прежде чем снять карантин с нового приложения.",
+      ),
+    ),
   },
+  "brew-linux": { update: brewUpdate() },
   // `scoop update <app>` syncs the buckets only when Scoop itself is old.
   scoop: {
     update: [
@@ -251,7 +258,7 @@ export const INSTALL = {
       commands: BREW_INSTALL,
     },
     TO_UPDATE,
-    { updates: "brew" },
+    { updates: "brew-macos" },
     BREW_TIP,
     {
       title: t("Disk image (.dmg)", "Образ диска (.dmg)"),
@@ -299,7 +306,7 @@ export const INSTALL = {
       commands: BREW_INSTALL,
     },
     TO_UPDATE,
-    { updates: "brew" },
+    { updates: "brew-linux" },
     BREW_TIP,
     {
       title: t("App image (.AppImage)", "Образ приложения (.AppImage)"),
