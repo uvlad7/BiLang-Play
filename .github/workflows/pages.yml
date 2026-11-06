@@ -1,11 +1,12 @@
 name: Pages
 
 # The site is rebuilt on every public-repository commit or on request for
-# testing. Publishing a release also renders its package-manager source and
-# deploys that exact tree in this one workflow. The bot's source commit uses
-# GITHUB_TOKEN and deliberately does not trigger a recursive Pages workflow.
-# The site embeds the newest published release and changelogs so visitors do
-# not need browser-side GitHub API requests.
+# testing. Publishing a release also renders its package-manager sources and
+# the update file (site/updates/main.json) and deploys that exact tree in
+# this one workflow. The bot's source commit uses GITHUB_TOKEN and
+# deliberately does not trigger a recursive Pages workflow. The site embeds
+# the update file and the changelogs, so visitors make no GitHub API
+# requests, and the app reads the same file for its update notice.
 on:
   push:
     branches: [main]
@@ -34,7 +35,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: main
-      - run: node --test package-managers/*.test.mjs
+      - run: node --test package-managers/*.test.mjs scripts/*.test.mjs
       - if: github.event_name == 'release' && !github.event.release.draft
         name: Download the exact published install artifacts
         env:
@@ -54,6 +55,7 @@ jobs:
       - if: github.event_name == 'release' && !github.event.release.draft
         name: Render and commit sources verified against those assets
         env:
+          GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
         run: |
           version="${TAG#v}"
@@ -64,16 +66,18 @@ jobs:
           cp generated/chocolatey/bilangplay.nuspec chocolatey/
           cp generated/chocolatey/tools/chocolateyinstall.ps1 chocolatey/tools/
           node package-managers/build-chocolatey-feed.mjs "$version" chocolatey chocolatey
+          # In the same commit as the sources, so the update notice never
+          # offers a version a package manager cannot install yet.
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" > release.json
+          node package-managers/updates.mjs release.json site/updates/main.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Casks bucket chocolatey
+          git add Casks bucket chocolatey site/updates
           if ! git diff --cached --quiet; then
             git commit -m "package-manager sources for ${version}"
             git push origin HEAD:main
           fi
-      - env:
-          GH_TOKEN: ${{ github.token }}
-        run: node scripts/build-site.mjs _site
+      - run: node scripts/build-site.mjs _site
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:

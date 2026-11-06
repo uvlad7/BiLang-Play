@@ -937,3 +937,8 @@ pre .copy:hover {
     font-size: 1.5rem;
   }
 }
+
+/* A warning the update file gives with a channel's update step. */
+.steps .warning {
+  color: #f4bd57;
+}

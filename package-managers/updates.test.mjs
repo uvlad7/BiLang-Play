@@ -1,0 +1,141 @@
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+import { CHANNELS, FILES, SCHEMA, compareVersions, renderUpdates } from "./updates.mjs";
+
+const script = fileURLToPath(new URL("./updates.mjs", import.meta.url));
+
+/** A release as the GitHub API returns it, with every package. */
+function release(version, extra = []) {
+  const names = [
+    ...Object.values(FILES).map((name) => name(version)),
+    `bilangplay-${version}-windows-x64-setup.exe.blockmap`,
+    "latest.yml",
+    "ffmpeg-9.0.2.tar.xz",
+    "opus-1.6.1.tar.gz",
+    "build-ffmpeg.mjs",
+    ...extra,
+  ];
+  return {
+    tag_name: `v${version}`,
+    published_at: "2026-12-01T10:00:00Z",
+    html_url: `https://github.com/uvlad7/BiLang-Play/releases/tag/v${version}`,
+    draft: false,
+    assets: names.map((name, index) => ({
+      name,
+      size: 1000 + index,
+      browser_download_url: `https://github.com/uvlad7/BiLang-Play/releases/download/v${version}/${name}`,
+    })),
+  };
+}
+
+test("orders versions by semantic-version precedence", () => {
+  const ordered = [
+    "0.0.1-dev",
+    "0.1.0-alpha.2",
+    "0.1.0-alpha.3",
+    "0.1.0-alpha.10",
+    "0.1.0-beta",
+    "0.1.0-beta.1",
+    "0.1.0",
+    "0.1.1",
+    "0.2.0",
+    "1.0.0-rc.1",
+    "1.0.0",
+  ];
+  for (let i = 0; i < ordered.length; i++) {
+    for (let j = 0; j < ordered.length; j++) {
+      assert.equal(Math.sign(compareVersions(ordered[i], ordered[j])), Math.sign(i - j), `${ordered[i]} vs ${ordered[j]}`);
+    }
+  }
+  assert.equal(compareVersions("1.0.0+build.1", "1.0.0"), 0);
+  assert.throws(() => compareVersions("1.0", "1.0.0"), /not a version/);
+});
+
+test("names the version, its files, its sources, and every channel's commands", () => {
+  const updates = renderUpdates(release("0.1.0-beta.1"));
+  const base = "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-beta.1";
+  assert.equal(updates.schema, SCHEMA);
+  assert.equal(updates.version, "0.1.0-beta.1");
+  assert.equal(updates.published, "2026-12-01T10:00:00Z");
+  assert.equal(updates.notes, "https://uvlad7.github.io/BiLang-Play/#v0.1.0-beta.1");
+  assert.deepEqual(Object.keys(updates.files), Object.keys(FILES));
+  assert.deepEqual(updates.files.deb, {
+    name: "bilangplay-0.1.0-beta.1-linux-amd64.deb",
+    url: `${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`,
+    size: 1005,
+  });
+  assert.deepEqual(
+    updates.sources.map((s) => s.name),
+    ["ffmpeg-9.0.2.tar.xz", "opus-1.6.1.tar.gz", "build-ffmpeg.mjs"],
+  );
+  assert.deepEqual(Object.keys(updates.channels), Object.keys(CHANNELS));
+  assert.deepEqual(
+    updates.channels.brew.update.map((a) => a.commands),
+    [
+      [
+        'git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only',
+        "HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade --cask uvlad7/bilang-play/bilang-play",
+      ],
+      ["brew update", "brew upgrade --cask uvlad7/bilang-play/bilang-play"],
+    ],
+  );
+  assert.equal(updates.channels.deb.download, `${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`);
+  assert.deepEqual(updates.channels.deb.update[0].commands, [
+    `wget -O /tmp/bilangplay.deb ${base}/bilangplay-0.1.0-beta.1-linux-amd64.deb`,
+    "sudo apt install /tmp/bilangplay.deb",
+  ]);
+  assert.equal(updates.channels.chocolatey.update[0].elevated, true);
+  assert.equal(updates.channels.scoop.update[0].elevated, undefined);
+  assert.match(updates.channels.scoop.update[0].warning.en, /warns/);
+  assert.equal(updates.channels.nsis.download, `${base}/bilangplay-0.1.0-beta.1-windows-x64-setup.exe`);
+  assert.equal(updates.channels.macos.download, `${base}/bilangplay-0.1.0-beta.1-macos-arm64.dmg`);
+  const text = JSON.stringify(updates);
+  assert.doesNotMatch(text, /\{(version|name:|url:)/);
+});
+
+test("every channel has a download or update steps, each with commands and texts in English and Russian", () => {
+  const updates = renderUpdates(release("1.0.0"));
+  for (const [name, channel] of Object.entries(updates.channels)) {
+    assert.ok(channel.download || channel.update, name);
+    for (const step of channel.update ?? []) {
+      assert.ok(step.commands.length > 0, name);
+      assert.ok(step.commands.every((c) => typeof c === "string" && c && !c.includes("\n")), name);
+      assert.ok(step.description, name);
+      for (const text of [step.description, step.warning].filter(Boolean)) {
+        assert.deepEqual(Object.keys(text).sort(), ["en", "ru"], name);
+      }
+    }
+  }
+});
+
+test("refuses a release missing a package, a draft, or a link elsewhere", () => {
+  const missing = release("0.2.0");
+  missing.assets = missing.assets.filter((a) => !a.name.endsWith(".deb"));
+  assert.throws(() => renderUpdates(missing), /no bilangplay-0\.2\.0-linux-amd64\.deb/);
+  assert.throws(() => renderUpdates({ ...release("0.2.0"), draft: true }), /draft/);
+  const moved = release("0.2.0");
+  moved.assets[0].browser_download_url = "https://example.com/x.exe";
+  assert.throws(() => renderUpdates(moved), /unexpected download link/);
+  assert.throws(() => renderUpdates(release("0.2")), /not a version/);
+});
+
+test("the command writes a newer version and leaves an older one", () => {
+  const directory = mkdtempSync(join(tmpdir(), "updates-"));
+  const output = join(directory, "updates", "main.json");
+  const run = (version) => {
+    const input = join(directory, `${version}.json`);
+    writeFileSync(input, JSON.stringify(release(version)));
+    execFileSync(process.execPath, [script, input, output], { stdio: "pipe" });
+    return JSON.parse(readFileSync(output, "utf8")).version;
+  };
+  assert.equal(run("0.1.0-alpha.3"), "0.1.0-alpha.3");
+  assert.equal(run("0.1.0-beta.1"), "0.1.0-beta.1");
+  assert.equal(run("0.1.0-alpha.4"), "0.1.0-beta.1");
+  // The same version again (a release deleted and published again).
+  assert.equal(run("0.1.0-beta.1"), "0.1.0-beta.1");
+});

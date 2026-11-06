@@ -470,11 +470,17 @@
             <p lang="ru">Scoop выводит предупреждение, прежде чем снять метку о скачанном файле со своих установленных файлов:</p>
             <pre><code>scoop bucket add bilang-play https://github.com/uvlad7/BiLang-Play
 scoop install bilang-play/bilang-play</code></pre>
+            <p lang="en"><b>To update to a newer version:</b></p>
+            <p lang="ru"><b>Обновление до новой версии:</b></p>
+            <div class="steps" data-steps="channels.scoop.update"></div>
             <h3>Chocolatey</h3>
             <p lang="en">Chocolatey shows a warning before it clears the download mark from the verified installer and installed files:</p>
             <p lang="ru">Chocolatey выводит предупреждение, прежде чем снять метку о скачанном файле с проверенного установщика и установленных файлов:</p>
             <pre><code>choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"
 choco install bilangplay --source bilangplay --pre -y</code></pre>
+            <p lang="en"><b>To update to a newer version:</b></p>
+            <p lang="ru"><b>Обновление до новой версии:</b></p>
+            <div class="steps" data-steps="channels.chocolatey.update"></div>
             <div lang="en">
               <h3>NSIS installer (.exe)</h3>
               <p>
@@ -550,8 +556,11 @@ choco install bilangplay --source bilangplay --pre -y</code></pre>
             <p lang="ru">Личный cask устанавливает приложение и предупреждает перед снятием карантина с этой неподписанной предварительной версии.</p>
             <pre><code>brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play
 brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
-<p lang="en">If the tap is already installed, <code>brew update</code> fetches its latest Cask; do not untap and add it again. If Homebrew still shows an old Cask, run <code>brew update --force</code>. Use <code>brew upgrade --cask bilang-play</code> for a newer app version, or <code>brew reinstall --cask bilang-play</code> to apply a changed Cask at the same version.</p>
-<p lang="ru">Если tap уже установлен, <code>brew update</code> получает свежий Cask; удалять tap и добавлять его заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните <code>brew update --force</code>. Для новой версии приложения используйте <code>brew upgrade --cask bilang-play</code>, а чтобы применить изменённый Cask с той же версией — <code>brew reinstall --cask bilang-play</code>.</p>
+            <p lang="en"><b>To update to a newer version:</b></p>
+            <p lang="ru"><b>Обновление до новой версии:</b></p>
+            <div class="steps" data-steps="channels.brew.update"></div>
+            <p lang="en">If the tap is already installed, do not untap and add it again. If Homebrew still shows an old Cask, run <code>brew update --force</code>. Use <code>brew reinstall --cask bilang-play</code> to apply a changed Cask at the same version.</p>
+            <p lang="ru">Если tap уже установлен, удалять его и добавлять заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните <code>brew update --force</code>. Чтобы применить изменённый Cask с той же версией, используйте <code>brew reinstall --cask bilang-play</code>.</p>
             <div lang="en">
               <h3>Disk image (.dmg)</h3>
               <p>
@@ -619,8 +628,11 @@ brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
             <p lang="ru">Личный cask устанавливает сборку tar.gz, команду, пункт меню приложений и значки.</p>
             <pre><code>brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play
 brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
-<p lang="en">If the tap is already installed, <code>brew update</code> fetches its latest Cask; do not untap and add it again. If Homebrew still shows an old Cask, run <code>brew update --force</code>. Use <code>brew upgrade --cask bilang-play</code> for a newer app version, or <code>brew reinstall --cask bilang-play</code> to apply a changed Cask at the same version.</p>
-<p lang="ru">Если tap уже установлен, <code>brew update</code> получает свежий Cask; удалять tap и добавлять его заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните <code>brew update --force</code>. Для новой версии приложения используйте <code>brew upgrade --cask bilang-play</code>, а чтобы применить изменённый Cask с той же версией — <code>brew reinstall --cask bilang-play</code>.</p>
+            <p lang="en"><b>To update to a newer version:</b></p>
+            <p lang="ru"><b>Обновление до новой версии:</b></p>
+            <div class="steps" data-steps="channels.brew.update"></div>
+            <p lang="en">If the tap is already installed, do not untap and add it again. If Homebrew still shows an old Cask, run <code>brew update --force</code>. Use <code>brew reinstall --cask bilang-play</code> to apply a changed Cask at the same version.</p>
+            <p lang="ru">Если tap уже установлен, удалять его и добавлять заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните <code>brew update --force</code>. Чтобы применить изменённый Cask с той же версией, используйте <code>brew reinstall --cask bilang-play</code>.</p>
             <div lang="en">
               <h3>App image (.AppImage)</h3>
               <p>Make it executable and run it:</p>
@@ -652,6 +664,9 @@ brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
             <pre><code>sudo apt install ./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-amd64.deb</code></pre>
             <p lang="en">It adds BiLang Play to the applications menu itself.</p>
             <p lang="ru">Он сам добавляет BiLang Play в меню приложений.</p>
+            <p lang="en"><b>To update to a newer version:</b></p>
+            <p lang="ru"><b>Обновление до новой версии:</b></p>
+            <div class="steps" data-steps="channels.deb.update"></div>
             <h3 lang="en">Portable app (.tar.gz)</h3>
             <h3 lang="ru">Портативное приложение (.tar.gz)</h3>
             <p lang="en">

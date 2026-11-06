@@ -1,6 +1,6 @@
-// BiLang Play site: the language switch, static download links from the
-// newest published release, install and uninstall tabs, and the changelog
-// embedded by the Pages build.
+// BiLang Play site: the language switch, the download links and install
+// commands of the update file (updates/main.json, embedded by the Pages
+// build), install and uninstall tabs, and the changelog.
 
 const REPO = "uvlad7/BiLang-Play";
 const RELEASES = `https://github.com/${REPO}/releases`;
@@ -19,13 +19,13 @@ const TEXT = {
     copy: "Copy",
     copied: "Copied",
     kinds: {
-      "win-setup": "NSIS installer (.exe)",
-      "win-zip": "Portable app (.zip)",
-      "mac-dmg": "Disk image (.dmg)",
-      "mac-zip": "App (.app in .zip)",
+      "windows-setup": "NSIS installer (.exe)",
+      "windows-zip": "Portable app (.zip)",
+      "macos-dmg": "Disk image (.dmg)",
+      "macos-zip": "App (.app in .zip)",
       appimage: "App image (.AppImage)",
       deb: "Debian/Ubuntu package (.deb)",
-      tar: "Portable app (.tar.gz)",
+      "linux-tar": "Portable app (.tar.gz)",
     },
     onGitHub: "Release on GitHub",
     locale: "en-GB",
@@ -41,30 +41,29 @@ const TEXT = {
     copy: "Копировать",
     copied: "Скопировано",
     kinds: {
-      "win-setup": "Установщик NSIS (.exe)",
-      "win-zip": "Портативное приложение (.zip)",
-      "mac-dmg": "Образ диска (.dmg)",
-      "mac-zip": "Приложение (.app в .zip)",
+      "windows-setup": "Установщик NSIS (.exe)",
+      "windows-zip": "Портативное приложение (.zip)",
+      "macos-dmg": "Образ диска (.dmg)",
+      "macos-zip": "Приложение (.app в .zip)",
       appimage: "Образ приложения (.AppImage)",
       deb: "Пакет Debian/Ubuntu (.deb)",
-      tar: "Портативное приложение (.tar.gz)",
+      "linux-tar": "Портативное приложение (.tar.gz)",
     },
     onGitHub: "Релиз на GitHub",
     locale: "ru-RU",
   },
 };
 
-// The packages `npm run dist` names, by system; the first is the main one.
+// The update file's packages, by system; the first is the main one.
 const KINDS = [
-  { os: "windows", id: "win-setup", match: /-windows-x64-setup\.exe$/ },
-  { os: "windows", id: "win-zip", match: /-windows-x64\.zip$/ },
-  { os: "macos", id: "mac-dmg", match: /-macos-arm64\.dmg$/ },
-  { os: "macos", id: "mac-zip", match: /-macos-arm64\.zip$/ },
-  { os: "linux", id: "appimage", match: /\.AppImage$/ },
-  { os: "linux", id: "deb", match: /\.deb$/ },
-  { os: "linux", id: "tar", match: /-linux-x64\.tar\.gz$/ },
+  { os: "windows", id: "windows-setup" },
+  { os: "windows", id: "windows-zip" },
+  { os: "macos", id: "macos-dmg" },
+  { os: "macos", id: "macos-zip" },
+  { os: "linux", id: "appimage" },
+  { os: "linux", id: "deb" },
+  { os: "linux", id: "linux-tar" },
 ];
-const SOURCES = [/^ffmpeg-.*\.tar\.xz$/, /^opus-.*\.tar\.gz$/, /^build-ffmpeg\.mjs$/];
 
 const root = document.documentElement;
 const lang = () => (root.dataset.lang === "ru" ? "ru" : "en");
@@ -75,7 +74,8 @@ const isMobileBrowser =
   navigator.userAgentData?.mobile === true ||
   window.matchMedia("(pointer: coarse)").matches;
 const siteData = window.BILANGPLAY_SITE_DATA;
-const release = siteData?.release ?? null;
+// The newest version: its files and each channel's commands.
+const updates = siteData?.updates ?? null;
 
 function detectSystem() {
   const ua = navigator.userAgent;
@@ -130,18 +130,18 @@ const megabytes = (bytes) => `${(bytes / 1024 / 1024).toFixed(0)} MB`;
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString(t().locale, { year: "numeric", month: "long", day: "numeric" });
 
-function assetsOf(os) {
-  if (!release) return [];
+function filesOf(os) {
+  if (!updates) return [];
   return KINDS.filter((kind) => kind.os === os)
-    .map((kind) => ({ kind, asset: release.assets.find((a) => kind.match.test(a.name)) }))
-    .filter((entry) => entry.asset);
+    .map((kind) => ({ kind, file: updates.files[kind.id] }))
+    .filter((entry) => entry.file);
 }
 
-function button({ kind, asset }, main) {
+function button({ kind, file }, main) {
   const link = document.createElement("a");
   link.className = main ? "button main" : "button";
-  link.href = asset.browser_download_url;
-  link.innerHTML = `<span>${escapeHtml(t().kinds[kind.id])}</span><small>${megabytes(asset.size)}</small>`;
+  link.href = file.url;
+  link.innerHTML = `<span>${escapeHtml(t().kinds[kind.id])}</span><small>${megabytes(file.size)}</small>`;
   return link;
 }
 
@@ -158,7 +158,7 @@ function renderDownloads() {
     card.classList.toggle("detected", card.dataset.platform === system);
   }
   const all = `<a href="${RELEASES}">${text.allReleases}</a>`;
-  if (!release) {
+  if (!updates) {
     const message = text.noRelease;
     meta.innerHTML = `${message} ${all}`;
     releaseMeta.innerHTML = meta.innerHTML;
@@ -168,19 +168,18 @@ function renderDownloads() {
     return;
   }
 
-  const tag = escapeHtml(release.tag_name);
-  const version = `${text.version(tag, formatDate(release.published_at))}${
-    release.prerelease ? ` · ${text.preRelease}` : ""
+  const version = `${text.version(escapeHtml(updates.version), formatDate(updates.published))}${
+    updates.version.includes("-") ? ` · ${text.preRelease}` : ""
   }`;
   meta.innerHTML = `${version} · ${all}`;
-  releaseMeta.innerHTML = `${version} · <a href="${escapeHtml(release.html_url)}">${text.onGitHub}</a>`;
+  releaseMeta.innerHTML = `${version} · <a href="${escapeHtml(updates.release)}">${text.onGitHub}</a>`;
 
   if (system)
-    assetsOf(system).forEach((entry, index) => buttons.append(button(entry, index === 0)));
+    filesOf(system).forEach((entry, index) => buttons.append(button(entry, index === 0)));
 
   for (const list of document.querySelectorAll("[data-files]")) {
     list.replaceChildren(
-      ...assetsOf(list.dataset.files).map((entry, index) => {
+      ...filesOf(list.dataset.files).map((entry, index) => {
         const item = document.createElement("li");
         item.append(button(entry, index === 0 && list.dataset.files === system));
         return item;
@@ -188,16 +187,40 @@ function renderDownloads() {
     );
   }
 
-  const sources = release.assets.filter((a) => SOURCES.some((match) => match.test(a.name)));
+  const sources = updates.sources ?? [];
   const sourceLine = document.querySelector("[data-sources]");
   sourceLine.hidden = sources.length === 0;
   document.querySelector("[data-source-links]").innerHTML = sources
-    .map((a) => `<a href="${escapeHtml(a.browser_download_url)}">${escapeHtml(a.name)}</a>`)
+    .map((s) => `<a href="${escapeHtml(s.url)}">${escapeHtml(s.name)}</a>`)
     .join(", ");
 
-  // The commands name the files of this release.
-  const plain = release.tag_name.replace(/^v/, "");
-  for (const node of document.querySelectorAll(".ver")) node.textContent = plain;
+  // The commands name the files of this version.
+  for (const node of document.querySelectorAll(".ver")) node.textContent = updates.version;
+}
+
+// Each channel's update steps, as the update file gives them (the app's
+// update notice shows the same): description, warning, and commands.
+function renderSteps() {
+  for (const box of document.querySelectorAll("[data-steps]")) {
+    const steps = box.dataset.steps.split(".").reduce((node, key) => node?.[key], updates) ?? [];
+    box.replaceChildren(
+      ...steps.flatMap((step) => {
+        const texts = (text, className) =>
+          Object.entries(text ?? {}).map(([language, line]) => {
+            const node = document.createElement("p");
+            node.lang = language;
+            node.textContent = line;
+            if (className) node.className = className;
+            return node;
+          });
+        const pre = document.createElement("pre");
+        const code = document.createElement("code");
+        code.textContent = step.commands.join("\n");
+        pre.append(code);
+        return [...texts(step.description), ...texts(step.warning, "warning"), pre];
+      }),
+    );
+  }
 }
 
 // Tabs: the visitor's system first.
@@ -488,6 +511,7 @@ for (const b of document.querySelectorAll("[data-set-lang]")) {
 }
 setupTabs();
 setupGallery();
+renderSteps();
 setupCopy();
 setupBuildRequest();
 render();
