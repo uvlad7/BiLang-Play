@@ -109,7 +109,7 @@ function brewUpdate() {
 
 /**
  * Each way of installing the app, as its update notice tells it: the new
- * version's `download` (a kind of `FILES`), and the `update` steps; a step
+ * version's files to `download` (kinds of `FILES`), and the `update` steps; a step
  * that is another way of doing the same says so, "Or …".
  */
 export const CHANNELS = {
@@ -147,7 +147,7 @@ export const CHANNELS = {
   // No APT repository: download, then install the file. /tmp is readable
   // by APT's sandbox user, so it does not warn.
   deb: {
-    download: "deb",
+    download: ["deb"],
     update: [
       {
         text: t(
@@ -158,12 +158,13 @@ export const CHANNELS = {
       },
     ],
   },
-  appimage: { download: "appimage" },
-  "linux-tar": { download: "linux-tar" },
-  nsis: { download: "windows-setup" },
-  "windows-zip": { download: "windows-zip" },
+  appimage: { download: ["appimage"] },
+  "linux-tar": { download: ["linux-tar"] },
+  nsis: { download: ["windows-setup"] },
+  "windows-zip": { download: ["windows-zip"] },
   macos: {
-    download: "macos-dmg",
+    // A copy from the disk image and one from the zip are the same app.
+    download: ["macos-dmg", "macos-zip"],
     update: [
       {
         text: t(

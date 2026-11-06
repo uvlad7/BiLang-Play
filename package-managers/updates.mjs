@@ -102,7 +102,7 @@ export function renderUpdates(release) {
     Object.entries(CHANNELS).map(([name, channel]) => [
       name,
       {
-        ...(channel.download ? { download: files[channel.download].url } : {}),
+        ...(channel.download ? { downloads: channel.download.map((kind) => files[kind].url) } : {}),
         ...(channel.warning ? { warning: filled(channel.warning) } : {}),
         ...(channel.update ? { update: filled(channel.update) } : {}),
       },
