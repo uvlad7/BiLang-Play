@@ -116,11 +116,20 @@ test("names the version, its files, its sources, and every channel's commands", 
   assert.doesNotMatch(text, /\{(version|name:|url:)/);
 });
 
+// The app's interface languages: a text may add any of them to English and
+// Russian (the site shows those two only).
+const LANGUAGES = ["en", "be", "uk", "ru", "de", "fr", "es", "it"];
+const languages = (value, where) => {
+  const keys = Object.keys(value);
+  assert.ok(keys.includes("en") && keys.includes("ru"), where);
+  assert.ok(keys.every((key) => LANGUAGES.includes(key)), where);
+};
+
 test("every step is well formed: texts in English and Russian, commands as lines, known channels", () => {
   const updates = renderUpdates(release("1.0.0"));
   const text = (value, where) => {
     if (typeof value === "string") return;
-    assert.deepEqual(Object.keys(value).sort(), ["en", "ru"], where);
+    languages(value, where);
     for (const lines of Object.values(value)) assert.ok([lines].flat().every((l) => typeof l === "string" && l), where);
   };
   const steps = (list, where) => {
@@ -134,7 +143,7 @@ test("every step is well formed: texts in English and Russian, commands as lines
       for (const key of ["title", "text", "warning"]) if (step[key]) text(step[key], where);
       if (step.commands) {
         const lists = Array.isArray(step.commands) ? [step.commands] : Object.values(step.commands);
-        if (!Array.isArray(step.commands)) assert.deepEqual(Object.keys(step.commands).sort(), ["en", "ru"], where);
+        if (!Array.isArray(step.commands)) languages(step.commands, where);
         for (const lines of lists) {
           assert.ok(lines.length > 0 && lines.every((l) => typeof l === "string" && l && !l.includes("\n")), where);
         }

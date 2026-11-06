@@ -48,6 +48,7 @@ const KINDS = [
 ];
 
 const root = document.documentElement;
+const SITE_LANGUAGES = ["en", "ru"];
 const lang = () => (root.dataset.lang === "ru" ? "ru" : "en");
 const t = () => TEXT[lang()];
 const system = detectSystem();
@@ -190,8 +191,17 @@ function renderSteps() {
     version ? html.split(version).join(`<span class="ver">${version}</span>`) : html;
   const marked = (html) =>
     html.replace(/<code>(.*?)<\/code>/g, (_, code) => `<code>${markVersion(code)}</code>`);
+  // The site's languages only; a text the file has in English alone shows
+  // in English on the Russian page too, and the app's other languages stay
+  // out.
+  const own = (value) =>
+    Object.fromEntries(
+      SITE_LANGUAGES.map((language) => [language, value[language] ?? value.en]).filter(
+        ([, lines]) => lines !== undefined,
+      ),
+    );
   const texts = (tag, value, className) =>
-    Object.entries(typeof value === "string" ? { "": value } : (value ?? {})).flatMap(
+    Object.entries(typeof value === "string" ? { "": value } : own(value ?? {})).flatMap(
       ([language, lines]) =>
         [lines].flat().map((line) => {
           const node = document.createElement(tag);
@@ -208,7 +218,7 @@ function renderSteps() {
     return heading;
   };
   const commands = (value) =>
-    Object.entries(Array.isArray(value) ? { "": value } : value).map(([language, lines]) => {
+    Object.entries(Array.isArray(value) ? { "": value } : own(value)).map(([language, lines]) => {
       const pre = document.createElement("pre");
       if (language) pre.lang = language;
       const code = document.createElement("code");

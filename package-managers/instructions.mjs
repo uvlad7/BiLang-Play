@@ -17,7 +17,16 @@
 // Placeholders: `{version}`, `{name:<kind>}`, `{url:<kind>}` (`FILES`).
 
 /** @param {string | string[]} en @param {string | string[]} ru */
-const t = (en, ru) => ({ en, ru });
+/**
+ * A text in English and Russian, and in any of the app's other interface
+ * languages (`be`, `uk`, `de`, `fr`, `es`, `it`) once translated: the app
+ * shows its interface language's, else English; the site shows only `en`
+ * and `ru`.
+ * @param {string | string[]} en
+ * @param {string | string[]} ru
+ * @param {Record<string, string | string[]>} [more]
+ */
+const t = (en, ru, more = {}) => ({ en, ru, ...more });
 
 const TO_UPDATE = { text: t("**To update to a newer version:**", "**Обновление до новой версии:**") };
 
