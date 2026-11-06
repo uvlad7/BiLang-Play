@@ -144,7 +144,11 @@ Write-Warning 'SECURITY NOTICE: this package removes Mark-of-the-Web from a veri
 Unblock-File -LiteralPath $installer
 Install-ChocolateyInstallPackage -PackageName $env:ChocolateyPackageName -FileType 'exe' -File $installer -SilentArgs '/S' -ValidExitCodes @(0)
 $installedApp = Get-UninstallRegistryKey -SoftwareName 'BiLang Play*' | Select-Object -First 1
-if ($installedApp -and $installedApp.InstallLocation -and (Test-Path -LiteralPath $installedApp.InstallLocation)) { Get-ChildItem -LiteralPath $installedApp.InstallLocation -Recurse -File | Unblock-File }
+if ($installedApp -and $installedApp.InstallLocation -and (Test-Path -LiteralPath $installedApp.InstallLocation)) {
+  Get-ChildItem -LiteralPath $installedApp.InstallLocation -Recurse -File | Unblock-File
+  # The installer wrote packaged-by=nsis; the app shows Chocolatey's update command for this.
+  Set-Content -LiteralPath (Join-Path $installedApp.InstallLocation 'packaged-by') -Value 'chocolatey' -NoNewline
+}
 `,
     ],
   ]);
