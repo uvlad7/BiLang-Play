@@ -92,9 +92,12 @@ test("names the version, its files, its sources, and every channel's commands", 
   ]);
   assert.equal(updates.channels.chocolatey.update[0].elevated, true);
   assert.equal(updates.channels.scoop.update[0].elevated, undefined);
-  assert.match(updates.channels.scoop.update[0].warning.en, /warns/);
-  assert.ok(updates.channels["brew-macos"].update.every((step) => /^Homebrew warns/.test(step.warning.en)));
-  assert.ok(updates.channels["brew-linux"].update.every((step) => !step.warning));
+  assert.match(updates.channels.scoop.warning.en, /^Scoop warns/);
+  assert.match(updates.channels.chocolatey.warning.en, /^Chocolatey warns/);
+  assert.match(updates.channels["brew-macos"].warning.en, /^Homebrew warns/);
+  assert.equal(updates.channels["brew-linux"].warning, undefined);
+  // The site shows a channel's warning with its install steps.
+  assert.deepEqual(updates.install.windows[1].warning, updates.channels.scoop.warning);
   assert.equal(updates.channels.nsis.download, `${base}/bilangplay-0.1.0-beta.1-windows-x64-setup.exe`);
   assert.equal(updates.channels.macos.download, `${base}/bilangplay-0.1.0-beta.1-macos-arm64.dmg`);
   const text = JSON.stringify(updates);
@@ -132,6 +135,7 @@ test("every step is well formed: texts in English and Russian, commands as lines
   };
   for (const [name, channel] of Object.entries(updates.channels)) {
     assert.ok(channel.download || channel.update, name);
+    if (channel.warning) text(channel.warning, name);
     if (channel.update) steps(channel.update, name);
     // The app shows an update step's text first.
     for (const step of channel.update ?? []) assert.ok(step.text && step.commands, name);

@@ -11,6 +11,9 @@
 // Commands are plain lines, the same in every language or one list per
 // language. `elevated` marks commands that need an administrator shell.
 // `{ updates: "<channel>" }` stands for that channel's update steps.
+// A channel's `warning` is what its manager says each time it installs the
+// app, the first time and at every update: the site shows it with the
+// install steps, the app's update notice above the update steps.
 // Placeholders: `{version}`, `{name:<kind>}`, `{url:<kind>}` (`FILES`).
 
 /** @param {string | string[]} en @param {string | string[]} ru */
@@ -64,12 +67,27 @@ const BREW_TIP = {
   ),
 };
 
+/** What each manager warns about, at the first install and every update. */
+const WARNINGS = {
+  "brew-macos": t(
+    "Homebrew warns before it clears the quarantine mark from this unsigned preview.",
+    "Homebrew предупреждает, прежде чем снять карантин с этой неподписанной предварительной версии.",
+  ),
+  scoop: t(
+    "Scoop warns before it clears the download mark from its installed files.",
+    "Scoop предупреждает, прежде чем снять метку о скачанном файле со своих установленных файлов.",
+  ),
+  chocolatey: t(
+    "Chocolatey warns before it clears the download mark from the verified installer and the installed files.",
+    "Chocolatey предупреждает, прежде чем снять метку о скачанном файле с проверенного установщика и установленных файлов.",
+  ),
+};
+
 /**
  * Homebrew's update steps. `brew upgrade` fetches the tap first only when
  * Homebrew's auto-update is on and due, so the tap is always fetched here.
- * @param {{ en: string, ru: string }} [warning]
  */
-function brewUpdate(warning) {
+function brewUpdate() {
   const upgrade = "brew upgrade --cask uvlad7/bilang-play/bilang-play";
   return [
     {
@@ -77,7 +95,6 @@ function brewUpdate(warning) {
         "Fetch only this tap, then upgrade BiLang Play:",
         "Получите только этот tap, затем обновите BiLang Play:",
       ),
-      ...(warning ? { warning } : {}),
       commands: ['git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only', upgrade],
     },
     {
@@ -85,7 +102,6 @@ function brewUpdate(warning) {
         "Or fetch the newest Homebrew and every tap's package lists (nothing installed is upgraded), then upgrade BiLang Play:",
         "Или получите свежий Homebrew и списки пакетов всех tap'ов (установленное при этом не обновляется), затем обновите BiLang Play:",
       ),
-      ...(warning ? { warning } : {}),
       commands: ["brew update", upgrade],
     },
   ];
@@ -99,26 +115,16 @@ function brewUpdate(warning) {
 export const CHANNELS = {
   // Homebrew on macOS and on Linux: the same commands; on macOS the cask
   // clears quarantine, and says so.
-  "brew-macos": {
-    update: brewUpdate(
-      t(
-        "Homebrew warns before it clears the quarantine mark from the new app.",
-        "Homebrew предупредит, прежде чем снять карантин с нового приложения.",
-      ),
-    ),
-  },
+  "brew-macos": { warning: WARNINGS["brew-macos"], update: brewUpdate() },
   "brew-linux": { update: brewUpdate() },
   // `scoop update <app>` syncs the buckets only when Scoop itself is old.
   scoop: {
+    warning: WARNINGS.scoop,
     update: [
       {
         text: t(
           "Fetch the newest Scoop and its buckets (nothing installed is upgraded), then upgrade BiLang Play:",
           "Получите свежий Scoop и его bucket'ы (установленное при этом не обновляется), затем обновите BiLang Play:",
-        ),
-        warning: t(
-          "Scoop warns before it clears the download mark from the new files.",
-          "Scoop предупредит, прежде чем снять метку о скачанном файле с новых файлов.",
         ),
         commands: ["scoop update", "scoop update bilang-play"],
       },
@@ -127,15 +133,12 @@ export const CHANNELS = {
   // Chocolatey keeps its packages in a folder shared by every user
   // (C:\ProgramData\chocolatey), which only an administrator may change.
   chocolatey: {
+    warning: WARNINGS.chocolatey,
     update: [
       elevated({
         text: t(
           "In an administrator shell (Chocolatey keeps its packages in a folder shared by every user):",
           "В оболочке администратора (Chocolatey хранит пакеты в общей для всех пользователей папке):",
-        ),
-        warning: t(
-          "Chocolatey warns before it clears the download mark from the verified installer and the installed files.",
-          "Chocolatey предупредит, прежде чем снять метку о скачанном файле с проверенного установщика и установленных файлов.",
         ),
         commands: ["choco upgrade bilangplay --source bilangplay --pre -y"],
       }),
@@ -185,10 +188,7 @@ export const INSTALL = {
     },
     {
       title: "Scoop",
-      text: t(
-        "Scoop shows a warning before it clears the download mark from its installed files:",
-        "Scoop выводит предупреждение, прежде чем снять метку о скачанном файле со своих установленных файлов:",
-      ),
+      warning: WARNINGS.scoop,
       commands: [
         "scoop bucket add bilang-play https://github.com/uvlad7/BiLang-Play",
         "scoop install bilang-play/bilang-play",
@@ -198,10 +198,7 @@ export const INSTALL = {
     { updates: "scoop" },
     elevated({
       title: "Chocolatey",
-      text: t(
-        "Chocolatey shows a warning before it clears the download mark from the verified installer and installed files:",
-        "Chocolatey выводит предупреждение, прежде чем снять метку о скачанном файле с проверенного установщика и установленных файлов:",
-      ),
+      warning: WARNINGS.chocolatey,
       commands: [
         'choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"',
         "choco install bilangplay --source bilangplay --pre -y",
@@ -251,10 +248,8 @@ export const INSTALL = {
   macos: [
     {
       title: "Homebrew",
-      text: t(
-        "The personal cask installs the app and warns before removing quarantine from this unsigned preview.",
-        "Личный cask устанавливает приложение и предупреждает перед снятием карантина с этой неподписанной предварительной версии.",
-      ),
+      text: t("The personal cask installs the app.", "Личный cask устанавливает приложение."),
+      warning: WARNINGS["brew-macos"],
       commands: BREW_INSTALL,
     },
     TO_UPDATE,

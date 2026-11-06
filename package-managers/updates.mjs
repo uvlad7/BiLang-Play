@@ -103,6 +103,7 @@ export function renderUpdates(release) {
       name,
       {
         ...(channel.download ? { download: files[channel.download].url } : {}),
+        ...(channel.warning ? { warning: filled(channel.warning) } : {}),
         ...(channel.update ? { update: filled(channel.update) } : {}),
       },
     ]),
