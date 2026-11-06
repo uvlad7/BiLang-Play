@@ -194,32 +194,65 @@ function renderDownloads() {
     .map((s) => `<a href="${escapeHtml(s.url)}">${escapeHtml(s.name)}</a>`)
     .join(", ");
 
-  // The commands name the files of this version.
-  for (const node of document.querySelectorAll(".ver")) node.textContent = updates.version;
 }
 
-// Each channel's update steps, as the update file gives them (the app's
-// update notice shows the same): description, warning, and commands.
+// The install and uninstall tabs, as the update file gives them (the
+// channels' update steps are the app's update notice too): each step's
+// title, text, warning, commands, and a collapsed part. The version in
+// commands and code is marked as the site always has.
 function renderSteps() {
-  for (const box of document.querySelectorAll("[data-steps]")) {
-    const steps = box.dataset.steps.split(".").reduce((node, key) => node?.[key], updates) ?? [];
-    box.replaceChildren(
-      ...steps.flatMap((step) => {
-        const texts = (text, className) =>
-          Object.entries(text ?? {}).map(([language, line]) => {
-            const node = document.createElement("p");
-            node.lang = language;
-            node.textContent = line;
-            if (className) node.className = className;
-            return node;
-          });
-        const pre = document.createElement("pre");
-        const code = document.createElement("code");
-        code.textContent = step.commands.join("\n");
-        pre.append(code);
-        return [...texts(step.description), ...texts(step.warning, "warning"), pre];
-      }),
+  const version = updates?.version;
+  const markVersion = (html) =>
+    version ? html.split(version).join(`<span class="ver">${version}</span>`) : html;
+  const marked = (html) =>
+    html.replace(/<code>(.*?)<\/code>/g, (_, code) => `<code>${markVersion(code)}</code>`);
+  const texts = (tag, value, className) =>
+    Object.entries(typeof value === "string" ? { "": value } : (value ?? {})).flatMap(
+      ([language, lines]) =>
+        [lines].flat().map((line) => {
+          const node = document.createElement(tag);
+          if (language) node.lang = language;
+          if (className) node.className = className;
+          node.innerHTML = marked(inline(line));
+          return node;
+        }),
     );
+  const title = (value) => {
+    const heading = document.createElement("h3");
+    if (typeof value === "string") heading.textContent = value;
+    else heading.append(...texts("span", value));
+    return heading;
+  };
+  const commands = (value) =>
+    Object.entries(Array.isArray(value) ? { "": value } : value).map(([language, lines]) => {
+      const pre = document.createElement("pre");
+      if (language) pre.lang = language;
+      const code = document.createElement("code");
+      code.innerHTML = markVersion(escapeHtml(lines.join("\n")));
+      pre.append(code);
+      return pre;
+    });
+  const render = (steps) =>
+    steps.flatMap((step) => {
+      if (step.updates) return render(updates.channels[step.updates]?.update ?? []);
+      const nodes = [
+        ...(step.title ? [title(step.title)] : []),
+        ...texts("p", step.text),
+        ...texts("p", step.warning, "warning"),
+        ...(step.commands ? commands(step.commands) : []),
+      ];
+      if (step.more) {
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.append(...texts("span", step.more.summary));
+        details.append(summary, ...render(step.more.steps));
+        nodes.push(details);
+      }
+      return nodes;
+    });
+  for (const box of document.querySelectorAll("[data-steps]")) {
+    const steps = box.dataset.steps.split(".").reduce((node, key) => node?.[key], updates);
+    box.replaceChildren(...render(steps ?? []));
   }
 }
 

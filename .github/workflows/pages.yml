@@ -2,11 +2,13 @@ name: Pages
 
 # The site is rebuilt on every public-repository commit or on request for
 # testing. Publishing a release also renders its package-manager sources and
-# the update file (site/updates/main.json) and deploys that exact tree in
-# this one workflow. The bot's source commit uses GITHUB_TOKEN and
-# deliberately does not trigger a recursive Pages workflow. The site embeds
-# the update file and the changelogs, so visitors make no GitHub API
-# requests, and the app reads the same file for its update notice.
+# records it (release.json) and deploys that exact tree in this one
+# workflow. The bot's source commit uses GITHUB_TOKEN and deliberately does
+# not trigger a recursive Pages workflow. Every build renders the update file
+# (updates/main.json) from that record and the instructions, so a changed
+# instruction reaches the site and the app's update notice with the next
+# push. The site embeds it and the changelogs, so visitors make no GitHub API
+# requests.
 on:
   push:
     branches: [main]
@@ -68,11 +70,11 @@ jobs:
           node package-managers/build-chocolatey-feed.mjs "$version" chocolatey chocolatey
           # In the same commit as the sources, so the update notice never
           # offers a version a package manager cannot install yet.
-          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" > release.json
-          node package-managers/updates.mjs release.json site/updates/main.json
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" > github-release.json
+          node package-managers/updates.mjs github-release.json release.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Casks bucket chocolatey site/updates
+          git add Casks bucket chocolatey release.json
           if ! git diff --cached --quiet; then
             git commit -m "package-manager sources for ${version}"
             git push origin HEAD:main

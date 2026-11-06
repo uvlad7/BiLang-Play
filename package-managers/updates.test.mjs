@@ -5,7 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { CHANNELS, FILES, SCHEMA, compareVersions, renderUpdates } from "./updates.mjs";
+import { CHANNELS } from "./instructions.mjs";
+import { FILES, SCHEMA, compareVersions, releaseRecord, renderUpdates } from "./updates.mjs";
 
 const script = fileURLToPath(new URL("./updates.mjs", import.meta.url));
 
@@ -98,19 +99,57 @@ test("names the version, its files, its sources, and every channel's commands", 
   assert.doesNotMatch(text, /\{(version|name:|url:)/);
 });
 
-test("every channel has a download or update steps, each with commands and texts in English and Russian", () => {
+test("every step is well formed: texts in English and Russian, commands as lines, known channels", () => {
   const updates = renderUpdates(release("1.0.0"));
-  for (const [name, channel] of Object.entries(updates.channels)) {
-    assert.ok(channel.download || channel.update, name);
-    for (const step of channel.update ?? []) {
-      assert.ok(step.commands.length > 0, name);
-      assert.ok(step.commands.every((c) => typeof c === "string" && c && !c.includes("\n")), name);
-      assert.ok(step.description, name);
-      for (const text of [step.description, step.warning].filter(Boolean)) {
-        assert.deepEqual(Object.keys(text).sort(), ["en", "ru"], name);
+  const text = (value, where) => {
+    if (typeof value === "string") return;
+    assert.deepEqual(Object.keys(value).sort(), ["en", "ru"], where);
+    for (const lines of Object.values(value)) assert.ok([lines].flat().every((l) => typeof l === "string" && l), where);
+  };
+  const steps = (list, where) => {
+    assert.ok(Array.isArray(list) && list.length > 0, where);
+    for (const step of list) {
+      if (step.updates) {
+        assert.ok(updates.channels[step.updates]?.update, `${where}: ${step.updates}`);
+        continue;
+      }
+      assert.ok(step.title || step.text || step.commands, where);
+      for (const key of ["title", "text", "warning"]) if (step[key]) text(step[key], where);
+      if (step.commands) {
+        const lists = Array.isArray(step.commands) ? [step.commands] : Object.values(step.commands);
+        if (!Array.isArray(step.commands)) assert.deepEqual(Object.keys(step.commands).sort(), ["en", "ru"], where);
+        for (const lines of lists) {
+          assert.ok(lines.length > 0 && lines.every((l) => typeof l === "string" && l && !l.includes("\n")), where);
+        }
+      }
+      if (step.more) {
+        text(step.more.summary, where);
+        steps(step.more.steps, `${where} (more)`);
       }
     }
+  };
+  for (const [name, channel] of Object.entries(updates.channels)) {
+    assert.ok(channel.download || channel.update, name);
+    if (channel.update) steps(channel.update, name);
+    // The app shows an update step's text first.
+    for (const step of channel.update ?? []) assert.ok(step.text && step.commands, name);
   }
+  for (const part of ["install", "uninstall"]) {
+    assert.deepEqual(Object.keys(updates[part]), ["windows", "macos", "linux"]);
+    for (const [system, list] of Object.entries(updates[part])) steps(list, `${part}.${system}`);
+  }
+});
+
+test("elevated commands come with sudo and gsudo, collapsed", () => {
+  const step = renderUpdates(release("1.0.0")).channels.chocolatey.update[0];
+  assert.equal(step.elevated, true);
+  assert.deepEqual(
+    step.more.steps.map((s) => s.commands),
+    [
+      ["sudo choco upgrade bilangplay --source bilangplay --pre -y"],
+      ["gsudo choco upgrade bilangplay --source bilangplay --pre -y"],
+    ],
+  );
 });
 
 test("refuses a release missing a package, a draft, or a link elsewhere", () => {
@@ -124,18 +163,22 @@ test("refuses a release missing a package, a draft, or a link elsewhere", () => 
   assert.throws(() => renderUpdates(release("0.2")), /not a version/);
 });
 
-test("the command writes a newer version and leaves an older one", () => {
+test("the command records a newer release and leaves an older one", () => {
   const directory = mkdtempSync(join(tmpdir(), "updates-"));
-  const output = join(directory, "updates", "main.json");
+  const output = join(directory, "release.json");
   const run = (version) => {
     const input = join(directory, `${version}.json`);
-    writeFileSync(input, JSON.stringify(release(version)));
+    writeFileSync(input, JSON.stringify({ ...release(version), author: { login: "x" }, body: "notes" }));
     execFileSync(process.execPath, [script, input, output], { stdio: "pipe" });
-    return JSON.parse(readFileSync(output, "utf8")).version;
+    return JSON.parse(readFileSync(output, "utf8"));
   };
-  assert.equal(run("0.1.0-alpha.3"), "0.1.0-alpha.3");
-  assert.equal(run("0.1.0-beta.1"), "0.1.0-beta.1");
-  assert.equal(run("0.1.0-alpha.4"), "0.1.0-beta.1");
+  assert.equal(run("0.1.0-alpha.3").tag_name, "v0.1.0-alpha.3");
+  const record = run("0.1.0-beta.1");
+  assert.equal(record.tag_name, "v0.1.0-beta.1");
+  assert.deepEqual(Object.keys(record), ["tag_name", "published_at", "html_url", "assets"]);
+  assert.deepEqual(renderUpdates(record), renderUpdates(release("0.1.0-beta.1")));
+  assert.equal(run("0.1.0-alpha.4").tag_name, "v0.1.0-beta.1");
   // The same version again (a release deleted and published again).
-  assert.equal(run("0.1.0-beta.1"), "0.1.0-beta.1");
+  assert.equal(run("0.1.0-beta.1").tag_name, "v0.1.0-beta.1");
+  assert.throws(() => releaseRecord({ ...release("0.2.0"), assets: [] }), /the release has no/);
 });

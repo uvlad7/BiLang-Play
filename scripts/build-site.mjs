@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-// Build the static Pages payload. The download and install sections come
-// from the update file, site/updates/main.json, which a release's Pages run
-// writes (package-managers/updates.mjs); the page embeds it and the
-// changelogs, so a visitor makes no requests to GitHub's API.
+// Build the static Pages payload. The update file, updates/main.json, is
+// rendered from the release record (release.json, which a release's Pages
+// run writes) and the instructions (package-managers/updates.mjs); the page
+// embeds it and the changelogs, so a visitor makes no requests to GitHub's
+// API, and fills its downloads and its install and uninstall tabs from it.
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { SCHEMA } from "../package-managers/updates.mjs";
+import { renderUpdates } from "../package-managers/updates.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const output = resolve(process.argv[2] ?? "_site");
@@ -17,11 +18,10 @@ const event = process.env.GITHUB_EVENT_PATH
 
 if (event?.release?.draft) throw new Error("refusing to deploy a draft release");
 
-const updatesPath = join(root, "site", "updates", "main.json");
-const updates = existsSync(updatesPath) ? JSON.parse(readFileSync(updatesPath, "utf8")) : null;
-if (updates && updates.schema !== SCHEMA) {
-  throw new Error(`${updatesPath} is ${updates.schema}, not ${SCHEMA}`);
-}
+const recordPath = join(root, "release.json");
+const updates = existsSync(recordPath)
+  ? renderUpdates(JSON.parse(readFileSync(recordPath, "utf8")))
+  : null;
 const changelogs = {
   en: readFileSync(join(root, "CHANGELOG.md"), "utf8"),
   ru: readFileSync(join(root, "CHANGELOG.ru.md"), "utf8"),
@@ -32,6 +32,10 @@ cpSync(join(root, "site"), output, { recursive: true });
 cpSync(join(root, "screenshots"), join(output, "screenshots"), { recursive: true });
 if (existsSync(join(root, "chocolatey"))) {
   cpSync(join(root, "chocolatey"), join(output, "chocolatey"), { recursive: true });
+}
+if (updates) {
+  mkdirSync(join(output, "updates"), { recursive: true });
+  writeFileSync(join(output, "updates", "main.json"), `${JSON.stringify(updates, null, 2)}\n`);
 }
 writeFileSync(
   join(output, "site-data.js"),
