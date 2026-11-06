@@ -80,7 +80,7 @@ test("names the version, its files, its sources, and every channel's commands", 
     [
       [
         'git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only',
-        "HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade --cask uvlad7/bilang-play/bilang-play",
+        "brew upgrade --cask uvlad7/bilang-play/bilang-play",
       ],
       ["brew update", "brew upgrade --cask uvlad7/bilang-play/bilang-play"],
     ],

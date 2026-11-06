@@ -40,20 +40,22 @@ The feed holds only the newest version; each release replaces it.
 
 ## The update file
 
-`updates.mjs` renders `site/updates/main.json` from the GitHub API's object
-for a published release: the version, its files with their links and sizes,
-the bundled libraries' sources, and how each install channel takes the new
-version (`CHANNELS`: its download, and its update steps with their
-descriptions, warnings, and commands). The app reads it, served as
-`https://uvlad7.github.io/BiLang-Play/updates/main.json`, for its update
-notice, so a warning can be changed for copies already released. The site's
-downloads and update steps come from it too (embedded by
-`scripts/build-site.mjs`); the install and uninstall instructions are the
-site's own. A release's Pages run writes it and commits it with the sources
-above, so it never names a version a package manager cannot install yet. A
-release older than the version it names leaves it as it is.
+`instructions.mjs` holds the install, update, and uninstall steps, with
+their texts in a small markup (`**bold**`, `` `code` ``, links): the one
+source of the site's Install and Uninstall tabs and of the app's update
+notice, which reads each install channel's download and update steps.
+`updates.mjs` renders them, with the newest release's version and files,
+into the update file, served as
+`https://uvlad7.github.io/BiLang-Play/updates/main.json`. Every site build
+renders it from the committed release record, `release.json`, so a changed
+step reaches the site and released copies of the app with the next push.
+
+A release's Pages run writes `release.json` and commits it with the
+sources above, so the update file never names a version a package manager
+cannot install yet. A release older than the recorded one leaves it as it
+is.
 
 ```sh
-gh api repos/uvlad7/BiLang-Play/releases/tags/v<version> > release.json
-node package-managers/updates.mjs release.json site/updates/main.json
+gh api repos/uvlad7/BiLang-Play/releases/tags/v<version> > github-release.json
+node package-managers/updates.mjs github-release.json release.json
 ```

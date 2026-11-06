@@ -76,12 +76,12 @@ export const CHANNELS = {
     update: [
       {
         text: t(
-          "Fetch only this tap, leaving Homebrew as it is, then upgrade BiLang Play:",
-          "Получите только этот tap, не обновляя Homebrew, затем обновите BiLang Play:",
+          "Fetch only this tap, then upgrade BiLang Play:",
+          "Получите только этот tap, затем обновите BiLang Play:",
         ),
         commands: [
           'git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only',
-          "HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade --cask uvlad7/bilang-play/bilang-play",
+          "brew upgrade --cask uvlad7/bilang-play/bilang-play",
         ],
       },
       {
@@ -334,11 +334,29 @@ export const INSTALL = {
   ],
 };
 
+const BREW_UNINSTALL = [
+  "brew uninstall --cask uvlad7/bilang-play/bilang-play",
+  "brew untap uvlad7/bilang-play",
+];
+
 const GSETTINGS_RESET = "reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/";
 
 /** The site's Uninstall tabs, by system. */
 export const UNINSTALL = {
   windows: [
+    {
+      title: "Scoop",
+      text: t("Remove the app, then its bucket:", "Удалите приложение, затем его bucket:"),
+      commands: ["scoop uninstall bilang-play", "scoop bucket rm bilang-play"],
+    },
+    elevated({
+      title: "Chocolatey",
+      text: t(
+        "In an administrator shell, remove the app (Chocolatey runs its uninstaller), then its source:",
+        "В оболочке администратора удалите приложение (Chocolatey запустит его деинсталлятор), затем его источник:",
+      ),
+      commands: ["choco uninstall bilangplay -y", "choco source remove --name bilangplay"],
+    }),
     {
       title: t("NSIS installer (.exe)", "Установщик NSIS (.exe)"),
       text: t(
@@ -367,6 +385,12 @@ export const UNINSTALL = {
   ],
   macos: [
     {
+      title: "Homebrew",
+      text: t("Remove the app, then the tap:", "Удалите приложение, затем tap:"),
+      commands: BREW_UNINSTALL,
+    },
+    {
+      title: t("Disk image (.dmg) or app (.app in .zip)", "Образ диска (.dmg) или приложение (.app в .zip)"),
       text: t(
         "Move **BiLang Play** to the Trash from wherever you keep it (usually **Applications**), and the downloaded disk image or zip.",
         "Переместите **BiLang Play** в Корзину оттуда, где оно лежит (обычно из **Программ**), и скачанный образ диска или zip.",
@@ -383,6 +407,14 @@ export const UNINSTALL = {
     },
   ],
   linux: [
+    {
+      title: "Homebrew",
+      text: t(
+        "Remove the app with its command, applications-menu entry, and icons, then the tap:",
+        "Удалите приложение вместе с командой, пунктом меню приложений и значками, затем tap:",
+      ),
+      commands: BREW_UNINSTALL,
+    },
     {
       title: t("Debian/Ubuntu package (.deb)", "Пакет Debian/Ubuntu (.deb)"),
       commands: ["sudo apt purge bilangplay"],
