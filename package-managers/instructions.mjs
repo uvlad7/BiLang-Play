@@ -79,6 +79,10 @@ export const CHANNELS = {
           "Fetch only this tap, then upgrade BiLang Play:",
           "Получите только этот tap, затем обновите BiLang Play:",
         ),
+        warning: t(
+          "On macOS, Homebrew warns before it clears the quarantine mark from the new app.",
+          "В macOS Homebrew предупредит, прежде чем снять карантин с нового приложения.",
+        ),
         commands: [
           'git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only',
           "brew upgrade --cask uvlad7/bilang-play/bilang-play",
@@ -88,6 +92,10 @@ export const CHANNELS = {
         text: t(
           "Or fetch the newest Homebrew and every tap's package lists (nothing installed is upgraded), then upgrade BiLang Play:",
           "Или получите свежий Homebrew и списки пакетов всех tap'ов (установленное при этом не обновляется), затем обновите BiLang Play:",
+        ),
+        warning: t(
+          "On macOS, Homebrew warns before it clears the quarantine mark from the new app.",
+          "В macOS Homebrew предупредит, прежде чем снять карантин с нового приложения.",
         ),
         commands: ["brew update", "brew upgrade --cask uvlad7/bilang-play/bilang-play"],
       },

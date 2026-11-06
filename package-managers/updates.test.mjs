@@ -93,6 +93,7 @@ test("names the version, its files, its sources, and every channel's commands", 
   assert.equal(updates.channels.chocolatey.update[0].elevated, true);
   assert.equal(updates.channels.scoop.update[0].elevated, undefined);
   assert.match(updates.channels.scoop.update[0].warning.en, /warns/);
+  assert.ok(updates.channels.brew.update.every((step) => /^On macOS, Homebrew warns/.test(step.warning.en)));
   assert.equal(updates.channels.nsis.download, `${base}/bilangplay-0.1.0-beta.1-windows-x64-setup.exe`);
   assert.equal(updates.channels.macos.download, `${base}/bilangplay-0.1.0-beta.1-macos-arm64.dmg`);
   const text = JSON.stringify(updates);
