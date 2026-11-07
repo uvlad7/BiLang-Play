@@ -248,6 +248,10 @@ function renderSteps() {
     const steps = box.dataset.steps.split(".").reduce((node, key) => node?.[key], updates);
     box.replaceChildren(...render(steps ?? []));
   }
+  // The license's description, as the app shows it when the terms change.
+  for (const box of document.querySelectorAll("[data-license]")) {
+    box.replaceChildren(...texts("p", updates?.license?.text));
+  }
 }
 
 // Tabs: the visitor's system first.

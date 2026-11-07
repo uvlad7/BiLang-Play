@@ -40,6 +40,15 @@ The feed holds only the newest version; each release replaces it.
 
 ## The update file
 
+`license.mjs` keeps each license's description by id, and the id the next
+release comes under. The release record keeps the id the release came
+under, and the update file names it with its description: the app compares
+it with its own (when a newer version's differs, its update notice warns
+before the update steps), and the site's License section shows the
+description. The terms change only with a new major version: add the new
+id with the app's, and `updates.mjs` refuses to record a release under
+another id than the recorded one without a new major version.
+
 `instructions.mjs` holds the install, update, and uninstall steps, with
 their texts in a small markup (`**bold**`, `` `code` ``, links): the one
 source of the site's Install and Uninstall tabs and of the app's update

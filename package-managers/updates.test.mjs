@@ -6,7 +6,8 @@ import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { CHANNELS } from "./instructions.mjs";
-import { FILES, SCHEMA, compareVersions, releaseRecord, renderUpdates } from "./updates.mjs";
+import { LICENSE, LICENSES } from "./license.mjs";
+import { FILES, SCHEMA, compareVersions, nextRecord, releaseRecord, renderUpdates } from "./updates.mjs";
 
 const script = fileURLToPath(new URL("./updates.mjs", import.meta.url));
 
@@ -158,6 +159,7 @@ test("every step is well formed: texts in English and Russian, commands as lines
     assert.ok(channel.downloads?.length || channel.update, name);
     if (channel.warning) text(channel.warning, name);
     if (channel.update) steps(channel.update, name);
+    if (channel.hold) steps(channel.hold, `${name} (hold)`);
     // The app shows an update step's text first.
     for (const step of channel.update ?? []) assert.ok(step.text && step.commands, name);
   }
@@ -202,10 +204,71 @@ test("the command records a newer release and leaves an older one", () => {
   assert.equal(run("0.1.0-alpha.3").tag_name, "v0.1.0-alpha.3");
   const record = run("0.1.0-beta.1");
   assert.equal(record.tag_name, "v0.1.0-beta.1");
-  assert.deepEqual(Object.keys(record), ["tag_name", "published_at", "html_url", "assets"]);
+  assert.deepEqual(Object.keys(record), ["tag_name", "published_at", "html_url", "license", "assets"]);
+  assert.equal(record.license, LICENSE);
   assert.deepEqual(renderUpdates(record), renderUpdates(release("0.1.0-beta.1")));
   assert.equal(run("0.1.0-alpha.4").tag_name, "v0.1.0-beta.1");
   // The same version again (a release deleted and published again).
   assert.equal(run("0.1.0-beta.1").tag_name, "v0.1.0-beta.1");
   assert.throws(() => releaseRecord({ ...release("0.2.0"), assets: [] }), /the release has no/);
+});
+
+test("a release under another license than the recorded one needs a new major version", () => {
+  const recorded = (version, license) => ({ ...releaseRecord(release(version)), license });
+  const older = "proprietary-2025-01-01";
+  assert.throws(() => nextRecord(release("0.2.0"), recorded("0.1.0-alpha.3", older)), /only with a new major version \(above 0\)/);
+  assert.throws(() => nextRecord(release("1.0.0"), recorded("1.0.0-beta.1", older)), /new major version/);
+  // The same version published again under another license.
+  assert.throws(() => nextRecord(release("1.2.0"), recorded("1.2.0", older)), /new major version/);
+  assert.equal(nextRecord(release("1.0.0"), recorded("0.9.0", older)).license, LICENSE);
+  assert.equal(nextRecord(release("2.0.0-alpha.1"), recorded("1.4.0", older)).license, LICENSE);
+  // A release published late, for an earlier version, leaves the record.
+  assert.equal(nextRecord(release("0.1.0"), recorded("1.0.0", older)), null);
+  // The same license, and a record from before licenses were recorded.
+  assert.equal(nextRecord(release("0.2.0"), recorded("0.1.0", LICENSE)).tag_name, "v0.2.0");
+  assert.equal(nextRecord(release("0.2.0"), recorded("0.1.0", undefined)).tag_name, "v0.2.0");
+  assert.equal(nextRecord(release("0.2.0"), null).tag_name, "v0.2.0");
+});
+
+test("the update file names the recorded release's license, not the next one's", () => {
+  assert.ok(Object.hasOwn(LICENSES, LICENSE));
+  const [id] = Object.keys(LICENSES);
+  assert.equal(renderUpdates({ ...releaseRecord(release("1.0.0")), license: id }).license.id, id);
+  assert.throws(() => renderUpdates({ ...releaseRecord(release("1.0.0")), license: "unknown-1" }), /no license unknown-1/);
+});
+
+test("the command refuses to record a release under another license without a new major version", () => {
+  const directory = mkdtempSync(join(tmpdir(), "updates-"));
+  const output = join(directory, "release.json");
+  writeFileSync(output, JSON.stringify({ ...releaseRecord(release("0.1.0-alpha.3")), license: "proprietary-2025-01-01" }));
+  const input = join(directory, "0.1.0.json");
+  writeFileSync(input, JSON.stringify(release("0.1.0")));
+  assert.throws(() => execFileSync(process.execPath, [script, input, output], { stdio: "pipe" }), /new major version/);
+  assert.equal(JSON.parse(readFileSync(output, "utf8")).tag_name, "v0.1.0-alpha.3");
+});
+
+test("names the license new copies come under, with its description and the site's section", () => {
+  const { license } = renderUpdates(release("1.0.0"));
+  assert.match(license.id, /^[a-z0-9][a-z0-9.-]{0,63}$/);
+  assert.equal(license.url, "https://uvlad7.github.io/BiLang-Play/#license");
+  languages(license.text, "license");
+  for (const line of Object.values(license.text).flat()) assert.ok(typeof line === "string" && line);
+});
+
+test("every package manager says how to keep the installed version", () => {
+  const { channels, install } = renderUpdates(release("1.0.0"));
+  const held = {
+    "brew-macos": "brew pin --cask bilang-play",
+    "brew-linux": "brew pin --cask bilang-play",
+    scoop: "scoop hold bilang-play",
+    chocolatey: "choco pin add -n bilangplay",
+  };
+  for (const [name, command] of Object.entries(held)) {
+    assert.deepEqual(channels[name].hold[0].commands, [command], name);
+  }
+  assert.ok(channels.chocolatey.hold[0].elevated);
+  for (const name of ["deb", "appimage", "nsis", "macos"]) assert.equal(channels[name].hold, undefined, name);
+  // The site shows them with the install steps.
+  const commands = JSON.stringify(install);
+  for (const command of Object.values(held)) assert.ok(commands.includes(command), command);
 });

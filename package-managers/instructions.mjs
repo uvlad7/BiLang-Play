@@ -29,6 +29,12 @@
 const t = (en, ru, more = {}) => ({ en, ru, ...more });
 
 const TO_UPDATE = { text: t("**To update to a newer version:**", "**Обновление до новой версии:**") };
+const TO_HOLD = {
+  text: t(
+    "**To keep the installed version when upgrading everything:**",
+    "**Чтобы оставить установленную версию при обновлении всего:**",
+  ),
+};
 
 /**
  * An administrator shell's commands, and, collapsed, the same through
@@ -117,6 +123,42 @@ function brewUpdate() {
 }
 
 /**
+ * How each package manager keeps the installed version when the user
+ * upgrades everything (none upgrades on its own): the update notice shows
+ * it with a newer version under another license, the site with the install
+ * steps.
+ */
+const HOLD = {
+  brew: [
+    {
+      text: t(
+        "Pin it (Homebrew 5.1.12 or later), so `brew upgrade` skips it; `brew unpin --cask bilang-play` releases it:",
+        "Закрепите его (Homebrew 5.1.12 или новее), чтобы `brew upgrade` его пропускал; `brew unpin --cask bilang-play` снимает закрепление:",
+      ),
+      commands: ["brew pin --cask bilang-play"],
+    },
+  ],
+  scoop: [
+    {
+      text: t(
+        "Hold it, so `scoop update *` skips it; `scoop unhold bilang-play` releases it:",
+        "Заморозьте его, чтобы `scoop update *` его пропускал; `scoop unhold bilang-play` снимает заморозку:",
+      ),
+      commands: ["scoop hold bilang-play"],
+    },
+  ],
+  chocolatey: [
+    elevated({
+      text: t(
+        "Pin it, in an administrator shell, so `choco upgrade all` skips it; `choco pin remove -n bilangplay` releases it:",
+        "Закрепите его в оболочке администратора, чтобы `choco upgrade all` его пропускал; `choco pin remove -n bilangplay` снимает закрепление:",
+      ),
+      commands: ["choco pin add -n bilangplay"],
+    }),
+  ],
+};
+
+/**
  * Each way of installing the app, as its update notice tells it: the new
  * version's files to `download` (kinds of `FILES`), and the `update` steps; a step
  * that is another way of doing the same says so, "Or …".
@@ -124,8 +166,8 @@ function brewUpdate() {
 export const CHANNELS = {
   // Homebrew on macOS and on Linux: the same commands; on macOS the cask
   // clears quarantine, and says so.
-  "brew-macos": { warning: WARNINGS["brew-macos"], update: brewUpdate() },
-  "brew-linux": { update: brewUpdate() },
+  "brew-macos": { warning: WARNINGS["brew-macos"], update: brewUpdate(), hold: HOLD.brew },
+  "brew-linux": { update: brewUpdate(), hold: HOLD.brew },
   // `scoop update <app>` syncs the buckets only when Scoop itself is old.
   scoop: {
     warning: WARNINGS.scoop,
@@ -138,6 +180,7 @@ export const CHANNELS = {
         commands: ["scoop update", "scoop update bilang-play"],
       },
     ],
+    hold: HOLD.scoop,
   },
   // Chocolatey keeps its packages in a folder shared by every user
   // (C:\ProgramData\chocolatey), which only an administrator may change.
@@ -152,6 +195,7 @@ export const CHANNELS = {
         commands: ["choco upgrade bilangplay --source bilangplay --pre -y"],
       }),
     ],
+    hold: HOLD.chocolatey,
   },
   // No APT repository: download, then install the file. /tmp is readable
   // by APT's sandbox user, so it does not warn.
@@ -206,6 +250,8 @@ export const INSTALL = {
     },
     TO_UPDATE,
     { updates: "scoop" },
+    TO_HOLD,
+    ...HOLD.scoop,
     elevated({
       title: "Chocolatey",
       warning: WARNINGS.chocolatey,
@@ -216,6 +262,8 @@ export const INSTALL = {
     }),
     TO_UPDATE,
     { updates: "chocolatey" },
+    TO_HOLD,
+    ...HOLD.chocolatey,
     {
       title: t("NSIS installer (.exe)", "Установщик NSIS (.exe)"),
       text: t(
@@ -264,6 +312,8 @@ export const INSTALL = {
     },
     TO_UPDATE,
     { updates: "brew-macos" },
+    TO_HOLD,
+    ...HOLD.brew,
     BREW_TIP,
     {
       title: t("Disk image (.dmg)", "Образ диска (.dmg)"),
@@ -312,6 +362,8 @@ export const INSTALL = {
     },
     TO_UPDATE,
     { updates: "brew-linux" },
+    TO_HOLD,
+    ...HOLD.brew,
     BREW_TIP,
     {
       title: t("App image (.AppImage)", "Образ приложения (.AppImage)"),

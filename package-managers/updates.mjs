@@ -9,12 +9,15 @@
 //   node package-managers/updates.mjs <github-release.json> release.json
 //
 // <github-release.json> is the GitHub API's release object
-// (`gh api repos/<owner>/<repo>/releases/tags/<tag>`).
+// (`gh api repos/<owner>/<repo>/releases/tags/<tag>`). The record keeps the
+// license id the release came under (`license.mjs`); a release under
+// another id than the recorded one needs a new major version.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { CHANNELS, INSTALL, UNINSTALL } from "./instructions.mjs";
+import { LICENSE, LICENSES } from "./license.mjs";
 
 export const SCHEMA = "bilangplay.updates/1";
 const SITE = "https://uvlad7.github.io/BiLang-Play";
@@ -86,12 +89,16 @@ export function compareVersions(a, b) {
 }
 
 /**
- * The update file for a published release.
+ * The update file for a published release: a release record, or a GitHub
+ * API release object (under the license the next release comes under).
  * @param {{ tag_name: string, published_at: string, html_url: string, draft?: boolean,
+ *   license?: string,
  *   assets: { name: string, size: number, browser_download_url: string }[] }} release
  */
 export function renderUpdates(release) {
   if (release.draft) throw new Error("a draft release is not published");
+  const license = release.license ?? LICENSE;
+  if (!Object.hasOwn(LICENSES, license)) throw new Error(`license.mjs has no license ${license}`);
   const version = release.tag_name.replace(/^v/, "");
   compareVersions(version, version);
   const base = `${DOWNLOADS}/v${version}/`;
@@ -138,6 +145,7 @@ export function renderUpdates(release) {
           : {}),
         ...(channel.warning ? { warning: filled(channel.warning) } : {}),
         ...(channel.update ? { update: filled(channel.update) } : {}),
+        ...(channel.hold ? { hold: filled(channel.hold) } : {}),
       },
     ]),
   );
@@ -152,23 +160,54 @@ export function renderUpdates(release) {
     channels,
     install: filled(INSTALL),
     uninstall: filled(UNINSTALL),
+    // The terms this version came under; a copy released under others says so.
+    license: { id: license, text: LICENSES[license], url: `${SITE}/#license` },
   };
 }
 
 /**
- * What the update file needs of a GitHub API release object.
+ * What the update file needs of a GitHub API release object, with the
+ * license it comes under.
  * @param {{ tag_name: string, published_at: string, html_url: string, draft?: boolean,
  *   assets: { name: string, size: number, browser_download_url: string }[] }} release
  */
 export function releaseRecord(release) {
-  renderUpdates(release);
+  renderUpdates({ ...release, license: LICENSE });
   const { tag_name, published_at, html_url, assets } = release;
   return {
     tag_name,
     published_at,
     html_url,
+    license: LICENSE,
     assets: assets.map(({ name, size, browser_download_url }) => ({ name, size, browser_download_url })),
   };
+}
+
+const versionOf = (record) => record.tag_name.replace(/^v/, "");
+const major = (version) => Number(version.split(".")[0]);
+
+/**
+ * The record to write for a release, given the one recorded (or null): null
+ * when the recorded version is newer (a release published late, for an
+ * earlier version). Throws when the release comes under another license
+ * than the recorded one without a new major version (docs/UPDATE-NOTICES.md
+ * in the app).
+ * @param {Parameters<typeof releaseRecord>[0]} release
+ * @param {{ tag_name: string, license?: string } | null} recorded
+ */
+export function nextRecord(release, recorded) {
+  const record = releaseRecord(release);
+  if (!recorded) return record;
+  const [version, current] = [versionOf(record), versionOf(recorded)];
+  if (compareVersions(version, current) < 0) return null;
+  // A record from before licenses were recorded has nothing to compare.
+  if (recorded.license && recorded.license !== record.license && major(version) <= major(current)) {
+    throw new Error(
+      `${version} comes under ${record.license}, ${current} under ${recorded.license}: ` +
+        `the license changes only with a new major version (above ${major(current)})`,
+    );
+  }
+  return record;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -176,18 +215,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (!releasePath || !outputPath) {
     throw new Error("usage: updates.mjs <github-release.json> <release.json>");
   }
-  const record = releaseRecord(JSON.parse(readFileSync(releasePath, "utf8")));
-  const version = record.tag_name.replace(/^v/, "");
+  const release = JSON.parse(readFileSync(releasePath, "utf8"));
   const output = resolve(outputPath);
-  // A release older than the recorded one (one published late, for an
-  // earlier version) leaves it as it is.
-  if (existsSync(output)) {
-    const current = JSON.parse(readFileSync(output, "utf8")).tag_name.replace(/^v/, "");
-    if (compareVersions(version, current) < 0) {
-      console.log(`${output} records ${current}, newer than ${version}; left as it is`);
-      process.exit(0);
-    }
+  const recorded = existsSync(output) ? JSON.parse(readFileSync(output, "utf8")) : null;
+  const record = nextRecord(release, recorded);
+  if (!record) {
+    console.log(`${output} records ${versionOf(recorded)}, newer than ${versionOf(release)}; left as it is`);
+    process.exit(0);
   }
   writeFileSync(output, `${JSON.stringify(record, null, 2)}\n`);
-  console.log(`Recorded ${version} in ${output}`);
+  console.log(`Recorded ${versionOf(record)} in ${output}`);
 }
