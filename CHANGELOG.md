@@ -10,13 +10,15 @@ shows them all. The Russian translation is in [CHANGELOG.ru.md](CHANGELOG.ru.md)
 
 ## [Unreleased]
 
-## [0.1.0-alpha.3] - 2026-11-03
+## [0.1.0-alpha.3] - 2026-11-07
 
-- **Interface languages:** the interface starts to come in Belarusian,
-  Ukrainian, Russian, German, French, Spanish, and Italian. It follows the
-  language you speak (or else the one you learn) unless you choose one under
-  Settings → Languages. Parts of the player, such as its menus, the
-  transcript, and the word card, are still in English.
+- **Interface languages:** the interface comes in Belarusian, Ukrainian,
+  Russian, German, French, Spanish, and Italian as well as English: the
+  menus, dialogs, panels, transcripts, word card, notices, and settings,
+  with numbers written the language's way (1,5 s). It follows the language
+  you speak (your system's language until you choose one), or else the one
+  you learn, unless you pick one under Settings → Languages. Only the
+  player's own control tooltips stay in English.
 - **More languages:** the language you speak and learn, and the preferred
   audio and subtitle languages, can be chosen from 81 more languages.
 - **Resuming videos:** reopening a video continues where you stopped, with
@@ -45,6 +47,36 @@ shows them all. The Russian translation is in [CHANGELOG.ru.md](CHANGELOG.ru.md)
   of passing silently.
 - **Linux file picker:** on desktops with an older file chooser (Ubuntu
   22.04), the picker shows BiLang Play's icon.
+- **Update notices:** when a newer version is out, the start screen says so,
+  with the steps to update the way this copy was installed (download,
+  Homebrew, Scoop, or Chocolatey) and a warning when the new version comes
+  under another license, with how to keep the installed one.
+- **Subtitle timing shortcuts:** Z and X now move the primary subtitles by a
+  second (Shift+Z and Shift+X by a tenth), A and S do the same for the
+  secondary subtitles, and Q gives the secondary the primary's timing.
+- **Clicking a word while playing** pauses with the subtitles still shown,
+  so the word stays under its card, and the transcript on pause opens above
+  them.
+- **Transcript on pause:** when it shows above the subtitles ("Hide subtitles
+  while the pause transcript is shown" off), it no longer overlaps them, nor
+  leaves an empty line's gap above a one-line subtitle.
+- **Panels and the settings window** make room for longer labels in the
+  other interface languages instead of cutting or overlapping them.
+- **Keyboard shortcuts:** holding Shift with a key that has no Shift
+  shortcut of its own no longer runs the key's shortcut (Shift+K used to
+  play, Shift+F to go fullscreen), and Shift+arrows select transcript text
+  again instead of seeking. The C key and the Subtitles menu's "Reset
+  primary timing" are gone: one stray press next to Ctrl+C lost a timing
+  correction. Reset a subtitle's timing with the button beside it in the
+  subtitles panel.
+- **Subtitle placement:** with both subtitles shown, each keeps its place:
+  a line appearing or ending in one no longer moves the other. The
+  subtitle position sets where the last line ends; more lines grow upward
+  from there, never past the top of the picture. At the lowest positions
+  subtitles now end just above the progress bar's time labels instead of
+  leaving a gap.
+- **macOS:** built on macOS 15 now, and still runs on macOS 14 (Sonoma) or
+  later.
 - Electron 44.5.0.
 
 ## [0.1.0-alpha.2] - 2026-10-27
