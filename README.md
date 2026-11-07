@@ -17,8 +17,9 @@ not guess.
 Each subtitle track has its own timing adjustment, so you can move it earlier
 or later to correct an offset.
 
-**Status: alpha.** Builds are shared for testing; expect rough edges. What
-changed in each version: [CHANGELOG.md](CHANGELOG.md).
+**Status: alpha.** Builds are shared for testing; expect rough edges. The
+interface isn't fully translated yet. What changed in each version:
+[CHANGELOG.md](CHANGELOG.md).
 
 **Vibe-coded.** The app is written almost entirely by AI coding agents
 (Claude Code and Codex), directed, tested, and reviewed by its author.
