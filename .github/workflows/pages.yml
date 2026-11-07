@@ -2,9 +2,14 @@ name: Pages
 
 # The site is rebuilt on every public-repository commit or on request for
 # testing. Publishing a release also renders its package-manager sources and
-# records it (release.json) and deploys that exact tree in this one
-# workflow. The bot's source commit uses GITHUB_TOKEN and deliberately does
-# not trigger a recursive Pages workflow. Every build renders the update file
+# records it (release.json) in a bot commit. That commit, pushed with
+# GITHUB_TOKEN, starts no push run, and this run cannot deploy it: Pages
+# names a deployment by GITHUB_SHA (the release tag's commit, which the
+# changelog push already deployed), keeps the first deployment of an ID,
+# and reports the second one a success without serving it (alpha.3,
+# 2026-11-07). So a run that pushed a commit deploys nothing and starts
+# this workflow for main instead, whose deployment is that commit's. Every
+# build renders the update file
 # (updates/main.json) from that record and the instructions, so a changed
 # instruction reaches the site and the app's update notice with the next
 # push. The site embeds it and the changelogs, so visitors make no GitHub API
@@ -20,10 +25,14 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  # Starting this workflow for main after a release's commit.
+  actions: write
 
+# A push replaces an older run; the run a release starts waits for the
+# release's run to finish instead of cancelling it.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   deploy:
@@ -55,6 +64,7 @@ jobs:
               --dir packages --pattern "$pattern"
           done
       - if: github.event_name == 'release' && !github.event.release.draft
+        id: render
         name: Render and commit sources verified against those assets
         env:
           GH_TOKEN: ${{ github.token }}
@@ -78,11 +88,22 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "package-manager sources for ${version}"
             git push origin HEAD:main
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
-      - run: node scripts/build-site.mjs _site
-      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+      # The pushed commit is deployed by a run of its own (see the top).
+      - if: steps.render.outputs.pushed == 'true'
+        name: Start this workflow for the pushed commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+      - if: steps.render.outputs.pushed != 'true'
+        run: node scripts/build-site.mjs _site
+      - if: steps.render.outputs.pushed != 'true'
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - if: steps.render.outputs.pushed != 'true'
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: _site
-      - id: deployment
+      - if: steps.render.outputs.pushed != 'true'
+        id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
