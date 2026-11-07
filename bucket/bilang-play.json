@@ -6,7 +6,7 @@
   "architecture": {
     "64bit": {
       "url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-windows-x64.zip",
-      "hash": "a4a381072555ca0c6fac334bbda9eefe002b5c29833d525f652f9614b0650fe2"
+      "hash": "4518bd4abc89666525fd9b66d0dfa221469e2e75ea86d2a7574dca000bea58d1"
     }
   },
   "bin": "BiLang Play.exe",

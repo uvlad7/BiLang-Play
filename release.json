@@ -1,88 +1,88 @@
 {
-  "tag_name": "v0.1.0-alpha.2",
-  "published_at": "2026-10-27T16:21:32Z",
-  "html_url": "https://github.com/uvlad7/BiLang-Play/releases/tag/v0.1.0-alpha.2",
+  "tag_name": "v0.1.0-alpha.3",
+  "published_at": "2026-11-07T18:16:38Z",
+  "html_url": "https://github.com/uvlad7/BiLang-Play/releases/tag/v0.1.0-alpha.3",
   "license": "proprietary-2026-10-25",
   "assets": [
     {
-      "name": "bilangplay-0.1.0-alpha.2-linux-amd64.deb",
-      "size": 104866348,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-linux-amd64.deb"
+      "name": "bilangplay-0.1.0-alpha.3-linux-amd64.deb",
+      "size": 105580068,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-linux-amd64.deb"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-linux-x64.tar.gz",
-      "size": 125506084,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-linux-x64.tar.gz"
+      "name": "bilangplay-0.1.0-alpha.3-linux-x64.tar.gz",
+      "size": 126595103,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-linux-x64.tar.gz"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-linux-x86_64.AppImage",
-      "size": 131889767,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-linux-x86_64.AppImage"
+      "name": "bilangplay-0.1.0-alpha.3-linux-x86_64.AppImage",
+      "size": 133011609,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-linux-x86_64.AppImage"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-macos-arm64.dmg",
-      "size": 136243969,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-macos-arm64.dmg"
+      "name": "bilangplay-0.1.0-alpha.3-macos-arm64.dmg",
+      "size": 137299288,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-macos-arm64.dmg"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-macos-arm64.dmg.blockmap",
-      "size": 143706,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-macos-arm64.dmg.blockmap"
+      "name": "bilangplay-0.1.0-alpha.3-macos-arm64.dmg.blockmap",
+      "size": 146164,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-macos-arm64.dmg.blockmap"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-macos-arm64.zip",
-      "size": 131962844,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-macos-arm64.zip"
+      "name": "bilangplay-0.1.0-alpha.3-macos-arm64.zip",
+      "size": 132988219,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-macos-arm64.zip"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-macos-arm64.zip.blockmap",
-      "size": 139294,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-macos-arm64.zip.blockmap"
+      "name": "bilangplay-0.1.0-alpha.3-macos-arm64.zip.blockmap",
+      "size": 139848,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-macos-arm64.zip.blockmap"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-windows-x64-setup.exe",
-      "size": 125229727,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-windows-x64-setup.exe"
+      "name": "bilangplay-0.1.0-alpha.3-windows-x64-setup.exe",
+      "size": 125872360,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-windows-x64-setup.exe"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-windows-x64-setup.exe.blockmap",
-      "size": 132802,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-windows-x64-setup.exe.blockmap"
+      "name": "bilangplay-0.1.0-alpha.3-windows-x64-setup.exe.blockmap",
+      "size": 133590,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-windows-x64-setup.exe.blockmap"
     },
     {
-      "name": "bilangplay-0.1.0-alpha.2-windows-x64.zip",
-      "size": 160433962,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/bilangplay-0.1.0-alpha.2-windows-x64.zip"
+      "name": "bilangplay-0.1.0-alpha.3-windows-x64.zip",
+      "size": 161269802,
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/bilangplay-0.1.0-alpha.3-windows-x64.zip"
     },
     {
       "name": "build-ffmpeg.mjs",
       "size": 14392,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/build-ffmpeg.mjs"
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/build-ffmpeg.mjs"
     },
     {
       "name": "ffmpeg-9.0.2.tar.xz",
       "size": 12040788,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/ffmpeg-9.0.2.tar.xz"
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/ffmpeg-9.0.2.tar.xz"
     },
     {
       "name": "latest-linux.yml",
       "size": 593,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/latest-linux.yml"
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/latest-linux.yml"
     },
     {
       "name": "latest-mac.yml",
       "size": 556,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/latest-mac.yml"
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/latest-mac.yml"
     },
     {
       "name": "latest.yml",
       "size": 397,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/latest.yml"
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/latest.yml"
     },
     {
       "name": "opus-1.6.1.tar.gz",
       "size": 10472813,
-      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.2/opus-1.6.1.tar.gz"
+      "browser_download_url": "https://github.com/uvlad7/BiLang-Play/releases/download/v0.1.0-alpha.3/opus-1.6.1.tar.gz"
     }
   ]
 }
