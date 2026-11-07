@@ -23,8 +23,9 @@ Each definition refers to immutable GitHub Release URLs and SHA-256 hashes.
 Do not publish an output whose artifact hashes have not been verified.
 
 The Linux cask owns the XDG desktop file and icon and writes
-`packaged-by=brew`; Scoop similarly writes `packaged-by=scoop`. NSIS writes
-`packaged-by=nsis` for Chocolatey.
+`packaged-by=brew`; Scoop similarly writes `packaged-by=scoop`. Chocolatey
+runs the NSIS installer, which writes `packaged-by=nsis`, then overwrites it
+with `chocolatey`, so the app's update notice shows Chocolatey's command.
 
 This one repository is the Homebrew tap, Scoop bucket, and Chocolatey feed.
 The Cask, the Scoop manifest, and the Chocolatey `.nuspec` and install
@@ -36,3 +37,34 @@ with it: every push to `main` redeploys Pages from the committed tree
 without building the feed, so a feed left out of git would vanish with the
 next deploy. Its history also keeps the exact `.nupkg` each version served.
 The feed holds only the newest version; each release replaces it.
+
+## The update file
+
+`license.mjs` keeps each license's description by id, and the id the next
+release comes under. The release record keeps the id the release came
+under, and the update file names it with its description: the app compares
+it with its own (when a newer version's differs, its update notice warns
+before the update steps), and the site's License section shows the
+description. The terms change only with a new major version: add the new
+id with the app's, and `updates.mjs` refuses to record a release under
+another id than the recorded one without a new major version.
+
+`instructions.mjs` holds the install, update, and uninstall steps, with
+their texts in a small markup (`**bold**`, `` `code` ``, links): the one
+source of the site's Install and Uninstall tabs and of the app's update
+notice, which reads each install channel's download and update steps.
+`updates.mjs` renders them, with the newest release's version and files,
+into the update file, served as
+`https://uvlad7.github.io/BiLang-Play/updates/main.json`. Every site build
+renders it from the committed release record, `release.json`, so a changed
+step reaches the site and released copies of the app with the next push.
+
+A release's Pages run writes `release.json` and commits it with the
+sources above, so the update file never names a version a package manager
+cannot install yet. A release older than the recorded one leaves it as it
+is.
+
+```sh
+gh api repos/uvlad7/BiLang-Play/releases/tags/v<version> > github-release.json
+node package-managers/updates.mjs github-release.json release.json
+```

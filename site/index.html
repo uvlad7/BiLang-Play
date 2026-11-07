@@ -461,221 +461,15 @@
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="windows">
-            <h3 lang="en">Personal package-manager channels</h3>
-            <h3 lang="ru">Личные каналы менеджеров пакетов</h3>
-            <p lang="en">These commands use BiLang Play's own sources; none submits anything to a public catalogue.</p>
-            <p lang="ru">Эти команды используют собственные источники BiLang Play; ничего не отправляется в публичный каталог.</p>
-            <h3>Scoop</h3>
-            <p lang="en">Scoop shows a warning before it clears the download mark from its installed files:</p>
-            <p lang="ru">Scoop выводит предупреждение, прежде чем снять метку о скачанном файле со своих установленных файлов:</p>
-            <pre><code>scoop bucket add bilang-play https://github.com/uvlad7/BiLang-Play
-scoop install bilang-play/bilang-play</code></pre>
-            <h3>Chocolatey</h3>
-            <p lang="en">Chocolatey shows a warning before it clears the download mark from the verified installer and installed files:</p>
-            <p lang="ru">Chocolatey выводит предупреждение, прежде чем снять метку о скачанном файле с проверенного установщика и установленных файлов:</p>
-            <pre><code>choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"
-choco install bilangplay --source bilangplay --pre -y</code></pre>
-            <div lang="en">
-              <h3>NSIS installer (.exe)</h3>
-              <p>
-                Run
-                <code
-                  >bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64-setup.exe</code
-                >. It asks whether to install for you only (no administrator rights, by default into
-                <code>%LOCALAPPDATA%\Programs\BiLang Play</code>) or for everyone on the computer
-                (administrator rights, into <code>C:\Program Files\BiLang Play</code>), and adds
-                Start menu and desktop shortcuts.
-              </p>
-              <h3>Portable app (.zip)</h3>
-              <p>
-                Unzip it anywhere and run <code>BiLang Play.exe</code>. On the first start it offers
-                to add itself to the Start menu and the desktop.
-              </p>
-              <h3>If Windows blocks it</h3>
-              <p>
-                Windows marks downloaded files, and unsigned apps then get “Windows protected your
-                PC” (choose <b>More info</b>, then <b>Run anyway</b>) or “The publisher could not be
-                verified” (choose <b>Run</b>). To remove the mark beforehand, right-click the
-                downloaded file, choose <b>Properties</b>, tick <b>Unblock</b>, and choose
-                <b>OK</b>; for the zip, do it before unzipping. Or in PowerShell:
-              </p>
-            </div>
-            <div lang="ru">
-              <h3>Установщик NSIS (.exe)</h3>
-              <p>
-                Запустите
-                <code
-                  >bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64-setup.exe</code
-                >. Он спросит, ставить программу только для вас (без прав администратора, по
-                умолчанию в <code>%LOCALAPPDATA%\Programs\BiLang Play</code>) или для всех
-                пользователей компьютера (с правами администратора, в
-                <code>C:\Program Files\BiLang Play</code>), и добавит ярлыки в меню «Пуск» и на
-                рабочий стол.
-              </p>
-              <h3>Портативное приложение (.zip)</h3>
-              <p>
-                Распакуйте куда угодно и запустите <code>BiLang Play.exe</code>. При первом запуске
-                приложение предложит добавить себя в меню «Пуск» и на рабочий стол.
-              </p>
-              <h3>Если Windows блокирует запуск</h3>
-              <p>
-                Windows помечает скачанные файлы, и для неподписанных программ показывает «Система
-                Windows защитила ваш компьютер» (нажмите <b>Подробнее</b>, затем
-                <b>Выполнить в любом случае</b>) или «Не удалось проверить издателя» (нажмите
-                <b>Запустить</b>). Чтобы снять пометку заранее, щёлкните скачанный файл правой
-                кнопкой, выберите <b>Свойства</b>, отметьте <b>Разблокировать</b> и нажмите
-                <b>ОК</b>; zip — до распаковки. Или в PowerShell:
-              </p>
-            </div>
-            <p lang="en">The downloaded installer or zip:</p>
-            <p lang="ru">Скачанный установщик или zip:</p>
-            <pre><code>Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<span class="ver">&lt;version&gt;</span>-windows-x64.zip"</code></pre>
-            <p lang="en">A folder already unzipped, every file in it:</p>
-            <p lang="ru">Уже распакованная папка, все файлы в ней:</p>
-            <pre><code>Get-ChildItem -Recurse "<span lang="en">&lt;the unzipped folder&gt;</span><span lang="ru">&lt;распакованная папка&gt;</span>" | Unblock-File</code></pre>
-            <p lang="en">
-              Where Smart App Control (Windows 11) blocks unsigned apps, unblocking does not help;
-              only turning Smart App Control off does.
-            </p>
-            <p lang="ru">
-              Если неподписанные программы блокирует «Интеллектуальное управление приложениями»
-              (Smart App Control, Windows 11), разблокировка не помогает — только его отключение.
-            </p>
+            <div class="steps" data-steps="install.windows"></div>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="macos">
-            <h3 lang="en">Homebrew</h3>
-            <h3 lang="ru">Homebrew</h3>
-            <p lang="en">The personal cask installs the app and warns before removing quarantine from this unsigned preview.</p>
-            <p lang="ru">Личный cask устанавливает приложение и предупреждает перед снятием карантина с этой неподписанной предварительной версии.</p>
-            <pre><code>brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play
-brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
-<p lang="en">If the tap is already installed, <code>brew update</code> fetches its latest Cask; do not untap and add it again. If Homebrew still shows an old Cask, run <code>brew update --force</code>. Use <code>brew upgrade --cask bilang-play</code> for a newer app version, or <code>brew reinstall --cask bilang-play</code> to apply a changed Cask at the same version.</p>
-<p lang="ru">Если tap уже установлен, <code>brew update</code> получает свежий Cask; удалять tap и добавлять его заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните <code>brew update --force</code>. Для новой версии приложения используйте <code>brew upgrade --cask bilang-play</code>, а чтобы применить изменённый Cask с той же версией — <code>brew reinstall --cask bilang-play</code>.</p>
-            <div lang="en">
-              <h3>Disk image (.dmg)</h3>
-              <p>
-                Open
-                <code>bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.dmg</code> and
-                drag <b>BiLang Play</b> onto <b>Applications</b>.
-              </p>
-              <h3>App (.app in .zip)</h3>
-              <p>
-                Unzip it and move <b>BiLang Play</b> to <b>Applications</b>. Started anywhere else,
-                the app offers to move itself there.
-              </p>
-              <p>
-                Or, in Finder, Control-click (or right-click) <b>BiLang Play</b>, choose
-                <b>Open</b>, then choose <b>Open</b> in the warning. Do this only when you trust
-                the download; macOS remembers that approval for this copy of the app.
-              </p>
-              <h3>If macOS blocks it</h3>
-              <p>
-                On the first start macOS says it cannot verify the app. Choose <b>Done</b>, open
-                <b>System Settings › Privacy &amp; Security</b>, scroll down to the message about
-                BiLang Play, and choose <b>Open Anyway</b>. Or remove the “downloaded from the
-                internet” mark in Terminal:
-              </p>
-            </div>
-            <div lang="ru">
-              <h3>Образ диска (.dmg)</h3>
-              <p>
-                Откройте
-                <code>bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.dmg</code> и
-                перетащите <b>BiLang Play</b> в <b>Программы</b> (Applications).
-              </p>
-              <h3>Приложение (.app в .zip)</h3>
-              <p>
-                Распакуйте и переместите <b>BiLang Play</b> в <b>Программы</b>. Если запустить его
-                из другого места, приложение само предложит туда переместиться.
-              </p>
-              <p>
-                Или в Finder нажмите Control и щёлкните (либо щёлкните правой кнопкой) по
-                <b>BiLang Play</b>, выберите <b>Открыть</b>, затем ещё раз <b>Открыть</b> в
-                предупреждении. Делайте это, только если доверяете загрузке: macOS запомнит
-                разрешение для этой копии приложения.
-              </p>
-              <h3>Если macOS блокирует запуск</h3>
-              <p>
-                При первом запуске macOS сообщает, что не может проверить приложение. Нажмите
-                <b>Готово</b>, откройте
-                <b>Системные настройки › Конфиденциальность и безопасность</b>, прокрутите до
-                сообщения о BiLang Play и нажмите <b>Всё равно открыть</b>. Или снимите пометку
-                «загружено из интернета» в Терминале:
-              </p>
-            </div>
-            <p lang="en">The installed app:</p>
-            <p lang="ru">Установленное приложение:</p>
-            <pre><code>xattr -dr com.apple.quarantine "/Applications/BiLang Play.app"</code></pre>
-            <p lang="en">Or the zip, before unzipping it:</p>
-            <p lang="ru">Или zip, до распаковки:</p>
-            <pre><code>xattr -d com.apple.quarantine ~/Downloads/bilangplay-<span class="ver">&lt;version&gt;</span>-macos-arm64.zip</code></pre>
+            <div class="steps" data-steps="install.macos"></div>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
-            <h3 lang="en">Homebrew</h3>
-            <h3 lang="ru">Homebrew</h3>
-            <p lang="en">The personal cask installs the tar.gz build, command, application-menu entry, and icons.</p>
-            <p lang="ru">Личный cask устанавливает сборку tar.gz, команду, пункт меню приложений и значки.</p>
-            <pre><code>brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play
-brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
-<p lang="en">If the tap is already installed, <code>brew update</code> fetches its latest Cask; do not untap and add it again. If Homebrew still shows an old Cask, run <code>brew update --force</code>. Use <code>brew upgrade --cask bilang-play</code> for a newer app version, or <code>brew reinstall --cask bilang-play</code> to apply a changed Cask at the same version.</p>
-<p lang="ru">Если tap уже установлен, <code>brew update</code> получает свежий Cask; удалять tap и добавлять его заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните <code>brew update --force</code>. Для новой версии приложения используйте <code>brew upgrade --cask bilang-play</code>, а чтобы применить изменённый Cask с той же версией — <code>brew reinstall --cask bilang-play</code>.</p>
-            <div lang="en">
-              <h3>App image (.AppImage)</h3>
-              <p>Make it executable and run it:</p>
-            </div>
-            <div lang="ru">
-              <h3>Образ приложения (.AppImage)</h3>
-              <p>Сделайте файл исполняемым и запустите:</p>
-            </div>
-            <pre><code>chmod +x bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage
-./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage</code></pre>
-            <p lang="en">
-              Or in the file manager:
-              <b>Properties › Permissions › Allow executing file as program</b>. It needs no
-              <code>libfuse2</code>. On the first start it offers to add itself to the applications
-              menu. On Ubuntu 24.04 and later the first start shows one <code>sudo</code> command
-              that installs an AppArmor profile for it, because Ubuntu restricts the sandbox the app
-              relies on; run it, then start the app again.
-            </p>
-            <p lang="ru">
-              Или в файловом менеджере:
-              <b>Свойства › Права › Разрешить выполнение файла как программы</b>.
-              <code>libfuse2</code> не нужен. При первом запуске приложение предложит добавить себя
-              в меню приложений. В Ubuntu 24.04 и новее первый запуск покажет одну команду с
-              <code>sudo</code>, которая ставит для него профиль AppArmor: Ubuntu ограничивает
-              песочницу, на которую опирается приложение. Выполните её и запустите приложение снова.
-            </p>
-            <h3 lang="en">Debian/Ubuntu package (.deb)</h3>
-            <h3 lang="ru">Пакет Debian/Ubuntu (.deb)</h3>
-            <pre><code>sudo apt install ./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-amd64.deb</code></pre>
-            <p lang="en">It adds BiLang Play to the applications menu itself.</p>
-            <p lang="ru">Он сам добавляет BiLang Play в меню приложений.</p>
-            <h3 lang="en">Portable app (.tar.gz)</h3>
-            <h3 lang="ru">Портативное приложение (.tar.gz)</h3>
-            <p lang="en">
-              Unpack it anywhere and run <code>./bilangplay</code> in the folder. On the first start
-              it offers to add itself to the applications menu. If it exits with a message about the
-              SUID sandbox helper, either install an AppArmor profile for it or let the bundled
-              helper run as root, from that folder:
-            </p>
-            <p lang="ru">
-              Распакуйте куда угодно и запустите <code>./bilangplay</code> в папке. При первом
-              запуске приложение предложит добавить себя в меню приложений. Если оно завершается с
-              сообщением о SUID sandbox helper, поставьте для него профиль AppArmor или разрешите
-              встроенному помощнику запускаться от root, из этой папки:
-            </p>
-            <pre><code>sudo chown root:root chrome-sandbox &amp;&amp; sudo chmod 4755 chrome-sandbox</code></pre>
-            <p lang="en">
-              On Ubuntu 22.04 and other systems of its age, install <code>zenity</code> so file
-              pickers open in the last folder you used:
-            </p>
-            <p lang="ru">
-              В Ubuntu 22.04 и других системах того времени поставьте <code>zenity</code>, чтобы
-              окна выбора файлов открывались в последней использованной папке:
-            </p>
-            <pre><code>sudo apt install zenity</code></pre>
+            <div class="steps" data-steps="install.linux"></div>
           </div>
         </div>
       </section>
@@ -704,146 +498,29 @@ brew install --cask uvlad7/bilang-play/bilang-play</code></pre>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="windows">
-            <h3>
-              <span lang="en">NSIS installer (.exe)</span>
-              <span lang="ru">Установщик NSIS (.exe)</span>
-            </h3>
-            <p lang="en">
-              <b>Settings › Apps › Installed apps › BiLang Play › Uninstall</b>, then delete the
-              downloaded installer.
-            </p>
-            <p lang="ru">
-              <b>Параметры › Приложения › Установленные приложения › BiLang Play › Удалить</b>,
-              затем удалите скачанный установщик.
-            </p>
-            <h3>
-              <span lang="en">Portable app (.zip)</span>
-              <span lang="ru">Портативное приложение (.zip)</span>
-            </h3>
-            <p lang="en">
-              Delete the unzipped folder and the downloaded zip. If you let it add its shortcuts,
-              remove them too (before deleting the folder, the app's start screen also has
-              <b>Remove from Start menu and desktop</b>):
-            </p>
-            <p lang="ru">
-              Удалите распакованную папку и скачанный zip. Если вы разрешили ему добавить ярлыки,
-              удалите и их (пока папка не удалена, на стартовом экране приложения есть и кнопка
-              <b>Remove from Start menu and desktop</b>):
-            </p>
-            <pre><code>Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\BiLang Play.lnk"
-Remove-Item "$([Environment]::GetFolderPath('Desktop'))\BiLang Play.lnk"</code></pre>
-            <h3>
-              <span lang="en">App data and settings, in PowerShell</span>
-              <span lang="ru">Данные и настройки, в PowerShell</span>
-            </h3>
-            <pre><code>Remove-Item -Recurse -Force "$env:APPDATA\bilangplay"
-Remove-Item -Recurse -Force "HKCU:\Software\io.github.uvlad7.bilangplay"</code></pre>
+            <div class="steps" data-steps="uninstall.windows"></div>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="macos">
-            <p lang="en">
-              Move <b>BiLang Play</b> to the Trash from wherever you keep it (usually
-              <b>Applications</b>), and the downloaded disk image or zip.
-            </p>
-            <p lang="ru">
-              Переместите <b>BiLang Play</b> в Корзину оттуда, где оно лежит (обычно из
-              <b>Программ</b>), и скачанный образ диска или zip.
-            </p>
-            <h3>
-              <span lang="en">App data and settings, in Terminal</span>
-              <span lang="ru">Данные и настройки, в Терминале</span>
-            </h3>
-            <pre><code>rm -rf ~/Library/"Application Support"/bilangplay
-defaults delete io.github.uvlad7.bilangplay 2&gt;/dev/null
-rm -f ~/Library/Preferences/io.github.uvlad7.bilangplay*.plist
-rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedState</code></pre>
+            <div class="steps" data-steps="uninstall.macos"></div>
           </div>
 
           <div class="card tab-panel" role="tabpanel" data-panel="linux">
-            <h3>
-              <span lang="en">Debian/Ubuntu package (.deb)</span>
-              <span lang="ru">Пакет Debian/Ubuntu (.deb)</span>
-            </h3>
-            <pre><code>sudo apt purge bilangplay</code></pre>
-            <p lang="en">
-              It removes its AppArmor profile and settings schema too. Then delete the downloaded
-              package.
-            </p>
-            <p lang="ru">
-              Заодно удаляет свой профиль AppArmor и схему настроек. Затем удалите скачанный пакет.
-            </p>
-            <h3>
-              <span lang="en">App image (.AppImage) or portable app (.tar.gz)</span>
-              <span lang="ru"
-                >Образ приложения (.AppImage) или портативное приложение (.tar.gz)</span
-              >
-            </h3>
-            <p lang="en">
-              Delete the AppImage file, or the unpacked folder and the downloaded archive. If you
-              added it to the applications menu, remove the entry and its icons (before deleting it,
-              the app's start screen also has
-              <b>Remove from applications menu</b>):
-            </p>
-            <p lang="ru">
-              Удалите файл AppImage или распакованную папку и скачанный архив. Если вы добавляли
-              приложение в меню приложений, удалите пункт меню и значки (пока оно не удалено, на
-              стартовом экране приложения есть и кнопка
-              <b>Remove from applications menu</b>):
-            </p>
-            <pre><code>data="${XDG_DATA_HOME:-$HOME/.local/share}"
-rm -f "$data/applications/bilang-play.desktop"
-find "$data/icons/hicolor" -name 'bilang-play*' -delete</code></pre>
-            <p lang="en">
-              If you installed the AppImage's AppArmor profile (Ubuntu 24.04 and later):
-            </p>
-            <p lang="ru">Если вы ставили профиль AppArmor для AppImage (Ubuntu 24.04 и новее):</p>
-            <pre><code>sudo apparmor_parser -R /etc/apparmor.d/bilangplay-appimage
-sudo rm /etc/apparmor.d/bilangplay-appimage</code></pre>
-            <h3>
-              <span lang="en"
-                >App data and settings (settings live in GSettings, stored by dconf on most
-                systems)</span
-              >
-              <span lang="ru"
-                >Данные и настройки (настройки — в GSettings, на большинстве систем их хранит
-                dconf)</span
-              >
-            </h3>
-            <pre><code>rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/bilangplay"
-dconf reset -f /io/github/uvlad7/bilangplay/</code></pre>
-            <p lang="en">
-              If the <code>dconf</code> command is not found, run this instead,
-              <b>before</b> deleting the app (<code>gsettings</code> needs a file that comes with
-              it):
-            </p>
-            <p lang="ru">
-              Если команда <code>dconf</code> не найдена, выполните вместо неё это,
-              <b>до</b> удаления приложения (<code>gsettings</code> нужен файл, который идёт с ним):
-            </p>
-            <p lang="en"><b>Debian/Ubuntu package (.deb):</b></p>
-            <p lang="ru"><b>Пакет Debian/Ubuntu (.deb):</b></p>
-            <pre><code>gsettings reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
-            <p lang="en">
-              <b>Portable app (.tar.gz)</b>, from the app's folder (the one with
-              <code>bilangplay</code> in it):
-            </p>
-            <p lang="ru">
-              <b>Портативное приложение (.tar.gz)</b>, из папки приложения (той, где лежит
-              <code>bilangplay</code>):
-            </p>
-            <pre><code>gsettings --schemadir resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/</code></pre>
-            <p lang="en">
-              <b>App image (.AppImage)</b>, from the folder it is in (this unpacks a
-              temporary copy):
-            </p>
-            <p lang="ru">
-              <b>Образ приложения (.AppImage)</b>, из папки, где он лежит (это распакует
-              временную копию):
-            </p>
-            <pre><code>./bilangplay-<span class="ver">&lt;version&gt;</span>-linux-x86_64.AppImage --appimage-extract
-gsettings --schemadir squashfs-root/resources/settings-schemas reset-recursively io.github.uvlad7.bilangplay:/io/github/uvlad7/bilangplay/
-rm -rf squashfs-root</code></pre>
+            <div class="steps" data-steps="uninstall.linux"></div>
           </div>
+        </div>
+      </section>
+
+      <section class="wrap section" id="license">
+        <h2><span lang="en">License</span><span lang="ru">Лицензия</span></h2>
+        <div class="card">
+          <div class="steps" data-license></div>
+          <p>
+            <a href="https://github.com/uvlad7/BiLang-Play/blob/main/LICENSE.txt"
+              ><span lang="en">The license's full text</span
+              ><span lang="ru">Полный текст лицензии</span></a
+            >
+          </p>
         </div>
       </section>
 
@@ -886,16 +563,6 @@ rm -rf squashfs-root</code></pre>
 
     <footer class="wrap footer">
       <p lang="en">
-        BiLang Play is proprietary software, not open source. Alpha builds are free, and will stay
-        free. Its license and the licenses of the open-source components it includes are in
-        <b>Help › Licenses</b> and in each package's <code>licenses</code> folder.
-      </p>
-      <p lang="ru">
-        BiLang Play — проприетарное ПО с закрытым исходным кодом. Альфа-версии бесплатны и останутся
-        бесплатными. Лицензия приложения и лицензии входящих в него открытых компонентов — в
-        <b>Help › Licenses</b> и в папке <code>licenses</code> каждого пакета.
-      </p>
-      <p lang="en">
         Word definitions: Wiktionary contributors,
         <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, via
         <a href="https://freedictionaryapi.com">FreeDictionaryAPI.com</a>. The video player is built
@@ -909,6 +576,7 @@ rm -rf squashfs-root</code></pre>
       </p>
       <p>
         <a href="https://github.com/uvlad7/BiLang-Play">GitHub</a> ·
+        <a href="#license"><span lang="en">License</span><span lang="ru">Лицензия</span></a> ·
         <a href="https://github.com/uvlad7/BiLang-Play/issues"
           ><span lang="en">Report a problem</span><span lang="ru">Сообщить о проблеме</span></a
         >
