@@ -63,7 +63,9 @@ exception was made once, on 2026-11-12, for the two releases from before
 this flow, whose tags held no sources of their own: `v0.1.0-alpha.2` was
 moved from `230d4c2` to `767da64`, and `v0.1.0-alpha.3` from `948e17e` to
 `672f356`, the commits on `main` with each version's own cask and manifest
-(identical to what `render.mjs` produces from the release's files).
+(identical to what `render.mjs` produces from the release's files); each
+release's recorded commit (`target_commitish`) was set to the same commit,
+or its page reads "0 commits to <old commit> since this release".
 `v0.1.0-alpha.1` has no sources. This repository's
 only workflow deploys Pages on a push to `main`.
 
