@@ -4,7 +4,7 @@ This public repository is the release-facing source for package-manager
 definitions. It contains only definitions generated from immutable release
 artifacts with verified SHA-256 hashes.
 The renderer produces the complete, independently deployable source for every
-personal channel. Download the four release artifacts into one directory and
+personal channel (`release.mjs` below runs it for a release). Download the four release artifacts into one directory and
 render the exact source with:
 
 ```sh
@@ -32,11 +32,37 @@ The Cask, the Scoop manifest, and the Chocolatey `.nuspec` and install
 script are committed source: their version, installer URL, and SHA-256 must
 be reviewable. The Chocolatey feed, a static NuGet v3 feed in
 `chocolatey/v3/` served by Pages, is built from that source by
-`build-chocolatey-feed.mjs` when a release is published, and is committed
-with it: every push to `main` redeploys Pages from the committed tree
-without building the feed, so a feed left out of git would vanish with the
-next deploy. Its history also keeps the exact `.nupkg` each version served.
-The feed holds only the newest version; each release replaces it.
+`build-chocolatey-feed.mjs` for each release, and is committed with it:
+every push to `main` redeploys Pages from the committed tree without
+building the feed, so a feed left out of git would vanish with the next
+deploy. The feed keeps every version, so an older one installs with
+`choco install bilangplay --version <version>`: `chocolatey/versions.json`
+lists them with their publish dates, each release adds its entry and its
+`.nupkg` (the earlier packages stay as built), and the feed's service,
+version, registration, and search files are rewritten from that list.
+
+## A release
+
+The private repository's package workflow runs `release.mjs` on a checkout
+of this repository, from the release's own files, and offers the result as
+the branch `release/v<version>` with a pull request and a draft release
+targeting the branch's commit:
+
+```sh
+node package-managers/release.mjs <version> path/to/release-assets [published-at]
+```
+
+It renders the sources above, adds the version to the Chocolatey feed, and
+records the release in `release.json`. Publish the draft and merge the pull
+request together, with a merge commit: publishing creates the tag
+`v<version>` on the branch's commit, so a package manager that checks the
+tag out (Homebrew's tap and Scoop's bucket do, to install an older version;
+the site shows how) gets that version's sources, and merging keeps the tag
+in `main`'s history. Never move or delete a release's tag, except
+`v0.1.0-alpha.2` and `v0.1.0-alpha.3`, which predate this flow: they are to
+be moved once to commits with their own sources, kept on the branches
+`release/v<version>` (not merged into `main`). This repository's
+only workflow deploys Pages on a push to `main`.
 
 ## The update file
 
@@ -59,10 +85,13 @@ into the update file, served as
 renders it from the committed release record, `release.json`, so a changed
 step reaches the site and released copies of the app with the next push.
 
-A release's Pages run writes `release.json` and commits it with the
+A release's pull request carries `release.json` in the commit with the
 sources above, so the update file never names a version a package manager
-cannot install yet. A release older than the recorded one leaves it as it
-is.
+cannot install yet once the pull request is merged. A release older than
+the recorded one leaves it as it is.
+
+`release.mjs` writes it from the release's files. To write it from a
+published release instead:
 
 ```sh
 gh api repos/uvlad7/BiLang-Play/releases/tags/v<version> > github-release.json

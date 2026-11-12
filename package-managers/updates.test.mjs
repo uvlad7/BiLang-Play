@@ -140,7 +140,7 @@ test("every step is well formed: texts in English and Russian, commands as lines
         assert.ok(updates.channels[step.updates]?.update, `${where}: ${step.updates}`);
         continue;
       }
-      assert.ok(step.title || step.text || step.commands, where);
+      assert.ok(step.title || step.text || step.commands || step.more, where);
       for (const key of ["title", "text", "warning"]) if (step[key]) text(step[key], where);
       if (step.commands) {
         const lists = Array.isArray(step.commands) ? [step.commands] : Object.values(step.commands);
@@ -167,6 +167,29 @@ test("every step is well formed: texts in English and Russian, commands as lines
     assert.deepEqual(Object.keys(updates[part]), ["windows", "macos", "linux"]);
     for (const [system, list] of Object.entries(updates[part])) steps(list, `${part}.${system}`);
   }
+});
+
+test("every package manager collapses how to install an older version; a download offers any version's link", () => {
+  const updates = renderUpdates(release("1.0.0"));
+  const summaries = (list) => list.filter((step) => step.more?.summary.en === "Install an older version");
+  const commands = (step) => step.more.steps.flatMap((s) => s.commands ?? []).join("\n");
+  const windows = updates.install.windows;
+  const [scoop, choco] = [windows.indexOf(windows.find((s) => s.title === "Scoop")), windows.findIndex((s) => s.title === "Chocolatey")];
+  // The part comes right under its manager's install steps.
+  assert.match(commands(windows[scoop + 1]), /checkout v<version>[\s\S]*scoop install bilang-play\/bilang-play[\s\S]*checkout main/);
+  assert.match(commands(windows[choco + 1]), /choco install bilangplay --version <version> .*--source bilangplay/);
+  assert.equal(summaries(windows).length, 2);
+  for (const system of ["macos", "linux"]) {
+    const [part] = summaries(updates.install[system]);
+    assert.match(commands(part), /checkout v<version>[\s\S]*HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask[\s\S]*checkout main/);
+  }
+  // Each standalone download gives its link for any version.
+  const prefix = "https://github.com/uvlad7/BiLang-Play/releases/download/v<version>/bilangplay-<version>-";
+  const text = JSON.stringify(updates.install);
+  for (const tail of ["windows-x64-setup.exe", "windows-x64.zip", "macos-arm64.dmg", "macos-arm64.zip", "linux-x86_64.AppImage", "linux-amd64.deb", "linux-x64.tar.gz"]) {
+    assert.ok(text.includes(prefix + tail), tail);
+  }
+  assert.doesNotMatch(JSON.stringify(updates), /\{old:/);
 });
 
 test("elevated commands come with sudo and gsudo, collapsed", () => {

@@ -15,6 +15,11 @@
       "registration": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/bilangplay/index.json",
       "versions": [
         {
+          "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/bilangplay/0.1.0-alpha.2.json",
+          "version": "0.1.0-alpha.2",
+          "downloads": 0
+        },
+        {
           "@id": "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/registration/bilangplay/0.1.0-alpha.3.json",
           "version": "0.1.0-alpha.3",
           "downloads": 0
