@@ -118,8 +118,10 @@ export function renderUpdates(release) {
   const fill = (text) =>
     text
       .replaceAll("{version}", version)
-      .replace(/\{(name|url):([a-z-]+)\}/g, (_, field, kind) => {
+      .replace(/\{(name|url|old):([a-z-]+)\}/g, (_, field, kind) => {
         if (!files[kind]) throw new Error(`unknown file kind: ${kind}`);
+        // The link for any version: the visitor replaces `<version>`.
+        if (field === "old") return `${DOWNLOADS}/v<version>/${FILES[kind].name("<version>")}`;
         return files[kind][field];
       });
   // Every string in the instructions, placeholders filled.

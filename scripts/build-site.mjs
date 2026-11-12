@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Build the static Pages payload. The update file, updates/main.json, is
-// rendered from the release record (release.json, which a release's Pages
-// run writes) and the instructions (package-managers/updates.mjs); the page
+// rendered from the release record (release.json, which a release's pull
+// request updates) and the instructions (package-managers/updates.mjs); the page
 // embeds it and the changelogs, so a visitor makes no requests to GitHub's
 // API, and fills its downloads and its install and uninstall tabs from it.
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -12,12 +12,6 @@ import { renderUpdates } from "../package-managers/updates.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const output = resolve(process.argv[2] ?? "_site");
-const event = process.env.GITHUB_EVENT_PATH
-  ? JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"))
-  : null;
-
-if (event?.release?.draft) throw new Error("refusing to deploy a draft release");
-
 const recordPath = join(root, "release.json");
 const updates = existsSync(recordPath)
   ? renderUpdates(JSON.parse(readFileSync(recordPath, "utf8")))

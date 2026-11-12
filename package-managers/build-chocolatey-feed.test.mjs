@@ -31,3 +31,40 @@ test("builds a static NuGet v3 package, registration, and search feed", () => {
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("keeps every version in the feed, newest first in search, so an older one can be installed", () => {
+  const root = mkdtempSync(join(tmpdir(), "bilangplay-choco-"));
+  try {
+    const source = join(root, "source");
+    mkdirSync(join(source, "tools"), { recursive: true });
+    writeFileSync(join(source, "bilangplay.nuspec"), "<package />");
+    writeFileSync(join(source, "tools", "chocolateyinstall.ps1"), "Write-Output test");
+    const feed = join(root, "feed");
+    buildFeed("1.0.0-alpha.10", source, feed, "2026-01-01T00:00:00.000Z");
+    buildFeed("1.0.0-alpha.2", source, feed, "2026-01-02T00:00:00.000Z");
+    buildFeed("1.0.0", source, feed, "2026-01-03T00:00:00.000Z");
+    const read = (...path) => JSON.parse(readFileSync(join(feed, "v3", ...path), "utf8"));
+    const order = ["1.0.0-alpha.2", "1.0.0-alpha.10", "1.0.0"];
+    assert.deepEqual(read("flatcontainer", "bilangplay", "index.json").versions, order);
+    assert.deepEqual(
+      JSON.parse(readFileSync(join(feed, "versions.json"), "utf8")).map((entry) => entry.version),
+      order,
+    );
+    const page = read("registration", "bilangplay", "index.json").items[0];
+    assert.equal(page.count, 3);
+    assert.equal(page.lower, "1.0.0-alpha.2");
+    assert.equal(page.upper, "1.0.0");
+    assert.deepEqual(page.items.map((leaf) => leaf.catalogEntry.version), order);
+    assert.equal(page.items[0].catalogEntry.published, "2026-01-02T00:00:00.000Z");
+    for (const version of order) {
+      assert.ok(readFileSync(join(feed, "v3", "flatcontainer", "bilangplay", version, `bilangplay.${version}.nupkg`)).length > 0);
+      assert.equal(read("registration", "bilangplay", `${version}.json`).catalogEntry.version, version);
+    }
+    const hit = read("search", "query").data[0];
+    assert.equal(hit.version, "1.0.0");
+    assert.deepEqual(hit.versions.map((v) => v.version), order);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
