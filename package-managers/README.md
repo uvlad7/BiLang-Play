@@ -58,10 +58,13 @@ request together, with a merge commit: publishing creates the tag
 `v<version>` on the branch's commit, so a package manager that checks the
 tag out (Homebrew's tap and Scoop's bucket do, to install an older version;
 the site shows how) gets that version's sources, and merging keeps the tag
-in `main`'s history. Never move or delete a release's tag, except
-`v0.1.0-alpha.2` and `v0.1.0-alpha.3`, which predate this flow: they are to
-be moved once to commits with their own sources, kept on the branches
-`release/v<version>` (not merged into `main`). This repository's
+in `main`'s history. Never move or delete a release's tag. The one
+exception was made once, on 2026-11-12, for the two releases from before
+this flow, whose tags held no sources of their own: `v0.1.0-alpha.2` was
+moved from `230d4c2` to `767da64`, and `v0.1.0-alpha.3` from `948e17e` to
+`672f356`, the commits on `main` with each version's own cask and manifest
+(identical to what `render.mjs` produces from the release's files).
+`v0.1.0-alpha.1` has no sources. This repository's
 only workflow deploys Pages on a push to `main`.
 
 ## The update file
