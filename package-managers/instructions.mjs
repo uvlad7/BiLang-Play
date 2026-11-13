@@ -14,9 +14,11 @@
 // A channel's `warning` is what its manager says each time it installs the
 // app, the first time and at every update: the site shows it with the
 // install steps, the app's update notice above the update steps.
-// Placeholders: `{version}`, `{name:<kind>}`, `{url:<kind>}` (`FILES`), and
-// `{old:<kind>}`, that file's link with `<version>` in place of the version
-// (the visitor fills in the one wanted).
+// Placeholders: `{version}`, `{name:<kind>}`, and `{url:<kind>}` (`FILES`).
+// A collapsed part with `versions: "<channel>"` is for older versions: the
+// site puts a picker of the channel's versions before the newest in it
+// (`versions.json`) and writes the picked one for `<version>` in its steps.
+// Commands go in `commands`, never inline in a text.
 
 /** @param {string | string[]} en @param {string | string[]} ru */
 /**
@@ -75,101 +77,108 @@ function elevated(step) {
 
 /**
  * The collapsed part under a package manager's install steps: installing an
- * older version. Every manager takes it from the tag of the release in this
- * repository, whose sources are the ones of that version (a release's pull
- * request carries them, and its commit is the tag); Chocolatey's feed keeps
- * every version. The first release with package-manager sources is
- * 0.1.0-alpha.2.
- * @param {object} intro a step's `text`
- * @param {object} step the commands, a step
+ * older version, picked on the site from the versions that install through
+ * `channel` (`versions.json`). Homebrew and Scoop take it from the tag of the
+ * release in this repository, whose sources are the ones of that version (a
+ * release's pull request carries them, and its commit is the tag);
+ * Chocolatey's feed keeps every version.
+ * @param {string} channel @param {object[]} steps
  */
-function olderVersion(intro, step) {
+function olderVersion(channel, steps) {
   return {
     more: {
       summary: t("Install an older version", "Установка старой версии"),
-      steps: [{ text: intro }, step],
+      versions: channel,
+      steps,
     },
   };
 }
 
-/** A downloaded file's link for any version, under its install steps. */
-const otherVersion = (kind) => ({
+/** Uninstalling another installed version first, with these commands. */
+const uninstallFirst = (commands) => ({
   text: t(
-    `Another version: \`{old:${kind}}\`, with \`<version>\` replaced by the one wanted.`,
-    `Другая версия: \`{old:${kind}}\`, где \`<version>\` заменено нужной версией.`,
+    "If another version is installed, uninstall it first:",
+    "Если установлена другая версия, сначала удалите её:",
   ),
+  commands,
 });
 
 const BREW_TAP = 'git -C "$(brew --repository uvlad7/bilang-play)"';
-const BREW_OLDER = olderVersion(
-  t(
-    [
-      "The tap keeps each version's Cask at its tag. Check the tag out, install, and return the tap to the newest version. Uninstall another installed version first (`brew uninstall --cask bilang-play`); `brew pin --cask bilang-play` keeps this one through upgrades.",
-      "Replace `<version>` with the version wanted (for example `0.1.0-alpha.2`, the oldest installable this way; see the [releases](https://github.com/uvlad7/BiLang-Play/releases)).",
-    ],
-    [
-      "Tap хранит Cask каждой версии на её теге. Переключитесь на тег, установите и верните tap на новейшую версию. Другую установленную версию сначала удалите (`brew uninstall --cask bilang-play`); `brew pin --cask bilang-play` оставит эту при обновлениях.",
-      "Замените `<version>` нужной версией (например, `0.1.0-alpha.2` — самая старая, которую можно так поставить; список — в [релизах](https://github.com/uvlad7/BiLang-Play/releases)).",
-    ],
-  ),
-  {
-    commands: [
-      `${BREW_TAP} fetch --tags`,
-      `${BREW_TAP} checkout v<version>`,
-      "HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask uvlad7/bilang-play/bilang-play",
-      `${BREW_TAP} checkout main`,
-    ],
-  },
-);
+/** @param {string} channel `brew-macos` or `brew-linux` */
+const brewOlder = (channel) =>
+  olderVersion(channel, [
+    {
+      // Homebrew replaces another installed version itself (tested with 7.0.13).
+      // Without HOMEBREW_NO_AUTO_UPDATE its auto-update returns the tap to the
+      // newest version first, and installs that.
+      text: t(
+        "The tap keeps each version's Cask at its tag. Check the tag out, install (this replaces another installed version), and return the tap to the newest version:",
+        "Tap хранит Cask каждой версии на её теге. Переключитесь на тег, установите (это заменит другую установленную версию) и верните tap на новейшую версию:",
+      ),
+      commands: [
+        `${BREW_TAP} fetch --tags`,
+        `${BREW_TAP} checkout v<version>`,
+        "HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask uvlad7/bilang-play/bilang-play",
+        `${BREW_TAP} checkout main`,
+      ],
+    },
+    TO_HOLD,
+    ...HOLD.brew,
+  ]);
 
 const SCOOP_BUCKET = '"$(if ($env:SCOOP) { $env:SCOOP } else { "$HOME\\scoop" })\\buckets\\bilang-play"';
-const SCOOP_OLDER = olderVersion(
-  t(
-    [
-      "The bucket keeps each version's manifest at its tag. In PowerShell, check the tag out, install, and return the bucket to the newest version. Uninstall another installed version first (`scoop uninstall bilang-play`); `scoop hold bilang-play` keeps this one through updates.",
-      "Replace `<version>` with the version wanted (for example `0.1.0-alpha.2`, the oldest installable this way; see the [releases](https://github.com/uvlad7/BiLang-Play/releases)).",
-    ],
-    [
-      "Bucket хранит манифест каждой версии на её теге. В PowerShell переключитесь на тег, установите и верните bucket на новейшую версию. Другую установленную версию сначала удалите (`scoop uninstall bilang-play`); `scoop hold bilang-play` оставит эту при обновлениях.",
-      "Замените `<version>` нужной версией (например, `0.1.0-alpha.2` — самая старая, которую можно так поставить; список — в [релизах](https://github.com/uvlad7/BiLang-Play/releases)).",
-    ],
-  ),
-  {
-    commands: [
-      `git -C ${SCOOP_BUCKET} fetch --tags`,
-      `git -C ${SCOOP_BUCKET} checkout v<version>`,
-      "scoop install bilang-play/bilang-play",
-      `git -C ${SCOOP_BUCKET} checkout main`,
-    ],
-  },
-);
+const SCOOP_OLDER = () =>
+  olderVersion("scoop", [
+    uninstallFirst(["scoop uninstall bilang-play"]),
+    {
+      text: t(
+        "The bucket keeps each version's manifest at its tag. In PowerShell, check the tag out, install, and return the bucket to the newest version:",
+        "Bucket хранит манифест каждой версии на её теге. В PowerShell переключитесь на тег, установите и верните bucket на новейшую версию:",
+      ),
+      commands: [
+        `git -C ${SCOOP_BUCKET} fetch --tags`,
+        `git -C ${SCOOP_BUCKET} checkout v<version>`,
+        "scoop install bilang-play/bilang-play",
+        `git -C ${SCOOP_BUCKET} checkout main`,
+      ],
+    },
+    TO_HOLD,
+    ...HOLD.scoop,
+  ]);
 
-const CHOCOLATEY_OLDER = olderVersion(
-  t(
-    [
-      "The feed keeps every version. In an administrator shell, install the version wanted (`--allow-downgrade` replaces a newer installed one); `choco pin add -n bilangplay` keeps it through upgrades.",
-      "Replace `<version>` with the version wanted (for example `0.1.0-alpha.2`, the oldest installable this way; see the [releases](https://github.com/uvlad7/BiLang-Play/releases)).",
-    ],
-    [
-      "В ленте есть все версии. В оболочке администратора установите нужную (`--allow-downgrade` заменит более новую установленную); `choco pin add -n bilangplay` оставит её при обновлениях.",
-      "Замените `<version>` нужной версией (например, `0.1.0-alpha.2` — самая старая, которую можно так поставить; список — в [релизах](https://github.com/uvlad7/BiLang-Play/releases)).",
-    ],
-  ),
-  elevated({
-    commands: ["choco install bilangplay --version <version> --source bilangplay --pre --allow-downgrade -y"],
-  }),
-);
+const CHOCOLATEY_OLDER = () =>
+  olderVersion("chocolatey", [
+    elevated({
+      text: t(
+        "The feed keeps every version. In an administrator shell, install this one; `--allow-downgrade` replaces a newer installed version:",
+        "В ленте есть все версии. В оболочке администратора установите эту; `--allow-downgrade` заменит более новую установленную версию:",
+      ),
+      commands: ["choco install bilangplay --version <version> --source bilangplay --pre --allow-downgrade -y"],
+    }),
+    TO_HOLD,
+    ...HOLD.chocolatey,
+  ]);
 
 const BREW_INSTALL = [
   "brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play",
   "brew install --cask uvlad7/bilang-play/bilang-play",
 ];
-const BREW_TIP = {
-  text: t(
-    "If the tap is already installed, do not untap and add it again. If Homebrew still shows an old Cask, run `brew update --force`. Use `brew reinstall --cask bilang-play` to apply a changed Cask at the same version.",
-    "Если tap уже установлен, удалять его и добавлять заново не нужно. Если Homebrew всё ещё показывает старый Cask, выполните `brew update --force`. Чтобы применить изменённый Cask с той же версией, используйте `brew reinstall --cask bilang-play`.",
-  ),
-};
+const BREW_TIP = [
+  {
+    text: t(
+      "If the tap is already installed, do not untap and add it again. If Homebrew still shows an old Cask:",
+      "Если tap уже установлен, удалять его и добавлять заново не нужно. Если Homebrew всё ещё показывает старый Cask:",
+    ),
+    commands: ["brew update --force"],
+  },
+  {
+    text: t(
+      "To apply a changed Cask at the same version:",
+      "Чтобы применить изменённый Cask с той же версией:",
+    ),
+    commands: ["brew reinstall --cask bilang-play"],
+  },
+];
 
 /** What each manager warns about, at the first install and every update. */
 const WARNINGS = {
@@ -217,33 +226,37 @@ function brewUpdate() {
  * it with a newer version under another license, the site with the install
  * steps.
  */
+const RELEASE = t("To release it later:", "Чтобы потом снять это:");
 const HOLD = {
   brew: [
     {
       text: t(
-        "Pin it (Homebrew 5.1.12 or later), so `brew upgrade` skips it; `brew unpin --cask bilang-play` releases it:",
-        "Закрепите его (Homebrew 5.1.12 или новее), чтобы `brew upgrade` его пропускал; `brew unpin --cask bilang-play` снимает закрепление:",
+        "Pin it (Homebrew 5.1.12 or later), so `brew upgrade` skips it:",
+        "Закрепите его (Homebrew 5.1.12 или новее), чтобы `brew upgrade` его пропускал:",
       ),
       commands: ["brew pin --cask bilang-play"],
     },
+    { text: RELEASE, commands: ["brew unpin --cask bilang-play"] },
   ],
   scoop: [
     {
       text: t(
-        "Hold it, so `scoop update *` skips it; `scoop unhold bilang-play` releases it:",
-        "Заморозьте его, чтобы `scoop update *` его пропускал; `scoop unhold bilang-play` снимает заморозку:",
+        "Hold it, so `scoop update *` skips it:",
+        "Заморозьте его, чтобы `scoop update *` его пропускал:",
       ),
       commands: ["scoop hold bilang-play"],
     },
+    { text: RELEASE, commands: ["scoop unhold bilang-play"] },
   ],
   chocolatey: [
     elevated({
       text: t(
-        "Pin it, in an administrator shell, so `choco upgrade all` skips it; `choco pin remove -n bilangplay` releases it:",
-        "Закрепите его в оболочке администратора, чтобы `choco upgrade all` его пропускал; `choco pin remove -n bilangplay` снимает закрепление:",
+        "Pin it, in an administrator shell, so `choco upgrade all` skips it:",
+        "Закрепите его в оболочке администратора, чтобы `choco upgrade all` его пропускал:",
       ),
       commands: ["choco pin add -n bilangplay"],
     }),
+    elevated({ text: RELEASE, commands: ["choco pin remove -n bilangplay"] }),
   ],
 };
 
@@ -337,7 +350,7 @@ export const INSTALL = {
         "scoop install bilang-play/bilang-play",
       ],
     },
-    SCOOP_OLDER,
+    SCOOP_OLDER(),
     TO_UPDATE,
     { updates: "scoop" },
     TO_HOLD,
@@ -350,7 +363,7 @@ export const INSTALL = {
         "choco install bilangplay --source bilangplay --pre -y",
       ],
     }),
-    CHOCOLATEY_OLDER,
+    CHOCOLATEY_OLDER(),
     TO_UPDATE,
     { updates: "chocolatey" },
     TO_HOLD,
@@ -362,7 +375,6 @@ export const INSTALL = {
         "Запустите `{name:windows-setup}`. Он спросит, ставить программу только для вас (без прав администратора, по умолчанию в `%LOCALAPPDATA%\\Programs\\BiLang Play`) или для всех пользователей компьютера (с правами администратора, в `C:\\Program Files\\BiLang Play`), и добавит ярлыки в меню «Пуск» и на рабочий стол.",
       ),
     },
-    otherVersion("windows-setup"),
     {
       title: t("Portable app (.zip)", "Портативное приложение (.zip)"),
       text: t(
@@ -370,7 +382,6 @@ export const INSTALL = {
         "Распакуйте куда угодно и запустите `BiLang Play.exe`. При первом запуске приложение предложит добавить себя в меню «Пуск» и на рабочий стол.",
       ),
     },
-    otherVersion("windows-zip"),
     {
       title: t("If Windows blocks it", "Если Windows блокирует запуск"),
       text: t(
@@ -403,12 +414,12 @@ export const INSTALL = {
       warning: WARNINGS["brew-macos"],
       commands: BREW_INSTALL,
     },
-    BREW_OLDER,
+    brewOlder("brew-macos"),
     TO_UPDATE,
     { updates: "brew-macos" },
     TO_HOLD,
     ...HOLD.brew,
-    BREW_TIP,
+    ...BREW_TIP,
     {
       title: t("Disk image (.dmg)", "Образ диска (.dmg)"),
       text: t(
@@ -416,7 +427,6 @@ export const INSTALL = {
         "Откройте `{name:macos-dmg}` и перетащите **BiLang Play** в **Программы** (Applications).",
       ),
     },
-    otherVersion("macos-dmg"),
     {
       title: t("App (.app in .zip)", "Приложение (.app в .zip)"),
       text: t(
@@ -430,7 +440,6 @@ export const INSTALL = {
         ],
       ),
     },
-    otherVersion("macos-zip"),
     {
       title: t("If macOS blocks it", "Если macOS блокирует запуск"),
       text: t(
@@ -456,12 +465,12 @@ export const INSTALL = {
       ),
       commands: BREW_INSTALL,
     },
-    BREW_OLDER,
+    brewOlder("brew-linux"),
     TO_UPDATE,
     { updates: "brew-linux" },
     TO_HOLD,
     ...HOLD.brew,
-    BREW_TIP,
+    ...BREW_TIP,
     {
       title: t("App image (.AppImage)", "Образ приложения (.AppImage)"),
       text: t("Make it executable and run it:", "Сделайте файл исполняемым и запустите:"),
@@ -473,7 +482,6 @@ export const INSTALL = {
         "Или в файловом менеджере: **Свойства › Права › Разрешить выполнение файла как программы**. `libfuse2` не нужен. При первом запуске приложение предложит добавить себя в меню приложений. В Ubuntu 24.04 и новее первый запуск покажет одну команду с `sudo`, которая ставит для него профиль AppArmor: Ubuntu ограничивает песочницу, на которую опирается приложение. Выполните её и запустите приложение снова.",
       ),
     },
-    otherVersion("appimage"),
     {
       title: t("Debian/Ubuntu package (.deb)", "Пакет Debian/Ubuntu (.deb)"),
       commands: ["sudo apt install ./{name:deb}"],
@@ -484,7 +492,6 @@ export const INSTALL = {
         "Он сам добавляет BiLang Play в меню приложений.",
       ),
     },
-    otherVersion("deb"),
     TO_UPDATE,
     { updates: "deb" },
     {
@@ -495,7 +502,6 @@ export const INSTALL = {
       ),
       commands: ["sudo chown root:root chrome-sandbox && sudo chmod 4755 chrome-sandbox"],
     },
-    otherVersion("linux-tar"),
     {
       text: t(
         "On Ubuntu 22.04 and other systems of its age, install `zenity` so file pickers open in the last folder you used:",

@@ -952,3 +952,24 @@ pre .copy:hover {
 .steps details[open] summary {
   margin-bottom: 12px;
 }
+
+/* A version picker inside a sentence ("Version [0.1.0-alpha.3], …") or
+   above a package manager's older-version steps. */
+.version-select {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin: 0 2px;
+  cursor: pointer;
+}
+.version-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.steps .version-pick {
+  margin: 0 0 12px;
+  color: var(--text-dim);
+}

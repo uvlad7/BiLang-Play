@@ -12,7 +12,7 @@ test("builds a static NuGet v3 package, registration, and search feed", () => {
     mkdirSync(join(source, "tools"), { recursive: true });
     writeFileSync(join(source, "bilangplay.nuspec"), "<package />");
     writeFileSync(join(source, "tools", "chocolateyinstall.ps1"), "Write-Output test");
-    buildFeed("1.2.3", source, join(root, "feed"));
+    buildFeed("1.2.3", source, join(root, "feed"), [{ version: "1.2.3", published: "2026-01-01T00:00:00Z" }]);
     const feed = join(root, "feed", "v3");
     const serviceIndex = readFileSync(join(feed, "index.json"), "utf8");
     assert.match(serviceIndex, /PackageBaseAddress/);
@@ -40,16 +40,19 @@ test("keeps every version in the feed, newest first in search, so an older one c
     writeFileSync(join(source, "bilangplay.nuspec"), "<package />");
     writeFileSync(join(source, "tools", "chocolateyinstall.ps1"), "Write-Output test");
     const feed = join(root, "feed");
-    buildFeed("1.0.0-alpha.10", source, feed, "2026-01-01T00:00:00.000Z");
-    buildFeed("1.0.0-alpha.2", source, feed, "2026-01-02T00:00:00.000Z");
-    buildFeed("1.0.0", source, feed, "2026-01-03T00:00:00.000Z");
+    // As versions.json lists them, by when each was released.
+    const listed = [];
+    for (const [version, published] of [
+      ["1.0.0-alpha.10", "2026-01-01T00:00:00.000Z"],
+      ["1.0.0-alpha.2", "2026-01-02T00:00:00.000Z"],
+      ["1.0.0", "2026-01-03T00:00:00.000Z"],
+    ]) {
+      listed.push({ version, published });
+      buildFeed(version, source, feed, listed);
+    }
     const read = (...path) => JSON.parse(readFileSync(join(feed, "v3", ...path), "utf8"));
     const order = ["1.0.0-alpha.2", "1.0.0-alpha.10", "1.0.0"];
     assert.deepEqual(read("flatcontainer", "bilangplay", "index.json").versions, order);
-    assert.deepEqual(
-      JSON.parse(readFileSync(join(feed, "versions.json"), "utf8")).map((entry) => entry.version),
-      order,
-    );
     const page = read("registration", "bilangplay", "index.json").items[0];
     assert.equal(page.count, 3);
     assert.equal(page.lower, "1.0.0-alpha.2");
@@ -68,3 +71,7 @@ test("keeps every version in the feed, newest first in search, so an older one c
   }
 });
 
+
+test("refuses to build a version its list does not have", () => {
+  assert.throws(() => buildFeed("1.0.0", "unused", "unused", [{ version: "0.9.0", published: "2026-01-01T00:00:00Z" }]), /do not list 1\.0\.0/);
+});

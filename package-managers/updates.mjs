@@ -61,7 +61,7 @@ export const FILES = {
 };
 
 /** The bundled libraries' sources and their build script (LGPL). */
-const SOURCES = [/^ffmpeg-.*\.tar\.xz$/, /^opus-.*\.tar\.gz$/, /^build-ffmpeg\.mjs$/];
+export const SOURCES = [/^ffmpeg-.*\.tar\.xz$/, /^opus-.*\.tar\.gz$/, /^build-ffmpeg\.mjs$/];
 
 /**
  * Semantic-version precedence: negative, zero, or positive as `a` is below,
@@ -89,16 +89,12 @@ export function compareVersions(a, b) {
 }
 
 /**
- * The update file for a published release: a release record, or a GitHub
- * API release object (under the license the next release comes under).
- * @param {{ tag_name: string, published_at: string, html_url: string, draft?: boolean,
- *   license?: string,
+ * A release's files by kind (each one must be there), with their titles, and
+ * the sources of its bundled libraries.
+ * @param {{ tag_name: string,
  *   assets: { name: string, size: number, browser_download_url: string }[] }} release
  */
-export function renderUpdates(release) {
-  if (release.draft) throw new Error("a draft release is not published");
-  const license = release.license ?? LICENSE;
-  if (!Object.hasOwn(LICENSES, license)) throw new Error(`license.mjs has no license ${license}`);
+export function releaseFiles(release) {
   const version = release.tag_name.replace(/^v/, "");
   compareVersions(version, version);
   const base = `${DOWNLOADS}/v${version}/`;
@@ -115,13 +111,27 @@ export function renderUpdates(release) {
       return [kind, { ...file(asset), title }];
     }),
   );
+  const sources = release.assets.filter((a) => SOURCES.some((s) => s.test(a.name))).map(file);
+  return { version, files, sources };
+}
+
+/**
+ * The update file for a published release: a release record, or a GitHub
+ * API release object (under the license the next release comes under).
+ * @param {{ tag_name: string, published_at: string, html_url: string, draft?: boolean,
+ *   license?: string,
+ *   assets: { name: string, size: number, browser_download_url: string }[] }} release
+ */
+export function renderUpdates(release) {
+  if (release.draft) throw new Error("a draft release is not published");
+  const license = release.license ?? LICENSE;
+  if (!Object.hasOwn(LICENSES, license)) throw new Error(`license.mjs has no license ${license}`);
+  const { version, files, sources } = releaseFiles(release);
   const fill = (text) =>
     text
       .replaceAll("{version}", version)
-      .replace(/\{(name|url|old):([a-z-]+)\}/g, (_, field, kind) => {
+      .replace(/\{(name|url):([a-z-]+)\}/g, (_, field, kind) => {
         if (!files[kind]) throw new Error(`unknown file kind: ${kind}`);
-        // The link for any version: the visitor replaces `<version>`.
-        if (field === "old") return `${DOWNLOADS}/v<version>/${FILES[kind].name("<version>")}`;
         return files[kind][field];
       });
   // Every string in the instructions, placeholders filled.
@@ -158,7 +168,7 @@ export function renderUpdates(release) {
     release: release.html_url,
     notes: `${SITE}/#v${version}`,
     files,
-    sources: release.assets.filter((a) => SOURCES.some((s) => s.test(a.name))).map(file),
+    sources,
     channels,
     install: filled(INSTALL),
     uninstall: filled(UNINSTALL),

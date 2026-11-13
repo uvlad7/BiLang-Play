@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Build a small static NuGet v3 feed for the generated Chocolatey package.
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { compareVersions } from "./updates.mjs";
+import { readVersions, through } from "./versions.mjs";
 
 const packageId = "bilangplay";
 
@@ -15,28 +16,24 @@ function json(path, value) {
 }
 
 /**
- * Add a version to the feed: its package is built into the flat container and
- * the version joins `versions.json` (the list of every version the feed
- * serves, kept in git, with when each was published). Every other file of the
- * feed, the service index, the version lists, registrations, and search, is
- * rewritten from that list, so the feed keeps all its versions and Chocolatey
- * can install an older one with `--version`.
+ * Add a version to the feed: its package is built into the flat container.
+ * Every other file of the feed, the service index, the version lists,
+ * registrations, and search, is rewritten from `versions`, the feed's
+ * versions with when each was published (the repository's `versions.json`
+ * entries that list `chocolatey`, this one among them), so the feed keeps all
+ * its versions and Chocolatey can install an older one with `--version`.
  * @param {string} version @param {string} source @param {string} output
- * @param {string} [published] when this version was published (ISO 8601)
+ * @param {{ version: string, published: string }[]} versions
  */
-export function buildFeed(version, source, output, published = new Date().toISOString()) {
+export function buildFeed(version, source, output, versions) {
   const root = resolve(output);
   const stage = join(root, ".stage");
   const v3 = join(root, "v3");
   const lowerVersion = version.toLowerCase();
   const filename = `${packageId}.${lowerVersion}.nupkg`;
-
-  const listPath = join(root, "versions.json");
-  const listed = existsSync(listPath) ? JSON.parse(readFileSync(listPath, "utf8")) : [];
-  const versions = [...listed.filter((entry) => entry.version.toLowerCase() !== lowerVersion), { version, published }].sort(
-    (a, b) => compareVersions(a.version, b.version),
-  );
-  json(listPath, versions);
+  if (!versions.some((item) => item.version.toLowerCase() === lowerVersion)) {
+    throw new Error(`the feed's versions do not list ${version}`);
+  }
 
   rmSync(stage, { recursive: true, force: true });
   mkdirSync(stage, { recursive: true });
@@ -49,21 +46,22 @@ export function buildFeed(version, source, output, published = new Date().toISOS
   execFileSync("zip", ["-q", "-r", join(packageDir, filename), "."], { cwd: stage });
   rmSync(stage, { recursive: true, force: true });
 
-  writeFeedIndexes(root);
+  writeFeedIndexes(root, versions);
 }
 
 /**
- * Rewrite every file of the feed that is derived from `versions.json`: the
+ * Rewrite every file of the feed that is derived from its versions: the
  * service index, the version list, registrations, and search. The packages
  * in the flat container stay as they were built.
- * @param {string} output the directory with `versions.json` and `v3/`
+ * @param {string} output the directory with `v3/`
+ * @param {{ version: string, published: string }[]} listed
  */
-export function writeFeedIndexes(output) {
+export function writeFeedIndexes(output, listed) {
   const root = resolve(output);
   const v3 = join(root, "v3");
   const base = "https://uvlad7.github.io/BiLang-Play/chocolatey/v3";
   const registration = `${base}/registration/${packageId}`;
-  const versions = JSON.parse(readFileSync(join(root, "versions.json"), "utf8"));
+  const versions = [...listed].sort((a, b) => compareVersions(a.version, b.version));
   rmSync(join(v3, "registration"), { recursive: true, force: true });
   rmSync(join(v3, "search"), { recursive: true, force: true });
   const entry = (item) => {
@@ -135,9 +133,9 @@ export function writeFeedIndexes(output) {
 }
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
-  const [, , version, source = "chocolatey", output = "chocolatey", published] = process.argv;
+  const [, , version, source = "chocolatey", output = "chocolatey", repository = "."] = process.argv;
   if (!version) {
-    throw new Error("usage: build-chocolatey-feed.mjs <version> [source-dir] [output-dir] [published]");
+    throw new Error("usage: build-chocolatey-feed.mjs <version> [source-dir] [output-dir] [repository-root]");
   }
-  buildFeed(version, source, output, published);
+  buildFeed(version, source, output, through(readVersions(resolve(repository)), "chocolatey"));
 }

@@ -6,6 +6,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { renderUpdates } from "../package-managers/updates.mjs";
+import { readVersions, siteVersion } from "../package-managers/versions.mjs";
 
 const script = fileURLToPath(new URL("./build-site.mjs", import.meta.url));
 const record = JSON.parse(readFileSync(fileURLToPath(new URL("../release.json", import.meta.url)), "utf8"));
@@ -19,4 +20,9 @@ test("the site serves and embeds the update file rendered from the release recor
   assert.deepEqual(embedded.updates, expected);
   assert.match(embedded.changelogs.en, /^# /m);
   assert.deepEqual(JSON.parse(readFileSync(join(output, "updates", "main.json"), "utf8")), expected);
+  // Every published version, newest first, for the pickers; the update file has only the newest.
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  assert.deepEqual(embedded.versions, readVersions(root).map(siteVersion).reverse());
+  assert.equal(embedded.versions[0].version, expected.version);
+  assert.equal(expected.versions, undefined);
 });
