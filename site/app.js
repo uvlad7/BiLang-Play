@@ -28,7 +28,7 @@ const TEXT = {
     noRelease: "Релизов пока нет.",
     allReleases: "Все релизы",
     version: (tag, date) => `Версия ${tag}, ${date}`,
-    preRelease: "предварительная",
+    preRelease: "предварительная версия",
     copy: "Копировать",
     copied: "Скопировано",
     onGitHub: "Релиз на GitHub",
@@ -334,13 +334,63 @@ function renderSteps() {
       }
       return nodes;
     });
+  // A system's ways of installing as tabs, one panel each, then the steps
+  // that are the same for every way (app data, troubleshooting).
+  const withMethods = (steps, system) => {
+    const methods = steps.filter((step) => step.method);
+    if (methods.length === 0) return render(steps);
+    const group = document.createElement("div");
+    group.className = "methods";
+    group.dataset.system = system;
+    const list = document.createElement("div");
+    list.className = "method-list";
+    list.setAttribute("role", "tablist");
+    const panels = methods.map((entry) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.setAttribute("role", "tab");
+      tab.dataset.method = entry.method;
+      tab.append(...(typeof entry.title === "string" ? [entry.title] : texts("span", entry.title)));
+      tab.addEventListener("click", () => selectMethod(system, entry.method));
+      list.append(tab);
+      const panel = document.createElement("div");
+      panel.setAttribute("role", "tabpanel");
+      panel.className = "method-panel";
+      panel.dataset.method = entry.method;
+      panel.append(...render(entry.steps));
+      return panel;
+    });
+    group.append(list, ...panels);
+    return [group, ...render(steps.filter((step) => !step.method))];
+  };
   for (const box of document.querySelectorAll("[data-steps]")) {
     const steps = box.dataset.steps.split(".").reduce((node, key) => node?.[key], updates);
-    box.replaceChildren(...render(steps ?? []));
+    box.replaceChildren(...withMethods(steps ?? [], box.dataset.steps.split(".")[1]));
+  }
+  for (const group of document.querySelectorAll(".methods")) {
+    const system = group.dataset.system;
+    selectMethod(system, pickedMethods[system] ?? group.querySelector("[data-method]").dataset.method);
   }
   // The license's description, as the app shows it when the terms change.
   for (const box of document.querySelectorAll("[data-license]")) {
     box.replaceChildren(...texts("p", updates?.license?.text));
+  }
+}
+
+// The way of installing picked for each system: the same tab in Install and
+// Uninstall. A list without that way shows its first.
+const pickedMethods = {};
+function selectMethod(system, method) {
+  pickedMethods[system] = method;
+  for (const group of document.querySelectorAll(`.methods[data-system="${system}"]`)) {
+    const has = group.querySelector(`.method-panel[data-method="${method}"]`);
+    const shown = has ? method : group.querySelector(".method-panel").dataset.method;
+    for (const tab of group.querySelectorAll("[role=tab]")) {
+      tab.setAttribute("aria-selected", String(tab.dataset.method === shown));
+    }
+    for (const panel of group.querySelectorAll(".method-panel")) {
+      panel.hidden = panel.dataset.method !== shown;
+    }
   }
 }
 
@@ -583,21 +633,40 @@ function renderChangelog() {
   const box = document.querySelector("[data-changelog]");
   const which = lang();
   const changelog = siteData?.changelogs?.[which] ?? "";
+  // The newest release open, the earlier ones collapsed to their headers;
+  // drawn again in another language, each stays as the visitor left it.
+  const opened = box.querySelector(".release")
+    ? new Set([...box.querySelectorAll(".release[open]")].map((release) => release.id))
+    : null;
   box.innerHTML = releases(changelog)
-    .map((r) => {
+    .map((r, index) => {
       const version = escapeHtml(r.version);
       const pre = r.version.includes("-") ? `<span class="pre">${t().preRelease}</span>` : "";
-      return `<article class="card release" id="v${version}">
-        <header>
+      const open = opened ? opened.has(`v${r.version}`) : index === 0;
+      return `<details class="card release" id="v${version}"${open ? " open" : ""}>
+        <summary>
           <h3>${version}</h3>${pre}
           <time datetime="${r.date}">${formatDate(`${r.date}T00:00:00`)}</time>
           <a class="gh" href="${RELEASES}/tag/v${version}">${t().onGitHub}</a>
-        </header>
+        </summary>
         ${markdown(r.lines)}
-      </article>`;
+      </details>`;
     })
     .join("");
+  if (!opened) openLinkedRelease();
 }
+
+// A link to a release's notes (the app's update notice has one) opens it
+// and shows it: the page loads before the changelog is drawn, so the
+// browser's own jump to it found nothing.
+function openLinkedRelease() {
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  if (target instanceof HTMLDetailsElement && target.classList.contains("release")) {
+    target.open = true;
+    target.scrollIntoView();
+  }
+}
+window.addEventListener("hashchange", openLinkedRelease);
 
 function setLanguage(next) {
   root.dataset.lang = next;

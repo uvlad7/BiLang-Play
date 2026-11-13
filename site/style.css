@@ -5,7 +5,8 @@
   --surface-raised: #132438;
   --text: #eceef2;
   --text-dim: #a3a9b5;
-  --text-faint: #6d7380;
+  /* 4.99:1 on the page, 4.66:1 on cards (WCAG AA for normal text). */
+  --text-faint: #7d8391;
   --accent: #249bff;
   --accent-ink: #031321;
   --border: rgb(255 255 255 / 0.08);
@@ -746,11 +747,29 @@ pre .copy:hover {
   display: grid;
   gap: 16px;
 }
-.release header {
+/* A release's header is its summary: the newest is open, the rest collapsed. */
+.release summary {
   display: flex;
   align-items: baseline;
   gap: 10px;
   flex-wrap: wrap;
+  cursor: pointer;
+  list-style: none;
+}
+.release summary::-webkit-details-marker {
+  display: none;
+}
+.release summary::before {
+  content: "›";
+  display: inline-block;
+  color: var(--text-faint);
+  font-size: 1.2rem;
+  transition: transform 160ms ease;
+}
+.release[open] summary::before {
+  transform: rotate(90deg);
+}
+.release[open] summary {
   margin-bottom: 8px;
 }
 .release h3 {
@@ -834,8 +853,27 @@ pre .copy:hover {
 }
 
 @media (max-width: 640px) {
+  /* The section links get a row of their own under the logo, scrolling
+     sideways when they do not fit. */
+  .top-row {
+    flex-wrap: wrap;
+    row-gap: 0;
+  }
   .nav {
-    display: none;
+    order: 3;
+    width: calc(100% + 12px);
+    margin: 0 -6px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* A fade at the right edge says the row scrolls. */
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  }
+  .nav a {
+    white-space: nowrap;
+    padding: 6px;
+  }
+  .nav a:last-child {
+    margin-right: 22px;
   }
   .lang-switch {
     margin-left: auto;
@@ -972,4 +1010,38 @@ pre .copy:hover {
 .steps .version-pick {
   margin: 0 0 12px;
   color: var(--text-dim);
+}
+
+/* An install or uninstall tab's ways of installing, as smaller tabs. */
+.method-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.method-list button {
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-dim);
+  font: 600 0.9rem var(--font);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.method-list button:hover {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.05);
+}
+.method-list button[aria-selected="true"] {
+  color: var(--text);
+  background: var(--surface-raised);
+  border-color: rgb(36 155 255 / 0.5);
+}
+.method-panel[hidden] {
+  display: none;
+}
+.methods + * {
+  margin-top: 20px;
 }
