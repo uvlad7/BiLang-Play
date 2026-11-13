@@ -178,13 +178,15 @@ test("every package manager collapses how to install an older version, picked fr
   const choco = windows.findIndex((s) => s.title === "Chocolatey");
   assert.equal(older(windows).length, 2);
   // The part comes right under its manager's install steps, for its channel's versions:
-  // the picked one installed (Scoop uninstalls another version first), then held.
+  // the tap, bucket, or source added if it is not yet (for a first install), the picked
+  // version installed (Scoop uninstalls another one first), then held.
   const scoopPart = windows[scoop + 1];
   assert.equal(scoopPart.more.versions, "scoop");
-  assert.match(commands(scoopPart).join("\n"), /^scoop uninstall bilang-play\n.*checkout v<version>\nscoop install bilang-play\/bilang-play\n.*checkout main\nscoop hold bilang-play\nscoop unhold bilang-play$/s);
+  assert.match(commands(scoopPart).join("\n"), /^scoop bucket add bilang-play https:\/\/github.com\/uvlad7\/BiLang-Play\nscoop uninstall bilang-play\n.*checkout v<version>\nscoop install bilang-play\/bilang-play\n.*checkout main\nscoop hold bilang-play\nscoop unhold bilang-play$/s);
   const chocoPart = windows[choco + 1];
   assert.equal(chocoPart.more.versions, "chocolatey");
   assert.deepEqual(commands(chocoPart), [
+    'choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"',
     "choco install bilangplay --version <version> --source bilangplay --pre --allow-downgrade -y",
     "choco pin add -n bilangplay",
     "choco pin remove -n bilangplay",
@@ -194,7 +196,7 @@ test("every package manager collapses how to install an older version, picked fr
     assert.equal(part.more.versions, channel);
     assert.match(
       commands(part).join("\n"),
-      /^git -C .* fetch --tags\n.*checkout v<version>\nHOMEBREW_NO_AUTO_UPDATE=1 brew install --cask uvlad7\/bilang-play\/bilang-play\n.*checkout main\nbrew pin --cask bilang-play\nbrew unpin --cask bilang-play$/s,
+      /^brew tap uvlad7\/bilang-play https:\/\/github.com\/uvlad7\/BiLang-Play\ngit -C .* fetch --tags\n.*checkout v<version>\nHOMEBREW_NO_AUTO_UPDATE=1 brew install --cask uvlad7\/bilang-play\/bilang-play\n.*checkout main\nbrew pin --cask bilang-play\nbrew unpin --cask bilang-play$/s,
     );
   }
   // The downloads have the site's version picker, not a link to fill in.

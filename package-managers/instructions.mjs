@@ -104,9 +104,14 @@ const uninstallFirst = (commands) => ({
 });
 
 const BREW_TAP = 'git -C "$(brew --repository uvlad7/bilang-play)"';
+const BREW_ADD_TAP = "brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play";
 /** @param {string} channel `brew-macos` or `brew-linux` */
 const brewOlder = (channel) =>
   olderVersion(channel, [
+    {
+      text: t("If the tap is not added yet, add it first:", "Если tap ещё не добавлен, сначала добавьте его:"),
+      commands: [BREW_ADD_TAP],
+    },
     {
       // Homebrew replaces another installed version itself (tested with 7.0.13).
       // Without HOMEBREW_NO_AUTO_UPDATE its auto-update returns the tap to the
@@ -127,8 +132,16 @@ const brewOlder = (channel) =>
   ]);
 
 const SCOOP_BUCKET = '"$(if ($env:SCOOP) { $env:SCOOP } else { "$HOME\\scoop" })\\buckets\\bilang-play"';
+const SCOOP_ADD_BUCKET = "scoop bucket add bilang-play https://github.com/uvlad7/BiLang-Play";
 const SCOOP_OLDER = () =>
   olderVersion("scoop", [
+    {
+      text: t(
+        "If the bucket is not added yet, add it first:",
+        "Если bucket ещё не добавлен, сначала добавьте его:",
+      ),
+      commands: [SCOOP_ADD_BUCKET],
+    },
     uninstallFirst(["scoop uninstall bilang-play"]),
     {
       text: t(
@@ -146,8 +159,17 @@ const SCOOP_OLDER = () =>
     ...HOLD.scoop,
   ]);
 
+const CHOCOLATEY_ADD_SOURCE =
+  'choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"';
 const CHOCOLATEY_OLDER = () =>
   olderVersion("chocolatey", [
+    elevated({
+      text: t(
+        "If the source is not added yet, add it first, in an administrator shell:",
+        "Если источник ещё не добавлен, сначала добавьте его в оболочке администратора:",
+      ),
+      commands: [CHOCOLATEY_ADD_SOURCE],
+    }),
     elevated({
       text: t(
         "The feed keeps every version. In an administrator shell, install this one; `--allow-downgrade` replaces a newer installed version:",
@@ -159,10 +181,7 @@ const CHOCOLATEY_OLDER = () =>
     ...HOLD.chocolatey,
   ]);
 
-const BREW_INSTALL = [
-  "brew tap uvlad7/bilang-play https://github.com/uvlad7/BiLang-Play",
-  "brew install --cask uvlad7/bilang-play/bilang-play",
-];
+const BREW_INSTALL = [BREW_ADD_TAP, "brew install --cask uvlad7/bilang-play/bilang-play"];
 const BREW_TIP = [
   {
     text: t(
@@ -345,10 +364,7 @@ export const INSTALL = {
     {
       title: "Scoop",
       warning: WARNINGS.scoop,
-      commands: [
-        "scoop bucket add bilang-play https://github.com/uvlad7/BiLang-Play",
-        "scoop install bilang-play/bilang-play",
-      ],
+      commands: [SCOOP_ADD_BUCKET, "scoop install bilang-play/bilang-play"],
     },
     SCOOP_OLDER(),
     TO_UPDATE,
@@ -358,10 +374,7 @@ export const INSTALL = {
     elevated({
       title: "Chocolatey",
       warning: WARNINGS.chocolatey,
-      commands: [
-        'choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"',
-        "choco install bilangplay --source bilangplay --pre -y",
-      ],
+      commands: [CHOCOLATEY_ADD_SOURCE, "choco install bilangplay --source bilangplay --pre -y"],
     }),
     CHOCOLATEY_OLDER(),
     TO_UPDATE,
@@ -394,11 +407,13 @@ export const INSTALL = {
       commands: ['Unblock-File "$env:USERPROFILE\\Downloads\\{name:windows-zip}"'],
     },
     {
-      text: t("A folder already unzipped, every file in it:", "Уже распакованная папка, все файлы в ней:"),
-      commands: t(
-        ['Get-ChildItem -Recurse "<the unzipped folder>" | Unblock-File'],
-        ['Get-ChildItem -Recurse "<распакованная папка>" | Unblock-File'],
+      // The zip has the app's files at its root, so Explorer's Extract All
+      // puts them in a folder named after it, next to it.
+      text: t(
+        "A folder already unzipped, every file in it (where **Extract All** puts it; change the path if you chose another):",
+        "Уже распакованная папка, все файлы в ней (там, куда её кладёт **Извлечь все**; если вы выбрали другую, исправьте путь):",
       ),
+      commands: ['Get-ChildItem -Recurse "$env:USERPROFILE\\Downloads\\bilangplay-{version}-windows-x64" | Unblock-File'],
     },
     {
       text: t(
