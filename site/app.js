@@ -209,6 +209,12 @@ function renderDownloads() {
     );
   }
 
+  // The install and uninstall steps name the shown version's files (an
+  // update step keeps the newest).
+  for (const version of document.querySelectorAll("[data-steps] .ver:not([data-newest])")) {
+    version.textContent = shown.version;
+  }
+
   const sources = shown.sources ?? [];
   const sourceLine = document.querySelector("[data-sources]");
   sourceLine.hidden = sources.length === 0;
@@ -302,7 +308,15 @@ function renderSteps() {
   };
   const render = (steps) =>
     steps.flatMap((step) => {
-      if (step.updates) return render(updates.channels[step.updates]?.update ?? []);
+      if (step.updates) {
+        // Updating gets the newest version, whichever one the download
+        // section shows.
+        const nodes = render(updates.channels[step.updates]?.update ?? []);
+        for (const node of nodes) {
+          for (const version of node.querySelectorAll(".ver")) version.dataset.newest = "";
+        }
+        return nodes;
+      }
       const nodes = [
         ...(step.title ? [title(step.title)] : []),
         ...texts("p", step.text),
