@@ -3,10 +3,11 @@
 # BiLang Play
 
 A desktop video player for language learners. Watch your own videos with
-subtitles in the language you learn and in your own, pause to see the
-transcript, and click any word for its translation and definition.
-Make it look the way you read best: style profiles, and fonts, sizes,
-colors, outlines, and positions for the subtitles and both transcripts.
+subtitles in the language you're learning and in your native language, pause
+to see the transcript, and click any word for its translation and definition.
+Adjust the appearance to your own preferences: style profiles, and fonts,
+sizes, colors, outlines, and positions for the subtitles and both
+transcripts.
 
 Keep subtitle files beside a video and name language versions after it—for
 example, `episode.mp4`, `episode.en.srt`, and `episode.ru.srt`. BiLang Play
@@ -42,7 +43,8 @@ exist.
 | Linux | `bilangplay-<version>-linux-x86_64.AppImage`, `…-linux-amd64.deb`, or `…-linux-x64.tar.gz` | x86-64 with glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+) |
 
 The builds are not signed with a paid certificate yet, so Windows and macOS
-warn about them once. The steps below get past that.
+may warn about them the first time you open them. The steps below show how
+to open them anyway.
 
 ## Screenshots
 
@@ -68,6 +70,12 @@ as the second audio track, and its
 
 ## Install
 
+Homebrew (macOS and Linux), Scoop, and Chocolatey install it from this
+repository; their commands, including updating, keeping a version, and
+installing an older one, are on the
+[site's Install section](https://uvlad7.github.io/BiLang-Play/#install). The
+downloaded packages install as follows.
+
 ### Windows
 
 **NSIS installer (.exe).** Run `bilangplay-<version>-windows-x64-setup.exe`.
@@ -76,8 +84,8 @@ default into `%LOCALAPPDATA%\Programs\BiLang Play`) or for everyone on the
 computer (administrator rights, into `C:\Program Files\BiLang Play`), and
 adds Start menu and desktop shortcuts.
 
-**Portable app (.zip).** Unzip it anywhere and run `BiLang Play.exe`. On the
-first start it offers to add itself to the Start menu and the desktop.
+**Portable app (.zip).** Unzip it anywhere and run `BiLang Play.exe`. On
+first launch it offers to add itself to the Start menu and the desktop.
 
 **If Windows blocks it.** Windows marks downloaded files, and unsigned apps
 then get "Windows protected your PC" (choose **More info**, then **Run
@@ -86,16 +94,23 @@ remove the mark beforehand, right-click the downloaded file, choose
 **Properties**, tick **Unblock**, and choose **OK**; for the zip, do it
 before unzipping. Or in PowerShell:
 
-The downloaded installer or zip:
+The downloaded installer:
+
+```powershell
+Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<version>-windows-x64-setup.exe"
+```
+
+The downloaded zip, before unzipping it:
 
 ```powershell
 Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<version>-windows-x64.zip"
 ```
 
-A folder already unzipped, every file in it:
+An unzipped folder, with every file in it (where **Extract All** puts it;
+change the path if you chose another):
 
 ```powershell
-Get-ChildItem -Recurse "<the unzipped folder>" | Unblock-File
+Get-ChildItem -Recurse "$env:USERPROFILE\Downloads\bilangplay-<version>-windows-x64" | Unblock-File
 ```
 
 Where Smart App Control (Windows 11) blocks unsigned apps, unblocking does
@@ -110,10 +125,14 @@ not help; only turning Smart App Control off does.
 **Applications**. Started anywhere else, the app offers to move itself
 there.
 
-**If macOS blocks it.** On the first start macOS says it cannot verify the
+**If macOS blocks it.** On first launch macOS says it cannot verify the
 app. Choose **Done**, open **System Settings > Privacy & Security**, scroll
-down to the message about BiLang Play, and choose **Open Anyway**. Or remove
-the "downloaded from the internet" mark in Terminal:
+down to the message about BiLang Play, and choose **Open Anyway**. On macOS
+14 and earlier you can instead Control-click (or right-click) **BiLang Play**
+in Finder, choose **Open**, then choose **Open** in the warning; macOS 15
+removed that. Do either only when you trust the download: macOS remembers the
+approval for this copy of the app. Or remove the "downloaded from the
+internet" mark in Terminal:
 
 The installed app:
 
@@ -137,8 +156,8 @@ chmod +x bilangplay-<version>-linux-x86_64.AppImage
 ```
 
 (Or in the file manager: **Properties > Permissions > Allow executing file
-as program**.) It needs no `libfuse2`. On the first start it offers to add
-itself to the applications menu. On Ubuntu 24.04 and later the first start
+as program**.) It needs no `libfuse2`. On first launch it offers to add
+itself to the applications menu. On Ubuntu 24.04 and later the first launch
 shows one `sudo` command that installs an AppArmor profile for it, because
 Ubuntu restricts the sandbox the app relies on; run it, then start the app
 again.
@@ -149,26 +168,39 @@ again.
 sudo apt install ./bilangplay-<version>-linux-amd64.deb
 ```
 
-It adds BiLang Play to the applications menu itself.
+It adds BiLang Play to the applications menu, with its AppArmor profile.
 
 **Portable app (.tar.gz).** Unpack it anywhere and run `./bilangplay` in the
-folder. On the first start it offers to add itself to the applications menu.
-If it exits with a message about the SUID sandbox helper, either install an
-AppArmor profile for it or let the bundled helper run as root, from that
-folder:
+folder. On first launch it offers to add itself to the applications menu.
+
+If it exits with a message about the SUID sandbox helper: Ubuntu 24.04 and
+later allow the sandbox the app relies on only to programs with an AppArmor
+profile, and the message names only the other fix, the setuid helper. From
+the app's folder, install a profile for it (moved elsewhere, it needs one for
+the new place):
+
+```sh
+printf 'abi <abi/4.0>,\ninclude <tunables/global>\n\nprofile bilangplay-portable "%s/bilangplay" flags=(unconfined) {\n  userns,\n\n  include if exists <local/bilangplay-portable>\n}\n' "$PWD" | sudo tee /etc/apparmor.d/bilangplay-portable >/dev/null
+sudo apparmor_parser -r /etc/apparmor.d/bilangplay-portable
+```
+
+Or let the bundled helper run as root, from the app's folder:
 
 ```sh
 sudo chown root:root chrome-sandbox && sudo chmod 4755 chrome-sandbox
 ```
 
-On Ubuntu 22.04 and other systems of its age, install `zenity` so file
-pickers open in the last folder you used:
+On Ubuntu 22.04 and other older desktops, install `zenity` so file pickers
+open in the last folder you used:
 
 ```sh
 sudo apt install zenity
 ```
 
 ## Uninstall completely
+
+Installed with a package manager: see the
+[site's Uninstall section](https://uvlad7.github.io/BiLang-Play/#uninstall).
 
 Quit BiLang Play first. Removing the app leaves your settings and app data,
 so a reinstall starts where you left off; the commands under **App data and
@@ -234,12 +266,19 @@ rm -rf ~/Library/"Saved Application State"/io.github.uvlad7.bilangplay*.savedSta
   find "$data/icons/hicolor" -name 'bilang-play*' -delete
   ```
 
-  If you installed the AppImage's AppArmor profile (Ubuntu 24.04 and
-  later):
+  If you installed an AppArmor profile for it (Ubuntu 24.04 and later),
+  the AppImage's:
 
   ```sh
   sudo apparmor_parser -R /etc/apparmor.d/bilangplay-appimage
   sudo rm /etc/apparmor.d/bilangplay-appimage
+  ```
+
+  Or the portable app's:
+
+  ```sh
+  sudo apparmor_parser -R /etc/apparmor.d/bilangplay-portable
+  sudo rm /etc/apparmor.d/bilangplay-portable
   ```
 
 App data and settings (settings live in GSettings, stored by dconf on most

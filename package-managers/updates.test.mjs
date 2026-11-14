@@ -101,7 +101,8 @@ test("names the version, its files, its sources, and every channel's commands", 
   assert.match(updates.channels["brew-macos"].warning.en, /^Homebrew warns/);
   assert.equal(updates.channels["brew-linux"].warning, undefined);
   // The site shows a channel's warning with its install steps.
-  assert.deepEqual(updates.install.windows[1].warning, updates.channels.scoop.warning);
+  const scoopTab = updates.install.windows.find((step) => step.method === "scoop");
+  assert.deepEqual(scoopTab.steps[0].warning, updates.channels.scoop.warning);
   assert.deepEqual(
     updates.channels.nsis.downloads.map((file) => file.url),
     [`${base}/bilangplay-0.1.0-beta.1-windows-x64-setup.exe`],
@@ -165,25 +166,48 @@ test("every step is well formed: texts in English and Russian, commands as lines
   }
   for (const part of ["install", "uninstall"]) {
     assert.deepEqual(Object.keys(updates[part]), ["windows", "macos", "linux"]);
-    for (const [system, list] of Object.entries(updates[part])) steps(list, `${part}.${system}`);
+    for (const [system, list] of Object.entries(updates[part])) {
+      // Its ways of installing first, as tabs, then the steps for all of them.
+      const methods = list.filter((step) => step.method);
+      assert.ok(methods.length > 0, `${part}.${system}`);
+      assert.ok(list.slice(0, methods.length).every((step) => step.method), `${part}.${system}: methods first`);
+      for (const entry of methods) {
+        text(entry.title, `${part}.${system}.${entry.method}`);
+        steps(entry.steps, `${part}.${system}.${entry.method}`);
+      }
+      const rest = list.slice(methods.length);
+      if (rest.length > 0) steps(rest, `${part}.${system} (after the methods)`);
+    }
+  }
+});
+
+test("Install and Uninstall have the same ways of installing for each system", () => {
+  const updates = renderUpdates(release("1.0.0"));
+  const ids = (list) => list.filter((step) => step.method).map((step) => step.method);
+  // A download first: the site shows it unless the visitor picks another.
+  assert.deepEqual(ids(updates.install.windows), ["download", "scoop", "chocolatey"]);
+  for (const system of ["macos", "linux"]) assert.deepEqual(ids(updates.install[system]), ["download", "brew"]);
+  for (const system of ["windows", "macos", "linux"]) {
+    assert.deepEqual(ids(updates.uninstall[system]), ids(updates.install[system]), system);
   }
 });
 
 test("every package manager collapses how to install an older version, picked from its channel's versions", () => {
   const updates = renderUpdates(release("1.0.0"));
-  const older = (list) => list.filter((step) => step.more?.summary.en === "Install an older version");
+  const tab = (system, id) => updates.install[system].find((step) => step.method === id).steps;
+  const older = (steps) => steps.filter((step) => step.more?.summary.en === "Install an older version");
   const commands = (step) => step.more.steps.flatMap((s) => s.commands ?? []);
-  const windows = updates.install.windows;
-  const scoop = windows.findIndex((s) => s.title === "Scoop");
-  const choco = windows.findIndex((s) => s.title === "Chocolatey");
-  assert.equal(older(windows).length, 2);
-  // The part comes right under its manager's install steps, for its channel's versions:
-  // the tap, bucket, or source added if it is not yet (for a first install), the picked
-  // version installed (Scoop uninstalls another one first), then held.
-  const scoopPart = windows[scoop + 1];
+  // Each package manager's tab has one, for its channel's versions: the tap, bucket,
+  // or source added if it is not yet (for a first install), the picked version
+  // installed (Scoop uninstalls another one first), then held.
+  for (const [system, id] of [["windows", "scoop"], ["windows", "chocolatey"], ["macos", "brew"], ["linux", "brew"]]) {
+    assert.equal(older(tab(system, id)).length, 1, `${system} ${id}`);
+  }
+  for (const system of ["windows", "macos", "linux"]) assert.equal(older(tab(system, "download")).length, 0);
+  const [scoopPart] = older(tab("windows", "scoop"));
   assert.equal(scoopPart.more.versions, "scoop");
   assert.match(commands(scoopPart).join("\n"), /^scoop bucket add bilang-play https:\/\/github.com\/uvlad7\/BiLang-Play\nscoop uninstall bilang-play\n.*checkout v<version>\nscoop install bilang-play\/bilang-play\n.*checkout main\nscoop hold bilang-play\nscoop unhold bilang-play$/s);
-  const chocoPart = windows[choco + 1];
+  const [chocoPart] = older(tab("windows", "chocolatey"));
   assert.equal(chocoPart.more.versions, "chocolatey");
   assert.deepEqual(commands(chocoPart), [
     'choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"',
@@ -192,7 +216,7 @@ test("every package manager collapses how to install an older version, picked fr
     "choco pin remove -n bilangplay",
   ]);
   for (const [system, channel] of [["macos", "brew-macos"], ["linux", "brew-linux"]]) {
-    const [part] = older(updates.install[system]);
+    const [part] = older(tab(system, "brew"));
     assert.equal(part.more.versions, channel);
     assert.match(
       commands(part).join("\n"),

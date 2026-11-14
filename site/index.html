@@ -55,7 +55,20 @@
           <img src="icon-32.svg" width="32" height="32" alt="" />
           <span>BiLang Play</span>
         </a>
-        <nav class="nav" aria-label="Sections">
+        <!-- Phones: the section links open from here, under the header. -->
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+            <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+          <span lang="en">Menu</span><span lang="ru">Меню</span>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Sections" data-aria-label-en="Sections" data-aria-label-ru="Разделы">
           <a href="#screenshots"
             ><span lang="en">Screenshots</span><span lang="ru">Скриншоты</span></a
           >
@@ -81,8 +94,9 @@
           </h1>
           <p class="lead" lang="en">
             A desktop video player for language learners. Watch your own videos with subtitles in
-            the language you learn and in your own, pause to see the transcript, and click any word
-            for its translation and definition. Make it look the way you read best.
+            the language you're learning and in your native language, pause to see the
+            transcript, and click any word for its translation and definition. Adjust the
+            appearance to your own preferences.
           </p>
           <p class="lead" lang="ru">
             Десктопный видеоплеер для тех, кто учит языки. Смотрите свои видео с субтитрами на
@@ -94,7 +108,7 @@
             The app's interface isn't fully translated yet.
           </p>
           <p class="note" lang="ru">
-            Интерфейс приложения переведён ещё не полностью.
+            Интерфейс приложения пока переведён не полностью.
           </p>
           <p class="note" lang="en">
             Vibe-coded: the app is written almost entirely by AI coding agents (Claude Code and
@@ -120,12 +134,12 @@
         </div>
       </section>
 
-      <section class="wrap features" aria-label="Features">
+      <section class="wrap features" aria-label="Features" data-aria-label-en="Features" data-aria-label-ru="Возможности">
         <article class="card feature">
-          <h3><span lang="en">Two subtitles</span><span lang="ru">Две дорожки субтитров</span></h3>
+          <h3><span lang="en">Two subtitle tracks</span><span lang="ru">Две дорожки субтитров</span></h3>
           <p lang="en">
-            The language you learn and your own at once, each configured separately. SRT, WebVTT,
-            and tracks inside the video.
+            Subtitles in the language you're learning and in your native language, shown together
+            and styled separately. Supports SRT, WebVTT, and subtitle tracks inside the video.
           </p>
           <p lang="ru">
             Субтитры на изучаемом и родном языках одновременно; каждую дорожку можно настроить
@@ -137,8 +151,8 @@
             <span lang="en">Transcript on pause</span><span lang="ru">Транскрипт на паузе</span>
           </h3>
           <p lang="en">
-            Pause and the lines so far appear over the picture; click one to go back to it. Or keep
-            a transcript panel beside the video.
+            Pause, and everything said so far appears over the video; click a line to go back to
+            it. Or keep a transcript panel beside the video.
           </p>
           <p lang="ru">
             На паузе поверх видео появляются все реплики до текущего момента; нажмите на любую,
@@ -151,10 +165,10 @@
           <p lang="ru">Нажмите на слово в субтитрах, чтобы увидеть перевод и определение.</p>
         </article>
         <article class="card feature">
-          <h3><span lang="en">Your look</span><span lang="ru">Настройте отображение</span></h3>
+          <h3><span lang="en">Customize the look</span><span lang="ru">Настройте отображение</span></h3>
           <p lang="en">
-            Style profiles, and the font, size, colors, outline, and position of the subtitles and
-            both transcripts, changed live.
+            Pick a style profile, then adjust the font, size, colors, outline, and position of the
+            subtitles and both transcripts, and see each change as you make it.
           </p>
           <p lang="ru">
             Выбирайте профили стиля и меняйте шрифт, размер, цвета, обводку и положение субтитров
@@ -181,7 +195,11 @@
           data-gallery
           role="region"
           aria-roledescription="carousel"
+          data-aria-roledescription-en="carousel"
+          data-aria-roledescription-ru="карусель"
           aria-label="Screenshots"
+          data-aria-label-en="Screenshots"
+          data-aria-label-ru="Скриншоты"
           tabindex="0"
         >
           <div class="gallery-viewport">
@@ -192,6 +210,8 @@
                   width="1552"
                   height="922"
                   alt="BiLang Play playing Tears of Steel with English and Russian subtitles"
+                  data-alt-en="BiLang Play playing Tears of Steel with English and Russian subtitles"
+                  data-alt-ru="BiLang Play воспроизводит Tears of Steel с английскими и русскими субтитрами"
                 />
                 <figcaption>
                   <span lang="en">Both subtitles while it plays</span>
@@ -205,6 +225,8 @@
                   height="922"
                   loading="lazy"
                   alt="The pause transcript in English and Russian"
+                  data-alt-en="The pause transcript in English and Russian"
+                  data-alt-ru="Транскрипт на паузе на английском и русском"
                 />
                 <figcaption>
                   <span lang="en">On pause: the transcript in both languages</span>
@@ -218,6 +240,8 @@
                   height="922"
                   loading="lazy"
                   alt="The word card for “forgot” over the pause transcript"
+                  data-alt-en="The word card for “forgot” over the pause transcript"
+                  data-alt-ru="Карточка слова «forgot» поверх транскрипта на паузе"
                 />
                 <figcaption>
                   <span lang="en">Click a word: its translation and definition</span>
@@ -258,7 +282,7 @@
           <a href="https://creativecommons.org/licenses/by/3.0/deed.ru">CC BY 3.0</a>.
         </p>
         <!-- A screenshot at full size: opened by clicking one in the gallery. -->
-        <dialog class="lightbox" data-lightbox aria-label="Screenshot">
+        <dialog class="lightbox" data-lightbox aria-label="Screenshot" data-aria-label-en="Screenshot" data-aria-label-ru="Скриншот">
           <figure class="lightbox-figure">
             <div class="lightbox-media">
               <img data-lightbox-image alt="" />
@@ -346,7 +370,7 @@
             <span class="setup-number">2</span>
             <div>
               <strong>Укажите свои языки</strong>
-              <span>При открытии видео BiLang выберет подходящие дорожки субтитров.</span>
+              <span>При открытии видео BiLang Play выберет подходящие дорожки субтитров.</span>
             </div>
           </li>
           <li>
@@ -409,7 +433,7 @@
           >
           <span data-source-links></span>
         </p>
-        <article class="card build-request" aria-label="Request another build">
+        <article class="card build-request" aria-label="Request another build" data-aria-label-en="Request another build" data-aria-label-ru="Запросить сборку для другой системы">
           <div>
             <h3 lang="en">Don’t see your system?</h3>
             <h3 lang="ru">Не видите своей системы?</h3>
@@ -421,13 +445,13 @@
               class="button"
               data-build-request
               data-tooltip-en="Open an issue"
-              data-tooltip-ru="Открыть issue"
+              data-tooltip-ru="Создать issue"
               href="https://github.com/uvlad7/BiLang-Play/issues/new?template=build-request.yml"
               title="Open an issue"
               aria-label="Open an issue"
             >
               <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.49c-2.23.49-2.7-.95-2.7-.95-.36-.93-.89-1.18-.89-1.18-.73-.5.06-.49.06-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.96 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82A7.65 7.65 0 0 1 8 3.8a7.7 7.7 0 0 1 2 .27c1.53-1.03 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.52.56.83 1.27.83 2.15 0 3.08-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.19c0 .21.14.46.55.38A8 8 0 0 0 8 0Z" /></svg>
-              <span lang="en">Open issue</span><span lang="ru">Открыть issue</span>
+              <span lang="en">Open issue</span><span lang="ru">Создать issue</span>
             </a>
             <a
               class="button"
@@ -452,12 +476,12 @@
       <section class="wrap section" id="install">
         <h2><span lang="en">Install</span><span lang="ru">Установка</span></h2>
         <p class="section-lead" lang="en">
-          The builds are not signed with a paid certificate yet, so Windows and macOS warn about
-          them once. The steps below get past that.
+          The builds are not signed with a paid certificate yet, so Windows and macOS may warn
+          about them the first time you open them. The steps below show how to open them anyway.
         </p>
         <p class="section-lead" lang="ru">
-          Сборки пока не подписаны платным сертификатом, поэтому Windows и macOS один раз
-          предупреждают о них. Ниже — как это обойти.
+          Сборки пока не подписаны платным сертификатом, поэтому при первом запуске Windows и
+          macOS могут о них предупредить. Ниже — как всё равно их открыть.
         </p>
         <div class="tabs" data-tabs>
           <div class="tab-list" role="tablist">
@@ -523,7 +547,7 @@
           <div class="steps" data-license></div>
           <p>
             <a href="https://github.com/uvlad7/BiLang-Play/blob/main/LICENSE.txt"
-              ><span lang="en">The license's full text</span
+              ><span lang="en">Full license text</span
               ><span lang="ru">Полный текст лицензии</span></a
             >
           </p>

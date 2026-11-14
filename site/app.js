@@ -28,7 +28,7 @@ const TEXT = {
     noRelease: "Релизов пока нет.",
     allReleases: "Все релизы",
     version: (tag, date) => `Версия ${tag}, ${date}`,
-    preRelease: "предварительная",
+    preRelease: "предварительная версия",
     copy: "Копировать",
     copied: "Скопировано",
     onGitHub: "Релиз на GitHub",
@@ -127,7 +127,8 @@ function escapeHtml(text) {
   );
 }
 
-const megabytes = (bytes) => `${(bytes / 1024 / 1024).toFixed(0)} MB`;
+const megabytes = (bytes) =>
+  `${(bytes / 1024 / 1024).toFixed(0)} ${lang() === "ru" ? "МБ" : "MB"}`;
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString(t().locale, { year: "numeric", month: "long", day: "numeric" });
 
@@ -334,13 +335,65 @@ function renderSteps() {
       }
       return nodes;
     });
+  // A system's ways of installing as tabs, one panel each, then the steps
+  // that are the same for every way (app data, troubleshooting).
+  const withMethods = (steps, system) => {
+    const methods = steps.filter((step) => step.method);
+    if (methods.length === 0) return render(steps);
+    const group = document.createElement("div");
+    group.className = "methods";
+    group.dataset.system = system;
+    const list = document.createElement("div");
+    list.className = "method-list";
+    list.setAttribute("role", "tablist");
+    const panels = methods.map((entry) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.setAttribute("role", "tab");
+      tab.dataset.method = entry.method;
+      tab.append(...(typeof entry.title === "string" ? [entry.title] : texts("span", entry.title)));
+      tab.addEventListener("click", () => selectMethod(system, entry.method));
+      list.append(tab);
+      const panel = document.createElement("div");
+      panel.setAttribute("role", "tabpanel");
+      panel.className = "method-panel";
+      panel.dataset.method = entry.method;
+      panel.append(...render(entry.steps));
+      return panel;
+    });
+    keyboardTabs(list, (tab) => selectMethod(system, tab.dataset.method));
+    group.append(list, ...panels);
+    return [group, ...render(steps.filter((step) => !step.method))];
+  };
   for (const box of document.querySelectorAll("[data-steps]")) {
     const steps = box.dataset.steps.split(".").reduce((node, key) => node?.[key], updates);
-    box.replaceChildren(...render(steps ?? []));
+    box.replaceChildren(...withMethods(steps ?? [], box.dataset.steps.split(".")[1]));
+  }
+  for (const group of document.querySelectorAll(".methods")) {
+    const system = group.dataset.system;
+    selectMethod(system, pickedMethods[system] ?? group.querySelector("[data-method]").dataset.method);
   }
   // The license's description, as the app shows it when the terms change.
   for (const box of document.querySelectorAll("[data-license]")) {
     box.replaceChildren(...texts("p", updates?.license?.text));
+  }
+}
+
+// The way of installing picked for each system: the same tab in Install and
+// Uninstall. A list without that way shows its first.
+const pickedMethods = {};
+function selectMethod(system, method) {
+  pickedMethods[system] = method;
+  for (const group of document.querySelectorAll(`.methods[data-system="${system}"]`)) {
+    const has = group.querySelector(`.method-panel[data-method="${method}"]`);
+    const shown = has ? method : group.querySelector(".method-panel").dataset.method;
+    for (const tab of group.querySelectorAll("[role=tab]")) {
+      tab.setAttribute("aria-selected", String(tab.dataset.method === shown));
+    }
+    for (const panel of group.querySelectorAll(".method-panel")) {
+      panel.hidden = panel.dataset.method !== shown;
+    }
+    rovingTabStop(group.querySelector(".method-list"));
   }
 }
 
@@ -353,10 +406,32 @@ function setupTabs() {
       for (const panel of tabs.querySelectorAll("[data-panel]")) {
         panel.hidden = panel.dataset.panel !== name;
       }
+      rovingTabStop(tabs.querySelector("[role=tablist]"));
     };
     for (const b of buttons) b.addEventListener("click", () => select(b.dataset.tab));
+    keyboardTabs(tabs.querySelector("[role=tablist]"), (tab) => select(tab.dataset.tab));
     select(system || "windows");
   }
+}
+
+// A row of tabs is one stop for Tab, its selected tab; ←/→ move along the
+// row (wrapping), and Home and End to its ends, selecting as they go.
+function rovingTabStop(list) {
+  for (const tab of list.querySelectorAll("[role=tab]")) {
+    tab.tabIndex = tab.getAttribute("aria-selected") === "true" ? 0 : -1;
+  }
+}
+function keyboardTabs(list, select) {
+  list.addEventListener("keydown", (event) => {
+    const tabs = [...list.querySelectorAll("[role=tab]")];
+    const at = tabs.indexOf(document.activeElement);
+    const to = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: tabs.length - 1 }[event.key];
+    if (at < 0 || to === undefined) return;
+    event.preventDefault();
+    const tab = tabs[(to + tabs.length) % tabs.length];
+    select(tab);
+    tab.focus();
+  });
 }
 
 // The screenshot gallery: one slide at a time; buttons, dots, the keyboard's
@@ -446,10 +521,16 @@ function setupGallery() {
 
   // Capturing the pointer lets a swipe complete even when the finger leaves
   // the image. The same gesture works in the full-screen viewer.
+  // A second finger (a pinch) or a zoomed-in page (moving around the
+  // zoomed screenshot) is not a swipe.
   const installSwipe = (target, step, tap) => {
     let start = null;
+    const down = new Set();
     const clear = () => (start = null);
+    const zoomed = () => (window.visualViewport?.scale ?? 1) > 1.01;
     target.addEventListener("pointerdown", (event) => {
+      down.add(event.pointerId);
+      if (down.size > 1 || zoomed()) return clear();
       if (event.pointerType === "mouse" && event.button !== 0) return;
       if (event.target.closest("button")) return;
       start = {
@@ -461,7 +542,8 @@ function setupGallery() {
       target.setPointerCapture?.(event.pointerId);
     });
     target.addEventListener("pointerup", (event) => {
-      if (!start || event.pointerId !== start.pointerId) return;
+      down.delete(event.pointerId);
+      if (!start || event.pointerId !== start.pointerId || zoomed()) return clear();
       const movedX = event.clientX - start.x;
       const movedY = event.clientY - start.y;
       const pressed = start;
@@ -475,7 +557,10 @@ function setupGallery() {
         tap?.({ target: pressed.target });
       }
     });
-    target.addEventListener("pointercancel", clear);
+    target.addEventListener("pointercancel", (event) => {
+      down.delete(event.pointerId);
+      clear();
+    });
   };
   installSwipe(track, (step) => show(current + step), (event) => {
     if (event.target.closest(".gallery-slide img")) open();
@@ -583,21 +668,40 @@ function renderChangelog() {
   const box = document.querySelector("[data-changelog]");
   const which = lang();
   const changelog = siteData?.changelogs?.[which] ?? "";
+  // The newest release open, the earlier ones collapsed to their headers;
+  // drawn again in another language, each stays as the visitor left it.
+  const opened = box.querySelector(".release")
+    ? new Set([...box.querySelectorAll(".release[open]")].map((release) => release.id))
+    : null;
   box.innerHTML = releases(changelog)
-    .map((r) => {
+    .map((r, index) => {
       const version = escapeHtml(r.version);
       const pre = r.version.includes("-") ? `<span class="pre">${t().preRelease}</span>` : "";
-      return `<article class="card release" id="v${version}">
-        <header>
+      const open = opened ? opened.has(`v${r.version}`) : index === 0;
+      return `<details class="card release" id="v${version}"${open ? " open" : ""}>
+        <summary>
           <h3>${version}</h3>${pre}
           <time datetime="${r.date}">${formatDate(`${r.date}T00:00:00`)}</time>
           <a class="gh" href="${RELEASES}/tag/v${version}">${t().onGitHub}</a>
-        </header>
+        </summary>
         ${markdown(r.lines)}
-      </article>`;
+      </details>`;
     })
     .join("");
+  if (!opened) openLinkedRelease();
 }
+
+// A link to a release's notes (the app's update notice has one) opens it
+// and shows it: the page loads before the changelog is drawn, so the
+// browser's own jump to it found nothing.
+function openLinkedRelease() {
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  if (target instanceof HTMLDetailsElement && target.classList.contains("release")) {
+    target.open = true;
+    target.scrollIntoView();
+  }
+}
+window.addEventListener("hashchange", openLinkedRelease);
 
 function setLanguage(next) {
   root.dataset.lang = next;
@@ -610,7 +714,24 @@ function setLanguage(next) {
   render();
 }
 
+// Attributes a screen reader or a tooltip reads, in the shown language: the
+// page's English, and each one's `data-<attribute>-<language>`.
+function localizeAttributes() {
+  for (const name of ["aria-label", "aria-roledescription", "alt"]) {
+    for (const element of document.querySelectorAll(`[data-${name}-${lang()}]`)) {
+      element.setAttribute(name, element.getAttribute(`data-${name}-${lang()}`));
+    }
+  }
+  // A button whose name is its tooltip.
+  for (const element of document.querySelectorAll("[data-tooltip-en]")) {
+    const text = element.getAttribute(`data-tooltip-${lang()}`) ?? element.dataset.tooltipEn;
+    element.title = text;
+    element.setAttribute("aria-label", text);
+  }
+}
+
 function render() {
+  localizeAttributes();
   for (const b of document.querySelectorAll("[data-set-lang]")) {
     b.setAttribute("aria-pressed", String(b.dataset.setLang === lang()));
   }
@@ -628,6 +749,26 @@ function render() {
 for (const b of document.querySelectorAll("[data-set-lang]")) {
   b.addEventListener("click", () => setLanguage(b.dataset.setLang));
 }
+
+// Phones: the Menu button shows the section links; a link, Esc, or the
+// button again hides them.
+function setupNavMenu() {
+  const toggle = document.querySelector("[data-nav-toggle]");
+  const header = toggle.closest(".top");
+  const show = (open) => {
+    header.classList.toggle("nav-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  toggle.addEventListener("click", () => show(!header.classList.contains("nav-open")));
+  for (const link of document.querySelectorAll(".nav a")) link.addEventListener("click", () => show(false));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && header.classList.contains("nav-open")) {
+      show(false);
+      toggle.focus();
+    }
+  });
+}
+setupNavMenu();
 setupTabs();
 setupGallery();
 renderSteps();

@@ -5,7 +5,8 @@
   --surface-raised: #132438;
   --text: #eceef2;
   --text-dim: #a3a9b5;
-  --text-faint: #6d7380;
+  /* 4.99:1 on the page, 4.66:1 on cards (WCAG AA for normal text). */
+  --text-faint: #7d8391;
   --accent: #249bff;
   --accent-ink: #031321;
   --border: rgb(255 255 255 / 0.08);
@@ -132,6 +133,7 @@ h3:first-child {
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
   color: var(--text);
   font-weight: 650;
   font-size: 1.05rem;
@@ -154,6 +156,22 @@ h3:first-child {
   color: var(--text);
   background: rgb(255 255 255 / 0.06);
   text-decoration: none;
+}
+/* The Menu button, shown on phones only (the media query below). */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.06);
+  color: var(--text-dim);
+  font: 600 0.85rem var(--font);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.nav-toggle[aria-expanded="true"] {
+  color: var(--text);
 }
 .lang-switch {
   display: flex;
@@ -271,11 +289,19 @@ h3:first-child {
 }
 
 /* Features */
+/* Three cards, then two wider ones: five in a row were too narrow for
+   Russian. */
 .features {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 16px;
   padding-bottom: 24px;
+}
+.feature {
+  grid-column: span 2;
+}
+.feature:nth-child(n + 4) {
+  grid-column: span 3;
 }
 .feature h3 {
   margin-bottom: 6px;
@@ -579,7 +605,8 @@ pre .copy:hover {
   border: 0;
   background: transparent;
   color: var(--text);
-  touch-action: pan-y;
+  /* Pinch zooms in on the screenshot; a horizontal swipe moves to the next. */
+  touch-action: pan-y pinch-zoom;
 }
 .lightbox[open] {
   display: grid;
@@ -746,11 +773,29 @@ pre .copy:hover {
   display: grid;
   gap: 16px;
 }
-.release header {
+/* A release's header is its summary: the newest is open, the rest collapsed. */
+.release summary {
   display: flex;
   align-items: baseline;
   gap: 10px;
   flex-wrap: wrap;
+  cursor: pointer;
+  list-style: none;
+}
+.release summary::-webkit-details-marker {
+  display: none;
+}
+.release summary::before {
+  content: "›";
+  display: inline-block;
+  color: var(--text-faint);
+  font-size: 1.2rem;
+  transition: transform 160ms ease;
+}
+.release[open] summary::before {
+  transform: rotate(90deg);
+}
+.release[open] summary {
   margin-bottom: 8px;
 }
 .release h3 {
@@ -810,6 +855,9 @@ pre .copy:hover {
   .features {
     grid-template-columns: repeat(2, 1fr);
   }
+  .features .feature {
+    grid-column: auto;
+  }
   .features .feature:last-child:nth-child(odd) {
     grid-column: span 2;
   }
@@ -834,12 +882,6 @@ pre .copy:hover {
 }
 
 @media (max-width: 640px) {
-  .nav {
-    display: none;
-  }
-  .lang-switch {
-    margin-left: auto;
-  }
   .features {
     grid-template-columns: 1fr;
   }
@@ -928,7 +970,10 @@ pre .copy:hover {
   }
   .lightbox-figure {
     gap: 8px;
-    padding: 56px 8px 16px;
+    padding: 56px 0 16px;
+  }
+  .lightbox-figure figcaption {
+    padding: 0 16px;
   }
   .lightbox-mobile-controls {
     padding-bottom: 0;
@@ -972,4 +1017,97 @@ pre .copy:hover {
 .steps .version-pick {
   margin: 0 0 12px;
   color: var(--text-dim);
+}
+
+/* An install or uninstall tab's ways of installing, as smaller tabs. */
+.method-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.method-list button {
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-dim);
+  font: 600 0.9rem var(--font);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.method-list button:hover {
+  color: var(--text);
+  background: rgb(255 255 255 / 0.05);
+}
+.method-list button[aria-selected="true"] {
+  color: var(--text);
+  background: var(--surface-raised);
+  border-color: rgb(36 155 255 / 0.5);
+}
+.method-panel[hidden] {
+  display: none;
+}
+.methods + * {
+  margin-top: 20px;
+}
+
+/* On the narrowest phones the build-request dialog's buttons stack: side by
+   side, «Продолжить» did not fit. */
+@media (max-width: 380px) {
+  .build-request-dialog-actions {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}
+
+/* Below 900 px the section links open from the Menu button, as a list
+   under the header: in one row they need about 780 px in English and 840 px
+   in Russian. */
+@media (max-width: 900px) {
+  /* The section links open from the Menu button, as a list under the
+     header: in one row they did not fit a phone in either language. */
+  .top-row {
+    flex-wrap: wrap;
+    gap: 0 8px;
+  }
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+  .nav {
+    display: none;
+    order: 3;
+    width: 100%;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 10px;
+  }
+  .top.nav-open .nav {
+    display: flex;
+  }
+  .nav a {
+    padding: 10px 8px;
+  }
+  .lang-switch {
+    margin-left: 0;
+  }
+}
+
+/* The narrowest phones: the Menu button keeps only its icon, so the logo,
+   it, and the language switch fit one line; its label stays for screen
+   readers. */
+@media (max-width: 420px) {
+  .nav-toggle {
+    padding: 7px 9px;
+  }
+  .nav-toggle span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
