@@ -7,7 +7,9 @@
 //
 // - the Homebrew cask, the Scoop manifest, and the Chocolatey source
 //   (render.mjs), with the files' SHA-256 hashes;
-// - the Chocolatey feed, which keeps every earlier version (versions.json);
+// - the version's entry in versions.json, the list of every published
+//   version and the channels it installs through (versions.mjs);
+// - the Chocolatey feed, which keeps every version that list gives it;
 // - the release record (release.json) the site's update file is built from,
 //   unless a newer version is recorded.
 //
@@ -23,6 +25,7 @@ import { fileURLToPath } from "node:url";
 import { buildFeed } from "./build-chocolatey-feed.mjs";
 import { artifacts, sources } from "./render.mjs";
 import { nextRecord } from "./updates.mjs";
+import { readVersions, through, versionEntry, withVersion, writeVersions } from "./versions.mjs";
 
 const owner = "uvlad7";
 const repository = "BiLang-Play";
@@ -59,14 +62,17 @@ export function release(root, version, directory, publishedAt) {
   // before anything is written.
   const recordPath = join(root, "release.json");
   const recorded = existsSync(recordPath) ? JSON.parse(readFileSync(recordPath, "utf8")) : null;
-  const record = nextRecord(releaseFromFiles(version, directory, publishedAt), recorded);
+  const published = releaseFromFiles(version, directory, publishedAt);
+  const record = nextRecord(published, recorded);
   const files = artifacts(version, directory);
+  const versions = withVersion(readVersions(root), versionEntry(version, publishedAt, published.assets));
+  writeVersions(root, versions);
   for (const [relative, text] of sources(version, files)) {
     const path = join(root, relative);
     mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, text);
   }
-  buildFeed(version, join(root, "chocolatey"), join(root, "chocolatey"), publishedAt);
+  buildFeed(version, join(root, "chocolatey"), join(root, "chocolatey"), through(versions, "chocolatey"));
   if (record) writeFileSync(recordPath, `${JSON.stringify(record, null, 2)}\n`);
   else console.log(`release.json records a newer version than ${version}; left as it is`);
   return files;

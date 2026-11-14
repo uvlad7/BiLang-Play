@@ -59,6 +59,24 @@ const isMobileBrowser =
 const siteData = window.BILANGPLAY_SITE_DATA;
 // The newest version: its files and each channel's commands.
 const updates = siteData?.updates ?? null;
+// Every published version, newest first: its files and the channels it
+// installs through.
+const versions = siteData?.versions ?? [];
+// The versions the download section offers: the update file's own when the
+// list has none.
+const downloadVersions = () => {
+  const listed = versions.filter((entry) => entry.channels.includes("downloads"));
+  return listed.length > 0 || !updates ? listed : [updates];
+};
+// The download section's version: the newest until the visitor picks one.
+let pickedVersion = updates?.version ?? null;
+const shownRelease = () =>
+  downloadVersions().find((entry) => entry.version === pickedVersion) ?? updates;
+// The versions before the newest that install through `channel`, newest first.
+const olderVersions = (channel) =>
+  versions.filter(
+    (entry) => entry.channels.includes(channel) && entry.version !== updates?.version,
+  );
 
 function detectSystem() {
   const ua = navigator.userAgent;
@@ -113,11 +131,23 @@ const megabytes = (bytes) => `${(bytes / 1024 / 1024).toFixed(0)} MB`;
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString(t().locale, { year: "numeric", month: "long", day: "numeric" });
 
-function filesOf(os) {
-  if (!updates) return [];
+function filesOf(os, release = updates) {
+  if (!release) return [];
   return KINDS.filter((kind) => kind.os === os)
-    .map((kind) => ({ kind, file: updates.files[kind.id] }))
+    .map((kind) => ({ kind, file: release.files[kind.id] }))
     .filter((entry) => entry.file);
+}
+
+/** A version picker's options, the chosen one selected. */
+function fillPicker(select, list, chosen) {
+  select.replaceChildren(
+    ...list.map((entry) => {
+      const option = document.createElement("option");
+      option.value = option.textContent = entry.version;
+      option.selected = entry.version === chosen;
+      return option;
+    }),
+  );
 }
 
 function button({ file }, main) {
@@ -135,7 +165,9 @@ function renderDownloads() {
   const primaryOs = document.querySelector("[data-primary-os]");
   const buttons = document.querySelector("[data-primary-buttons]");
   const meta = document.querySelector("[data-primary-meta]");
-  const releaseMeta = document.querySelector("[data-release-meta]");
+  const picker = document.querySelector("[data-download-version]");
+  const pickerLabel = document.querySelector("[data-release-picker]");
+  const releaseRest = document.querySelector("[data-release-rest]");
   buttons.replaceChildren();
   primaryOs.innerHTML = system ? text.forSystem(text.systems[system]) : text.pickSystem;
 
@@ -146,25 +178,30 @@ function renderDownloads() {
   if (!updates) {
     const message = text.noRelease;
     meta.innerHTML = `${message} ${all}`;
-    releaseMeta.innerHTML = meta.innerHTML;
+    picker.hidden = pickerLabel.hidden = true;
+    releaseRest.innerHTML = meta.innerHTML;
     for (const list of document.querySelectorAll("[data-files]")) {
       list.innerHTML = `<li class="empty">${message}</li>`;
     }
     return;
   }
 
-  const version = `${text.version(escapeHtml(updates.version), formatDate(updates.published))}${
-    updates.version.includes("-") ? ` · ${text.preRelease}` : ""
-  }`;
-  meta.innerHTML = `${version} · ${all}`;
-  releaseMeta.innerHTML = `${version} · <a href="${escapeHtml(updates.release)}">${text.onGitHub}</a>`;
+  const preRelease = (release) => (release.version.includes("-") ? ` · ${text.preRelease}` : "");
+  meta.innerHTML = `${text.version(escapeHtml(updates.version), formatDate(updates.published))}${preRelease(updates)} · ${all}`;
+
+  // The download section: "Version [picker], its date · pre-release · its
+  // release", and that version's files.
+  const shown = shownRelease();
+  fillPicker(picker, downloadVersions(), shown.version);
+  picker.hidden = pickerLabel.hidden = false;
+  releaseRest.innerHTML = `, ${formatDate(shown.published)}${preRelease(shown)} · <a href="${escapeHtml(shown.release)}">${text.onGitHub}</a>`;
 
   if (system)
     filesOf(system).forEach((entry, index) => buttons.append(button(entry, index === 0)));
 
   for (const list of document.querySelectorAll("[data-files]")) {
     list.replaceChildren(
-      ...filesOf(list.dataset.files).map((entry, index) => {
+      ...filesOf(list.dataset.files, shown).map((entry, index) => {
         const item = document.createElement("li");
         item.append(button(entry, index === 0 && list.dataset.files === system));
         return item;
@@ -172,7 +209,13 @@ function renderDownloads() {
     );
   }
 
-  const sources = updates.sources ?? [];
+  // The install and uninstall steps name the shown version's files (an
+  // update step keeps the newest).
+  for (const version of document.querySelectorAll("[data-steps] .ver:not([data-newest])")) {
+    version.textContent = shown.version;
+  }
+
+  const sources = shown.sources ?? [];
   const sourceLine = document.querySelector("[data-sources]");
   sourceLine.hidden = sources.length === 0;
   document.querySelector("[data-source-links]").innerHTML = sources
@@ -223,19 +266,66 @@ function renderSteps() {
       if (language) pre.lang = language;
       const code = document.createElement("code");
       code.innerHTML = markVersion(escapeHtml(lines.join("\n")));
-      pre.append(code);
+      pre.append(code, copyButton(pre));
       return pre;
     });
+  // Every string of `steps` with `<version>` replaced by `version`.
+  const withVersion = (value, version) =>
+    typeof value === "string"
+      ? value.replaceAll("<version>", version)
+      : Array.isArray(value)
+        ? value.map((item) => withVersion(item, version))
+        : value && typeof value === "object"
+          ? Object.fromEntries(
+              Object.entries(value).map(([key, item]) => [key, withVersion(item, version)]),
+            )
+          : value;
+  // A collapsed part for older versions of a channel: a version picker (the
+  // version before the newest at first), and the steps for the picked one.
+  // Nothing when no older version installs through the channel.
+  const olderPart = (more) => {
+    const older = olderVersions(more.versions);
+    if (older.length === 0) return [];
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.append(...texts("span", more.summary));
+    const pick = document.createElement("p");
+    pick.className = "version-pick";
+    const label = document.createElement("label");
+    const select = document.createElement("select");
+    select.className = "version-select";
+    select.id = `older-${more.versions}`;
+    label.htmlFor = select.id;
+    label.append(...texts("span", { en: "Version", ru: "Версия" }));
+    fillPicker(select, older, older[0].version);
+    pick.append(label, " ", select);
+    const body = document.createElement("div");
+    const fill = () => body.replaceChildren(...render(withVersion(more.steps, select.value)));
+    select.addEventListener("change", fill);
+    fill();
+    details.append(summary, pick, body);
+    return [details];
+  };
   const render = (steps) =>
     steps.flatMap((step) => {
-      if (step.updates) return render(updates.channels[step.updates]?.update ?? []);
+      if (step.updates) {
+        // Updating gets the newest version, whichever one the download
+        // section shows.
+        const nodes = render(updates.channels[step.updates]?.update ?? []);
+        for (const node of nodes) {
+          for (const version of node.querySelectorAll(".ver")) version.dataset.newest = "";
+        }
+        return nodes;
+      }
       const nodes = [
         ...(step.title ? [title(step.title)] : []),
         ...texts("p", step.text),
         ...texts("p", step.warning, "warning"),
         ...(step.commands ? commands(step.commands) : []),
       ];
-      if (step.more) {
+      if (step.more?.versions) {
+        nodes.push(...olderPart(step.more));
+      } else if (step.more) {
         const details = document.createElement("details");
         const summary = document.createElement("summary");
         summary.append(...texts("span", step.more.summary));
@@ -397,26 +487,24 @@ function setupGallery() {
   show(0);
 }
 
-// Copy buttons copy the command as shown, in the shown language.
-function setupCopy() {
-  for (const pre of document.querySelectorAll("pre")) {
-    const copy = document.createElement("button");
-    copy.type = "button";
-    copy.className = "copy";
-    copy.textContent = t().copy;
-    copy.addEventListener("click", async () => {
-      const code = pre.querySelector("code").cloneNode(true);
-      code.querySelectorAll(`[lang]:not([lang="${lang()}"])`).forEach((n) => n.remove());
-      try {
-        await navigator.clipboard.writeText(code.textContent);
-        copy.textContent = t().copied;
-        setTimeout(() => (copy.textContent = t().copy), 1500);
-      } catch {
-        // The clipboard is unavailable; the text can still be selected.
-      }
-    });
-    pre.append(copy);
-  }
+// A copy button copies its command as shown, in the shown language.
+function copyButton(pre) {
+  const copy = document.createElement("button");
+  copy.type = "button";
+  copy.className = "copy";
+  copy.textContent = t().copy;
+  copy.addEventListener("click", async () => {
+    const code = pre.querySelector("code").cloneNode(true);
+    code.querySelectorAll(`[lang]:not([lang="${lang()}"])`).forEach((n) => n.remove());
+    try {
+      await navigator.clipboard.writeText(code.textContent);
+      copy.textContent = t().copied;
+      setTimeout(() => (copy.textContent = t().copy), 1500);
+    } catch {
+      // The clipboard is unavailable; the text can still be selected.
+    }
+  });
+  return copy;
 }
 
 function setupBuildRequest() {
@@ -543,6 +631,9 @@ for (const b of document.querySelectorAll("[data-set-lang]")) {
 setupTabs();
 setupGallery();
 renderSteps();
-setupCopy();
 setupBuildRequest();
+document.querySelector("[data-download-version]").addEventListener("change", (event) => {
+  pickedVersion = event.target.value;
+  renderDownloads();
+});
 render();

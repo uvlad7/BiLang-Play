@@ -36,10 +36,31 @@ be reviewable. The Chocolatey feed, a static NuGet v3 feed in
 every push to `main` redeploys Pages from the committed tree without
 building the feed, so a feed left out of git would vanish with the next
 deploy. The feed keeps every version, so an older one installs with
-`choco install bilangplay --version <version>`: `chocolatey/versions.json`
-lists them with their publish dates, each release adds its entry and its
+`choco install bilangplay --version <version>`: each release adds its
 `.nupkg` (the earlier packages stay as built), and the feed's service,
-version, registration, and search files are rewritten from that list.
+version, registration, and search files are rewritten from the versions
+`versions.json` gives it.
+
+## Every version: `versions.json`
+
+`versions.json` lists every published version, oldest first: when it was
+published, the channels it installs through, and the files the site offers
+(the packages and the bundled libraries' sources, with their sizes). It is
+the one list of versions everything reads (`versions.mjs`):
+
+- the site's download section has a version picker, the newest version at
+  first, that switches the cards, the release link, and the sources to the
+  picked version's;
+- each package manager's "Install an older version" on the site has a picker
+  of the versions before the newest that list its channel, and writes the
+  picked one into its commands;
+- the Chocolatey feed serves the versions that list `chocolatey`.
+
+Channels: `downloads` (the release's files), `brew-macos`, `brew-linux`,
+`scoop`, and `chocolatey` (the names of `CHANNELS` in `instructions.mjs`).
+Each release from now on lists them all. `0.1.0-alpha.1` lists only
+`downloads`: its tag has no package-manager sources, and the feed starts at
+`0.1.0-alpha.2`.
 
 ## A release
 
@@ -52,8 +73,8 @@ targeting the branch's commit:
 node package-managers/release.mjs <version> path/to/release-assets [published-at]
 ```
 
-It renders the sources above, adds the version to the Chocolatey feed, and
-records the release in `release.json`. Publish the draft and merge the pull
+It renders the sources above, adds the version to `versions.json` and the
+Chocolatey feed, and records the release in `release.json`. Publish the draft and merge the pull
 request together, with a merge commit: publishing creates the tag
 `v<version>` on the branch's commit, so a package manager that checks the
 tag out (Homebrew's tap and Scoop's bucket do, to install an older version;

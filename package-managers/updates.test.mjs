@@ -169,27 +169,57 @@ test("every step is well formed: texts in English and Russian, commands as lines
   }
 });
 
-test("every package manager collapses how to install an older version; a download offers any version's link", () => {
+test("every package manager collapses how to install an older version, picked from its channel's versions", () => {
   const updates = renderUpdates(release("1.0.0"));
-  const summaries = (list) => list.filter((step) => step.more?.summary.en === "Install an older version");
-  const commands = (step) => step.more.steps.flatMap((s) => s.commands ?? []).join("\n");
+  const older = (list) => list.filter((step) => step.more?.summary.en === "Install an older version");
+  const commands = (step) => step.more.steps.flatMap((s) => s.commands ?? []);
   const windows = updates.install.windows;
-  const [scoop, choco] = [windows.indexOf(windows.find((s) => s.title === "Scoop")), windows.findIndex((s) => s.title === "Chocolatey")];
-  // The part comes right under its manager's install steps.
-  assert.match(commands(windows[scoop + 1]), /checkout v<version>[\s\S]*scoop install bilang-play\/bilang-play[\s\S]*checkout main/);
-  assert.match(commands(windows[choco + 1]), /choco install bilangplay --version <version> .*--source bilangplay/);
-  assert.equal(summaries(windows).length, 2);
-  for (const system of ["macos", "linux"]) {
-    const [part] = summaries(updates.install[system]);
-    assert.match(commands(part), /checkout v<version>[\s\S]*HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask[\s\S]*checkout main/);
+  const scoop = windows.findIndex((s) => s.title === "Scoop");
+  const choco = windows.findIndex((s) => s.title === "Chocolatey");
+  assert.equal(older(windows).length, 2);
+  // The part comes right under its manager's install steps, for its channel's versions:
+  // the tap, bucket, or source added if it is not yet (for a first install), the picked
+  // version installed (Scoop uninstalls another one first), then held.
+  const scoopPart = windows[scoop + 1];
+  assert.equal(scoopPart.more.versions, "scoop");
+  assert.match(commands(scoopPart).join("\n"), /^scoop bucket add bilang-play https:\/\/github.com\/uvlad7\/BiLang-Play\nscoop uninstall bilang-play\n.*checkout v<version>\nscoop install bilang-play\/bilang-play\n.*checkout main\nscoop hold bilang-play\nscoop unhold bilang-play$/s);
+  const chocoPart = windows[choco + 1];
+  assert.equal(chocoPart.more.versions, "chocolatey");
+  assert.deepEqual(commands(chocoPart), [
+    'choco source add --name bilangplay --source "https://uvlad7.github.io/BiLang-Play/chocolatey/v3/index.json"',
+    "choco install bilangplay --version <version> --source bilangplay --pre --allow-downgrade -y",
+    "choco pin add -n bilangplay",
+    "choco pin remove -n bilangplay",
+  ]);
+  for (const [system, channel] of [["macos", "brew-macos"], ["linux", "brew-linux"]]) {
+    const [part] = older(updates.install[system]);
+    assert.equal(part.more.versions, channel);
+    assert.match(
+      commands(part).join("\n"),
+      /^brew tap uvlad7\/bilang-play https:\/\/github.com\/uvlad7\/BiLang-Play\ngit -C .* fetch --tags\n.*checkout v<version>\nHOMEBREW_NO_AUTO_UPDATE=1 brew install --cask uvlad7\/bilang-play\/bilang-play\n.*checkout main\nbrew pin --cask bilang-play\nbrew unpin --cask bilang-play$/s,
+    );
   }
-  // Each standalone download gives its link for any version.
-  const prefix = "https://github.com/uvlad7/BiLang-Play/releases/download/v<version>/bilangplay-<version>-";
-  const text = JSON.stringify(updates.install);
-  for (const tail of ["windows-x64-setup.exe", "windows-x64.zip", "macos-arm64.dmg", "macos-arm64.zip", "linux-x86_64.AppImage", "linux-amd64.deb", "linux-x64.tar.gz"]) {
-    assert.ok(text.includes(prefix + tail), tail);
-  }
-  assert.doesNotMatch(JSON.stringify(updates), /\{old:/);
+  // The downloads have the site's version picker, not a link to fill in.
+  assert.doesNotMatch(JSON.stringify(updates.install), /releases\/download\/v<version>/);
+});
+
+test("no step's text has a command to run inline: commands are in their own blocks", () => {
+  const updates = renderUpdates(release("1.0.0"));
+  // Code in a text names a file, a folder, a flag, or a command it talks about, never one to copy.
+  const runnable = /`(?:brew|scoop|choco|git|sudo|apt|xattr|wget|dconf|gsettings) [^`]*`/;
+  const texts = [];
+  const walk = (value, key) => {
+    if (typeof value === "string") {
+      if (key !== "commands") texts.push(value);
+    } else if (Array.isArray(value)) value.forEach((item) => walk(item, key));
+    else if (value && typeof value === "object")
+      for (const [name, item] of Object.entries(value)) walk(item, name === "commands" ? "commands" : key === "commands" ? key : name);
+  };
+  walk({ channels: updates.channels, install: updates.install, uninstall: updates.uninstall });
+  // Upgrading everything is what a text talks about ("so `brew upgrade` skips it").
+  const talkedAbout = /^`(?:brew|scoop|choco|apt) (?:upgrade|update)(?: all| \*)?`$/;
+  const inline = texts.filter((text) => [...text.matchAll(new RegExp(runnable, "g"))].some(([code]) => !talkedAbout.test(code)));
+  assert.deepEqual(inline, []);
 });
 
 test("elevated commands come with sudo and gsudo, collapsed", () => {
@@ -286,10 +316,18 @@ test("every package manager says how to keep the installed version", () => {
     scoop: "scoop hold bilang-play",
     chocolatey: "choco pin add -n bilangplay",
   };
+  const released = {
+    "brew-macos": "brew unpin --cask bilang-play",
+    "brew-linux": "brew unpin --cask bilang-play",
+    scoop: "scoop unhold bilang-play",
+    chocolatey: "choco pin remove -n bilangplay",
+  };
   for (const [name, command] of Object.entries(held)) {
     assert.deepEqual(channels[name].hold[0].commands, [command], name);
+    // And how to release it, in a block of its own.
+    assert.deepEqual(channels[name].hold[1].commands, [released[name]], name);
   }
-  assert.ok(channels.chocolatey.hold[0].elevated);
+  assert.ok(channels.chocolatey.hold[0].elevated && channels.chocolatey.hold[1].elevated);
   for (const name of ["deb", "appimage", "nsis", "macos"]) assert.equal(channels[name].hold, undefined, name);
   // The site shows them with the install steps.
   const commands = JSON.stringify(install);

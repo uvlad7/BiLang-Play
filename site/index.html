@@ -368,7 +368,13 @@
 
       <section class="wrap section" id="download">
         <h2><span lang="en">Download</span><span lang="ru">Скачать</span></h2>
-        <p class="section-meta" data-release-meta></p>
+        <p class="section-meta" data-release-meta>
+          <label for="download-version" data-release-picker hidden
+            ><span lang="en">Version</span><span lang="ru">Версия</span></label
+          >
+          <select id="download-version" class="version-select" data-download-version hidden></select
+          ><span data-release-rest></span>
+        </p>
         <div class="downloads">
           <article class="card platform" data-platform="windows">
             <h3>Windows</h3>
