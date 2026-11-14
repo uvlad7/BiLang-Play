@@ -21,9 +21,10 @@
 // Commands go in `commands`, never inline in a text.
 //
 // A system's install and uninstall steps are its methods, `{ method, title,
-// steps }`, which the site shows as tabs (the same method ids in Install and
-// Uninstall, so picking one picks both), and any steps after them, shown
-// below the tabs for every method.
+// steps }`, which the site shows as tabs, the first (the direct download)
+// picked at first, with the same method ids in Install and Uninstall, so
+// picking one picks both; and any steps after them, shown below the tabs for
+// every method.
 
 /** @param {string | string[]} en @param {string | string[]} ru */
 /**
@@ -402,32 +403,6 @@ export const CHANNELS = {
 /** The site's Install tabs, by system: a tab for each way of installing. */
 export const INSTALL = {
   windows: [
-    method("scoop", "Scoop", [
-      {
-        text: t(
-          "From BiLang Play's own bucket (it is not in Scoop's public buckets):",
-          "Из собственного bucket'а BiLang Play (в публичных bucket'ах Scoop его нет):",
-        ),
-        warning: WARNINGS.scoop,
-        commands: [SCOOP_ADD_BUCKET, "scoop install bilang-play/bilang-play"],
-      },
-      updating("scoop"),
-      keeping(HOLD.scoop),
-      SCOOP_OLDER(),
-    ]),
-    method("chocolatey", "Chocolatey", [
-      elevated({
-        text: t(
-          "In an administrator shell, from BiLang Play's own feed (it is not in the Chocolatey Community Repository):",
-          "В оболочке администратора, из собственной ленты BiLang Play (в Chocolatey Community Repository его нет):",
-        ),
-        warning: WARNINGS.chocolatey,
-        commands: [CHOCOLATEY_ADD_SOURCE, "choco install bilangplay --source bilangplay --pre -y"],
-      }),
-      updating("chocolatey"),
-      keeping(HOLD.chocolatey),
-      CHOCOLATEY_OLDER(),
-    ]),
     method("download", DOWNLOAD, [
       {
         title: t("NSIS installer (.exe)", "Установщик NSIS (.exe)"),
@@ -475,22 +450,34 @@ export const INSTALL = {
         },
       ]),
     ]),
-  ],
-  macos: [
-    method("brew", "Homebrew", [
+    method("scoop", "Scoop", [
       {
         text: t(
-          "From BiLang Play's own tap (it is not in Homebrew's own casks):",
-          "Из собственного tap'а BiLang Play (среди casks самого Homebrew его нет):",
+          "From BiLang Play's own bucket (it is not in Scoop's public buckets):",
+          "Из собственного bucket'а BiLang Play (в публичных bucket'ах Scoop его нет):",
         ),
-        warning: WARNINGS["brew-macos"],
-        commands: BREW_INSTALL,
+        warning: WARNINGS.scoop,
+        commands: [SCOOP_ADD_BUCKET, "scoop install bilang-play/bilang-play"],
       },
-      updating("brew-macos"),
-      keeping(HOLD.brew),
-      brewOlder("brew-macos"),
-      BREW_TIP,
+      updating("scoop"),
+      keeping(HOLD.scoop),
+      SCOOP_OLDER(),
     ]),
+    method("chocolatey", "Chocolatey", [
+      elevated({
+        text: t(
+          "In an administrator shell, from BiLang Play's own feed (it is not in the Chocolatey Community Repository):",
+          "В оболочке администратора, из собственной ленты BiLang Play (в Chocolatey Community Repository его нет):",
+        ),
+        warning: WARNINGS.chocolatey,
+        commands: [CHOCOLATEY_ADD_SOURCE, "choco install bilangplay --source bilangplay --pre -y"],
+      }),
+      updating("chocolatey"),
+      keeping(HOLD.chocolatey),
+      CHOCOLATEY_OLDER(),
+    ]),
+  ],
+  macos: [
     method("download", DOWNLOAD, [
       {
         title: t("Disk image (.dmg)", "Образ диска (.dmg)"),
@@ -532,40 +519,22 @@ export const INSTALL = {
         },
       ]),
     ]),
-  ],
-  linux: [
     method("brew", "Homebrew", [
       {
         text: t(
-          "From BiLang Play's own tap: the .tar.gz build, with a command, an applications-menu entry, and icons.",
-          "Из собственного tap'а BiLang Play: сборка .tar.gz с командой, пунктом меню приложений и значками.",
+          "From BiLang Play's own tap (it is not in Homebrew's own casks):",
+          "Из собственного tap'а BiLang Play (среди casks самого Homebrew его нет):",
         ),
+        warning: WARNINGS["brew-macos"],
         commands: BREW_INSTALL,
       },
-      updating("brew-linux"),
+      updating("brew-macos"),
       keeping(HOLD.brew),
-      brewOlder("brew-linux"),
+      brewOlder("brew-macos"),
       BREW_TIP,
-      collapsed(SANDBOX_SUMMARY, [
-        {
-          text: t(
-            [
-              SANDBOX_WHY.en,
-              "Install a profile for the app, for this and every later version Homebrew installs:",
-            ],
-            [
-              SANDBOX_WHY.ru,
-              "Поставьте профиль для приложения, для этой и всех следующих версий, которые поставит Homebrew:",
-            ],
-          ),
-          commands: apparmorProfile(
-            "bilangplay-brew",
-            "%s/Caskroom/bilang-play/*/bilangplay-*-linux-x64/bilangplay",
-            '"$(brew --prefix)"',
-          ),
-        },
-      ]),
     ]),
+  ],
+  linux: [
     method("download", DOWNLOAD, [
       {
         title: t("App image (.AppImage)", "Образ приложения (.AppImage)"),
@@ -617,6 +586,38 @@ export const INSTALL = {
         },
       ]),
     ]),
+    method("brew", "Homebrew", [
+      {
+        text: t(
+          "From BiLang Play's own tap: the .tar.gz build, with a command, an applications-menu entry, and icons.",
+          "Из собственного tap'а BiLang Play: сборка .tar.gz с командой, пунктом меню приложений и значками.",
+        ),
+        commands: BREW_INSTALL,
+      },
+      updating("brew-linux"),
+      keeping(HOLD.brew),
+      brewOlder("brew-linux"),
+      BREW_TIP,
+      collapsed(SANDBOX_SUMMARY, [
+        {
+          text: t(
+            [
+              SANDBOX_WHY.en,
+              "Install a profile for the app, for this and every later version Homebrew installs:",
+            ],
+            [
+              SANDBOX_WHY.ru,
+              "Поставьте профиль для приложения, для этой и всех следующих версий, которые поставит Homebrew:",
+            ],
+          ),
+          commands: apparmorProfile(
+            "bilangplay-brew",
+            "%s/Caskroom/bilang-play/*/bilangplay-*-linux-x64/bilangplay",
+            '"$(brew --prefix)"',
+          ),
+        },
+      ]),
+    ]),
     collapsed(
       t(
         "If file pickers don't open in the last folder you used (Ubuntu 22.04 and other older desktops)",
@@ -643,21 +644,6 @@ const GSETTINGS_RESET = "reset-recursively io.github.uvlad7.bilangplay:/io/githu
 /** The site's Uninstall tabs, by system: the same tabs as Install, then app data. */
 export const UNINSTALL = {
   windows: [
-    method("scoop", "Scoop", [
-      {
-        text: t("Remove the app, then its bucket:", "Удалите приложение, затем его bucket:"),
-        commands: ["scoop uninstall bilang-play", "scoop bucket rm bilang-play"],
-      },
-    ]),
-    method("chocolatey", "Chocolatey", [
-      elevated({
-        text: t(
-          "In an administrator shell, remove the app (Chocolatey runs its uninstaller), then its source:",
-          "В оболочке администратора удалите приложение (Chocolatey запустит его деинсталлятор), затем его источник:",
-        ),
-        commands: ["choco uninstall bilangplay -y", "choco source remove --name bilangplay"],
-      }),
-    ]),
     method("download", DOWNLOAD, [
       {
         title: t("NSIS installer (.exe)", "Установщик NSIS (.exe)"),
@@ -678,6 +664,21 @@ export const UNINSTALL = {
         ],
       },
     ]),
+    method("scoop", "Scoop", [
+      {
+        text: t("Remove the app, then its bucket:", "Удалите приложение, затем его bucket:"),
+        commands: ["scoop uninstall bilang-play", "scoop bucket rm bilang-play"],
+      },
+    ]),
+    method("chocolatey", "Chocolatey", [
+      elevated({
+        text: t(
+          "In an administrator shell, remove the app (Chocolatey runs its uninstaller), then its source:",
+          "В оболочке администратора удалите приложение (Chocolatey запустит его деинсталлятор), затем его источник:",
+        ),
+        commands: ["choco uninstall bilangplay -y", "choco source remove --name bilangplay"],
+      }),
+    ]),
     {
       title: t("App data and settings, in PowerShell", "Данные и настройки, в PowerShell"),
       commands: [
@@ -687,18 +688,18 @@ export const UNINSTALL = {
     },
   ],
   macos: [
-    method("brew", "Homebrew", [
-      {
-        text: t("Remove the app, then the tap:", "Удалите приложение, затем tap:"),
-        commands: BREW_UNINSTALL,
-      },
-    ]),
     method("download", DOWNLOAD, [
       {
         text: t(
           "Move **BiLang Play** to the Trash from wherever you keep it (usually **Applications**), and the downloaded disk image or zip.",
           "Переместите **BiLang Play** в Корзину оттуда, где оно лежит (обычно из **Программ**), и скачанный образ диска или zip.",
         ),
+      },
+    ]),
+    method("brew", "Homebrew", [
+      {
+        text: t("Remove the app, then the tap:", "Удалите приложение, затем tap:"),
+        commands: BREW_UNINSTALL,
       },
     ]),
     {
@@ -712,18 +713,6 @@ export const UNINSTALL = {
     },
   ],
   linux: [
-    method("brew", "Homebrew", [
-      {
-        text: t(
-          "Remove the app with its command, applications-menu entry, and icons, then the tap:",
-          "Удалите приложение вместе с командой, пунктом меню приложений и значками, затем tap:",
-        ),
-        commands: BREW_UNINSTALL,
-      },
-      collapsed(t("If you installed its AppArmor profile", "Если вы ставили для него профиль AppArmor"), [
-        { commands: removeProfile("bilangplay-brew") },
-      ]),
-    ]),
     method("download", DOWNLOAD, [
       {
         title: t("Debian/Ubuntu package (.deb)", "Пакет Debian/Ubuntu (.deb)"),
@@ -751,6 +740,18 @@ export const UNINSTALL = {
       collapsed(t("If you installed an AppArmor profile for it", "Если вы ставили для него профиль AppArmor"), [
         { text: t("The AppImage's:", "Для AppImage:"), commands: removeProfile("bilangplay-appimage") },
         { text: t("The portable app's:", "Для портативного приложения:"), commands: removeProfile("bilangplay-portable") },
+      ]),
+    ]),
+    method("brew", "Homebrew", [
+      {
+        text: t(
+          "Remove the app with its command, applications-menu entry, and icons, then the tap:",
+          "Удалите приложение вместе с командой, пунктом меню приложений и значками, затем tap:",
+        ),
+        commands: BREW_UNINSTALL,
+      },
+      collapsed(t("If you installed its AppArmor profile", "Если вы ставили для него профиль AppArmor"), [
+        { commands: removeProfile("bilangplay-brew") },
       ]),
     ]),
     {

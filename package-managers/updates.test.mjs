@@ -184,8 +184,9 @@ test("every step is well formed: texts in English and Russian, commands as lines
 test("Install and Uninstall have the same ways of installing for each system", () => {
   const updates = renderUpdates(release("1.0.0"));
   const ids = (list) => list.filter((step) => step.method).map((step) => step.method);
-  assert.deepEqual(ids(updates.install.windows), ["scoop", "chocolatey", "download"]);
-  for (const system of ["macos", "linux"]) assert.deepEqual(ids(updates.install[system]), ["brew", "download"]);
+  // A download first: the site shows it unless the visitor picks another.
+  assert.deepEqual(ids(updates.install.windows), ["download", "scoop", "chocolatey"]);
+  for (const system of ["macos", "linux"]) assert.deepEqual(ids(updates.install[system]), ["download", "brew"]);
   for (const system of ["windows", "macos", "linux"]) {
     assert.deepEqual(ids(updates.uninstall[system]), ids(updates.install[system]), system);
   }
