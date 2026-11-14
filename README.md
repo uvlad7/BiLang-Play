@@ -42,7 +42,8 @@ exist.
 | Linux | `bilangplay-<version>-linux-x86_64.AppImage`, `…-linux-amd64.deb`, or `…-linux-x64.tar.gz` | x86-64 with glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+) |
 
 The builds are not signed with a paid certificate yet, so Windows and macOS
-warn about them once. The steps below get past that.
+may warn about them the first time you open them. The steps below get past
+that.
 
 ## Screenshots
 
@@ -104,7 +105,7 @@ The downloaded zip, before unzipping it:
 Unblock-File "$env:USERPROFILE\Downloads\bilangplay-<version>-windows-x64.zip"
 ```
 
-A folder already unzipped, every file in it (where **Extract All** puts it;
+An unzipped folder, with every file in it (where **Extract All** puts it;
 change the path if you chose another):
 
 ```powershell

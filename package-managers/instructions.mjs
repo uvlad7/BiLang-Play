@@ -77,7 +77,7 @@ function elevated(step) {
     more: {
       summary: t(
         "Not in an administrator shell? Use `sudo` or `gsudo`",
-        "Не в оболочке администратора? Используйте `sudo` или `gsudo`",
+        "Оболочка открыта без прав администратора? Используйте `sudo` или `gsudo`",
       ),
       steps: [
         {
@@ -89,8 +89,8 @@ function elevated(step) {
         },
         {
           text: t(
-            "Or, on any Windows, with [`gsudo`](https://community.chocolatey.org/packages/gsudo):",
-            "Или, в любой Windows, через [`gsudo`](https://community.chocolatey.org/packages/gsudo):",
+            "Or, on any version of Windows, with [`gsudo`](https://community.chocolatey.org/packages/gsudo):",
+            "Или, в любой версии Windows, через [`gsudo`](https://community.chocolatey.org/packages/gsudo):",
           ),
           commands: prefixed("gsudo"),
         },
@@ -197,7 +197,7 @@ const CHOCOLATEY_OLDER = () =>
     elevated({
       text: t(
         "The feed keeps every version. In an administrator shell, install this one; `--allow-downgrade` replaces a newer installed version:",
-        "В ленте есть все версии. В оболочке администратора установите эту; `--allow-downgrade` заменит более новую установленную версию:",
+        "В источнике есть все версии. В оболочке администратора установите эту; `--allow-downgrade` заменит более новую установленную версию:",
       ),
       commands: ["choco install bilangplay --version <version> --source bilangplay --pre --allow-downgrade -y"],
     }),
@@ -275,14 +275,14 @@ function brewUpdate() {
     {
       text: t(
         "Fetch only this tap, then upgrade BiLang Play:",
-        "Получите только этот tap, затем обновите BiLang Play:",
+        "Обновите только этот tap, затем BiLang Play:",
       ),
       commands: ['git -C "$(brew --repository uvlad7/bilang-play)" pull --ff-only', upgrade],
     },
     {
       text: t(
         "Or fetch the newest Homebrew and every tap's package lists (nothing installed is upgraded), then upgrade BiLang Play:",
-        "Или получите свежий Homebrew и списки пакетов всех tap'ов (установленное при этом не обновляется), затем обновите BiLang Play:",
+        "Или обновите сам Homebrew и списки пакетов всех tap'ов (установленное при этом не обновляется), затем BiLang Play:",
       ),
       commands: ["brew update", upgrade],
     },
@@ -300,7 +300,7 @@ const HOLD = {
     {
       text: t(
         "Pin it (Homebrew 5.1.12 or later), so `brew upgrade` skips it:",
-        "Закрепите его (Homebrew 5.1.12 или новее), чтобы `brew upgrade` его пропускал:",
+        "Закрепите BiLang Play (Homebrew 5.1.12 или новее), чтобы `brew upgrade` его пропускал:",
       ),
       commands: ["brew pin --cask bilang-play"],
     },
@@ -310,7 +310,7 @@ const HOLD = {
     {
       text: t(
         "Hold it, so `scoop update *` skips it:",
-        "Заморозьте его, чтобы `scoop update *` его пропускал:",
+        "Заморозьте BiLang Play, чтобы `scoop update *` его пропускал:",
       ),
       commands: ["scoop hold bilang-play"],
     },
@@ -320,7 +320,7 @@ const HOLD = {
     elevated({
       text: t(
         "Pin it, in an administrator shell, so `choco upgrade all` skips it:",
-        "Закрепите его в оболочке администратора, чтобы `choco upgrade all` его пропускал:",
+        "Закрепите BiLang Play в оболочке администратора, чтобы `choco upgrade all` его пропускал:",
       ),
       commands: ["choco pin add -n bilangplay"],
     }),
@@ -345,7 +345,7 @@ export const CHANNELS = {
       {
         text: t(
           "Fetch the newest Scoop and its buckets (nothing installed is upgraded), then upgrade BiLang Play:",
-          "Получите свежий Scoop и его bucket'ы (установленное при этом не обновляется), затем обновите BiLang Play:",
+          "Обновите сам Scoop и его bucket'ы (установленное при этом не обновляется), затем BiLang Play:",
         ),
         commands: ["scoop update", "scoop update bilang-play"],
       },
@@ -437,8 +437,8 @@ export const INSTALL = {
           // The zip has the app's files at its root, so Explorer's Extract All
           // puts them in a folder named after it, next to it.
           text: t(
-            "A folder already unzipped, every file in it (where **Extract All** puts it; change the path if you chose another):",
-            "Уже распакованная папка, все файлы в ней (там, куда её кладёт **Извлечь все**; если вы выбрали другую, исправьте путь):",
+            "An unzipped folder, with every file in it (where **Extract All** puts it; change the path if you chose another):",
+            "Распакованная папка со всеми файлами в ней (там, куда её кладёт **Извлечь все**; если вы выбрали другую, исправьте путь):",
           ),
           commands: ['Get-ChildItem -Recurse "$env:USERPROFILE\\Downloads\\bilangplay-{version}-windows-x64" | Unblock-File'],
         },
@@ -692,7 +692,7 @@ export const UNINSTALL = {
       {
         text: t(
           "Move **BiLang Play** to the Trash from wherever you keep it (usually **Applications**), and the downloaded disk image or zip.",
-          "Переместите **BiLang Play** в Корзину оттуда, где оно лежит (обычно из **Программ**), и скачанный образ диска или zip.",
+          "Переместите в Корзину **BiLang Play** (обычно оно лежит в **Программах**) и скачанный образ диска или zip.",
         ),
       },
     ]),
@@ -717,11 +717,12 @@ export const UNINSTALL = {
       {
         title: t("Debian/Ubuntu package (.deb)", "Пакет Debian/Ubuntu (.deb)"),
         text: t(
-          "It removes its AppArmor profile and settings schema too. Then delete the downloaded package.",
-          "Заодно удаляет свой профиль AppArmor и схему настроек. Затем удалите скачанный пакет.",
+          "Remove the package; this removes its AppArmor profile and settings schema too:",
+          "Удалите пакет; вместе с ним удалятся его профиль AppArmor и схема настроек:",
         ),
         commands: ["sudo apt purge bilangplay"],
       },
+      { text: t("Then delete the downloaded package.", "Затем удалите скачанный пакет.") },
       {
         title: t(
           "App image (.AppImage) or portable app (.tar.gz)",

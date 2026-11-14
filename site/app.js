@@ -127,7 +127,8 @@ function escapeHtml(text) {
   );
 }
 
-const megabytes = (bytes) => `${(bytes / 1024 / 1024).toFixed(0)} MB`;
+const megabytes = (bytes) =>
+  `${(bytes / 1024 / 1024).toFixed(0)} ${lang() === "ru" ? "МБ" : "MB"}`;
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString(t().locale, { year: "numeric", month: "long", day: "numeric" });
 
