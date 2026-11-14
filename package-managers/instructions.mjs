@@ -190,14 +190,14 @@ const CHOCOLATEY_OLDER = () =>
     elevated({
       text: t(
         "If the source is not added yet, add it first, in an administrator shell:",
-        "Если источник ещё не добавлен, сначала добавьте его в терминале администратора:",
+        "Если источник ещё не добавлен, сначала добавьте его в терминале с правами администратора:",
       ),
       commands: [CHOCOLATEY_ADD_SOURCE],
     }),
     elevated({
       text: t(
         "The feed keeps every version. In an administrator shell, install this one; `--allow-downgrade` replaces a newer installed version:",
-        "В источнике есть все версии. В терминале администратора установите эту; `--allow-downgrade` заменит более новую установленную версию:",
+        "В источнике есть все версии. В терминале с правами администратора установите эту; `--allow-downgrade` заменит более новую установленную версию:",
       ),
       commands: ["choco install bilangplay --version <version> --source bilangplay --pre --allow-downgrade -y"],
     }),
@@ -320,7 +320,7 @@ const HOLD = {
     elevated({
       text: t(
         "Pin it, in an administrator shell, so `choco upgrade all` skips it:",
-        "Закрепите BiLang Play в терминале администратора, чтобы `choco upgrade all` его пропускал:",
+        "Закрепите BiLang Play в терминале с правами администратора, чтобы `choco upgrade all` его пропускал:",
       ),
       commands: ["choco pin add -n bilangplay"],
     }),
@@ -345,7 +345,7 @@ export const CHANNELS = {
       {
         text: t(
           "Fetch the newest Scoop and its buckets (nothing installed is upgraded), then upgrade BiLang Play:",
-          "Обновите сам Scoop и его bucket (установленное при этом не обновляется), затем BiLang Play:",
+          "Обновите сам Scoop и все подключённые bucket (установленное при этом не обновляется), затем BiLang Play:",
         ),
         commands: ["scoop update", "scoop update bilang-play"],
       },
@@ -360,7 +360,7 @@ export const CHANNELS = {
       elevated({
         text: t(
           "In an administrator shell (Chocolatey keeps its packages in a folder shared by every user):",
-          "В терминале администратора (Chocolatey хранит пакеты в общей для всех пользователей папке):",
+          "В терминале с правами администратора (Chocolatey хранит пакеты в общей для всех пользователей папке):",
         ),
         commands: ["choco upgrade bilangplay --source bilangplay --pre -y"],
       }),
@@ -454,7 +454,7 @@ export const INSTALL = {
       {
         text: t(
           "From BiLang Play's own bucket (it is not in Scoop's public buckets):",
-          "Из собственного bucket BiLang Play (в публичных bucket Scoop его нет):",
+          "Из собственного источника BiLang Play (в публичных bucket Scoop его нет):",
         ),
         warning: WARNINGS.scoop,
         commands: [SCOOP_ADD_BUCKET, "scoop install bilang-play/bilang-play"],
@@ -467,7 +467,7 @@ export const INSTALL = {
       elevated({
         text: t(
           "In an administrator shell, from BiLang Play's own feed (it is not in the Chocolatey Community Repository):",
-          "В терминале администратора, из собственного источника BiLang Play (в Chocolatey Community Repository его нет):",
+          "В терминале с правами администратора, из собственного источника BiLang Play (в Chocolatey Community Repository его нет):",
         ),
         warning: WARNINGS.chocolatey,
         commands: [CHOCOLATEY_ADD_SOURCE, "choco install bilangplay --source bilangplay --pre -y"],
@@ -523,7 +523,7 @@ export const INSTALL = {
       {
         text: t(
           "From BiLang Play's own tap (it is not in Homebrew's own casks):",
-          "Из собственного tap BiLang Play (среди casks самого Homebrew его нет):",
+          "Из собственного источника BiLang Play (среди casks самого Homebrew его нет):",
         ),
         warning: WARNINGS["brew-macos"],
         commands: BREW_INSTALL,
@@ -590,7 +590,7 @@ export const INSTALL = {
       {
         text: t(
           "From BiLang Play's own tap: the .tar.gz build, with a command, an applications-menu entry, and icons.",
-          "Из собственного tap BiLang Play: сборка .tar.gz с командой, пунктом меню приложений и значками.",
+          "Из собственного источника BiLang Play: сборка .tar.gz с командой, пунктом меню приложений и значками.",
         ),
         commands: BREW_INSTALL,
       },
@@ -674,7 +674,7 @@ export const UNINSTALL = {
       elevated({
         text: t(
           "In an administrator shell, remove the app (Chocolatey runs its uninstaller), then its source:",
-          "В терминале администратора удалите приложение (Chocolatey запустит его деинсталлятор), затем его источник:",
+          "В терминале с правами администратора удалите приложение (Chocolatey запустит его деинсталлятор), затем его источник:",
         ),
         commands: ["choco uninstall bilangplay -y", "choco source remove --name bilangplay"],
       }),

@@ -714,7 +714,24 @@ function setLanguage(next) {
   render();
 }
 
+// Attributes a screen reader or a tooltip reads, in the shown language: the
+// page's English, and each one's `data-<attribute>-<language>`.
+function localizeAttributes() {
+  for (const name of ["aria-label", "aria-roledescription", "alt"]) {
+    for (const element of document.querySelectorAll(`[data-${name}-${lang()}]`)) {
+      element.setAttribute(name, element.getAttribute(`data-${name}-${lang()}`));
+    }
+  }
+  // A button whose name is its tooltip.
+  for (const element of document.querySelectorAll("[data-tooltip-en]")) {
+    const text = element.getAttribute(`data-tooltip-${lang()}`) ?? element.dataset.tooltipEn;
+    element.title = text;
+    element.setAttribute("aria-label", text);
+  }
+}
+
 function render() {
+  localizeAttributes();
   for (const b of document.querySelectorAll("[data-set-lang]")) {
     b.setAttribute("aria-pressed", String(b.dataset.setLang === lang()));
   }
