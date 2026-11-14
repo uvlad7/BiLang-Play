@@ -698,6 +698,26 @@ function render() {
 for (const b of document.querySelectorAll("[data-set-lang]")) {
   b.addEventListener("click", () => setLanguage(b.dataset.setLang));
 }
+
+// Phones: the Menu button shows the section links; a link, Esc, or the
+// button again hides them.
+function setupNavMenu() {
+  const toggle = document.querySelector("[data-nav-toggle]");
+  const header = toggle.closest(".top");
+  const show = (open) => {
+    header.classList.toggle("nav-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  toggle.addEventListener("click", () => show(!header.classList.contains("nav-open")));
+  for (const link of document.querySelectorAll(".nav a")) link.addEventListener("click", () => show(false));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && header.classList.contains("nav-open")) {
+      show(false);
+      toggle.focus();
+    }
+  });
+}
+setupNavMenu();
 setupTabs();
 setupGallery();
 renderSteps();

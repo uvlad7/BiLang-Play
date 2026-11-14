@@ -3,7 +3,7 @@
 # BiLang Play
 
 A desktop video player for language learners. Watch your own videos with
-subtitles in the language you learn and in your own, pause to see the
+subtitles in the language you're learning and in your own, pause to see the
 transcript, and click any word for its translation and definition.
 Make it look the way you read best: style profiles, and fonts, sizes,
 colors, outlines, and positions for the subtitles and both transcripts.

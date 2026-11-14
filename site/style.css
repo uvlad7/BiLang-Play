@@ -156,6 +156,22 @@ h3:first-child {
   background: rgb(255 255 255 / 0.06);
   text-decoration: none;
 }
+/* The Menu button, shown on phones only (the media query below). */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.06);
+  color: var(--text-dim);
+  font: 600 0.85rem var(--font);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.nav-toggle[aria-expanded="true"] {
+  color: var(--text);
+}
 .lang-switch {
   display: flex;
   padding: 3px;
@@ -864,30 +880,32 @@ pre .copy:hover {
 }
 
 @media (max-width: 640px) {
-  /* The section links get a row of their own under the logo, scrolling
-     sideways when they do not fit. */
+  /* The section links open from the Menu button, as a list under the
+     header: in one row they did not fit a phone in either language. */
   .top-row {
     flex-wrap: wrap;
-    row-gap: 0;
+    gap: 0 8px;
+  }
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
   }
   .nav {
+    display: none;
     order: 3;
-    width: calc(100% + 12px);
-    margin: 0 -6px 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    /* A fade at the right edge says the row scrolls. */
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    width: 100%;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 10px;
+  }
+  .top.nav-open .nav {
+    display: flex;
   }
   .nav a {
-    white-space: nowrap;
-    padding: 6px;
-  }
-  .nav a:last-child {
-    margin-right: 22px;
+    padding: 10px 8px;
   }
   .lang-switch {
-    margin-left: auto;
+    margin-left: 0;
   }
   .features {
     grid-template-columns: 1fr;
@@ -1066,5 +1084,22 @@ pre .copy:hover {
   .build-request-dialog-actions {
     grid-template-columns: 1fr;
     width: 100%;
+  }
+}
+
+/* The narrowest phones: the Menu button keeps only its icon, so the logo,
+   it, and the language switch fit one line; its label stays for screen
+   readers. */
+@media (max-width: 420px) {
+  .nav-toggle {
+    padding: 7px 9px;
+  }
+  .nav-toggle span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

@@ -55,7 +55,20 @@
           <img src="icon-32.svg" width="32" height="32" alt="" />
           <span>BiLang Play</span>
         </a>
-        <nav class="nav" aria-label="Sections">
+        <!-- Phones: the section links open from here, under the header. -->
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          data-nav-toggle
+        >
+          <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+            <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+          <span lang="en">Menu</span><span lang="ru">Меню</span>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Sections">
           <a href="#screenshots"
             ><span lang="en">Screenshots</span><span lang="ru">Скриншоты</span></a
           >
@@ -81,7 +94,7 @@
           </h1>
           <p class="lead" lang="en">
             A desktop video player for language learners. Watch your own videos with subtitles in
-            the language you learn and in your own, pause to see the transcript, and click any word
+            the language you're learning and in your own, pause to see the transcript, and click any word
             for its translation and definition. Make it look the way you read best.
           </p>
           <p class="lead" lang="ru">
@@ -125,7 +138,7 @@
           <h3><span lang="en">Two subtitle tracks</span><span lang="ru">Две дорожки субтитров</span></h3>
           <p lang="en">
             Subtitles in the language you're learning and in your own, shown together and styled
-            separately. SRT, WebVTT, and tracks inside the video.
+            separately. Supports SRT, WebVTT, and subtitle tracks inside the video.
           </p>
           <p lang="ru">
             Субтитры на изучаемом и родном языках одновременно; каждую дорожку можно настроить
