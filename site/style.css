@@ -133,6 +133,7 @@ h3:first-child {
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
   color: var(--text);
   font-weight: 650;
   font-size: 1.05rem;
@@ -880,33 +881,6 @@ pre .copy:hover {
 }
 
 @media (max-width: 640px) {
-  /* The section links open from the Menu button, as a list under the
-     header: in one row they did not fit a phone in either language. */
-  .top-row {
-    flex-wrap: wrap;
-    gap: 0 8px;
-  }
-  .nav-toggle {
-    display: inline-flex;
-    margin-left: auto;
-  }
-  .nav {
-    display: none;
-    order: 3;
-    width: 100%;
-    flex-direction: column;
-    gap: 2px;
-    margin: 0 0 10px;
-  }
-  .top.nav-open .nav {
-    display: flex;
-  }
-  .nav a {
-    padding: 10px 8px;
-  }
-  .lang-switch {
-    margin-left: 0;
-  }
   .features {
     grid-template-columns: 1fr;
   }
@@ -1084,6 +1058,39 @@ pre .copy:hover {
   .build-request-dialog-actions {
     grid-template-columns: 1fr;
     width: 100%;
+  }
+}
+
+/* Below 900 px the section links open from the Menu button, as a list
+   under the header: in one row they need about 780 px in English and 840 px
+   in Russian. */
+@media (max-width: 900px) {
+  /* The section links open from the Menu button, as a list under the
+     header: in one row they did not fit a phone in either language. */
+  .top-row {
+    flex-wrap: wrap;
+    gap: 0 8px;
+  }
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+  .nav {
+    display: none;
+    order: 3;
+    width: 100%;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 10px;
+  }
+  .top.nav-open .nav {
+    display: flex;
+  }
+  .nav a {
+    padding: 10px 8px;
+  }
+  .lang-switch {
+    margin-left: 0;
   }
 }
 

@@ -361,6 +361,7 @@ function renderSteps() {
       panel.append(...render(entry.steps));
       return panel;
     });
+    keyboardTabs(list, (tab) => selectMethod(system, tab.dataset.method));
     group.append(list, ...panels);
     return [group, ...render(steps.filter((step) => !step.method))];
   };
@@ -392,6 +393,7 @@ function selectMethod(system, method) {
     for (const panel of group.querySelectorAll(".method-panel")) {
       panel.hidden = panel.dataset.method !== shown;
     }
+    rovingTabStop(group.querySelector(".method-list"));
   }
 }
 
@@ -404,10 +406,32 @@ function setupTabs() {
       for (const panel of tabs.querySelectorAll("[data-panel]")) {
         panel.hidden = panel.dataset.panel !== name;
       }
+      rovingTabStop(tabs.querySelector("[role=tablist]"));
     };
     for (const b of buttons) b.addEventListener("click", () => select(b.dataset.tab));
+    keyboardTabs(tabs.querySelector("[role=tablist]"), (tab) => select(tab.dataset.tab));
     select(system || "windows");
   }
+}
+
+// A row of tabs is one stop for Tab, its selected tab; ←/→ move along the
+// row (wrapping), and Home and End to its ends, selecting as they go.
+function rovingTabStop(list) {
+  for (const tab of list.querySelectorAll("[role=tab]")) {
+    tab.tabIndex = tab.getAttribute("aria-selected") === "true" ? 0 : -1;
+  }
+}
+function keyboardTabs(list, select) {
+  list.addEventListener("keydown", (event) => {
+    const tabs = [...list.querySelectorAll("[role=tab]")];
+    const at = tabs.indexOf(document.activeElement);
+    const to = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: tabs.length - 1 }[event.key];
+    if (at < 0 || to === undefined) return;
+    event.preventDefault();
+    const tab = tabs[(to + tabs.length) % tabs.length];
+    select(tab);
+    tab.focus();
+  });
 }
 
 // The screenshot gallery: one slide at a time; buttons, dots, the keyboard's
