@@ -521,10 +521,16 @@ function setupGallery() {
 
   // Capturing the pointer lets a swipe complete even when the finger leaves
   // the image. The same gesture works in the full-screen viewer.
+  // A second finger (a pinch) or a zoomed-in page (moving around the
+  // zoomed screenshot) is not a swipe.
   const installSwipe = (target, step, tap) => {
     let start = null;
+    const down = new Set();
     const clear = () => (start = null);
+    const zoomed = () => (window.visualViewport?.scale ?? 1) > 1.01;
     target.addEventListener("pointerdown", (event) => {
+      down.add(event.pointerId);
+      if (down.size > 1 || zoomed()) return clear();
       if (event.pointerType === "mouse" && event.button !== 0) return;
       if (event.target.closest("button")) return;
       start = {
@@ -536,7 +542,8 @@ function setupGallery() {
       target.setPointerCapture?.(event.pointerId);
     });
     target.addEventListener("pointerup", (event) => {
-      if (!start || event.pointerId !== start.pointerId) return;
+      down.delete(event.pointerId);
+      if (!start || event.pointerId !== start.pointerId || zoomed()) return clear();
       const movedX = event.clientX - start.x;
       const movedY = event.clientY - start.y;
       const pressed = start;
@@ -550,7 +557,10 @@ function setupGallery() {
         tap?.({ target: pressed.target });
       }
     });
-    target.addEventListener("pointercancel", clear);
+    target.addEventListener("pointercancel", (event) => {
+      down.delete(event.pointerId);
+      clear();
+    });
   };
   installSwipe(track, (step) => show(current + step), (event) => {
     if (event.target.closest(".gallery-slide img")) open();

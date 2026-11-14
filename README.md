@@ -5,8 +5,9 @@
 A desktop video player for language learners. Watch your own videos with
 subtitles in the language you're learning and in your own, pause to see the
 transcript, and click any word for its translation and definition.
-Make it look the way you read best: style profiles, and fonts, sizes,
-colors, outlines, and positions for the subtitles and both transcripts.
+Adjust the appearance to your own preferences: style profiles, and fonts,
+sizes, colors, outlines, and positions for the subtitles and both
+transcripts.
 
 Keep subtitle files beside a video and name language versions after it—for
 example, `episode.mp4`, `episode.en.srt`, and `episode.ru.srt`. BiLang Play
@@ -42,8 +43,8 @@ exist.
 | Linux | `bilangplay-<version>-linux-x86_64.AppImage`, `…-linux-amd64.deb`, or `…-linux-x64.tar.gz` | x86-64 with glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+) |
 
 The builds are not signed with a paid certificate yet, so Windows and macOS
-may warn about them the first time you open them. The steps below get past
-that.
+may warn about them the first time you open them. The steps below show how
+to open them anyway.
 
 ## Screenshots
 
